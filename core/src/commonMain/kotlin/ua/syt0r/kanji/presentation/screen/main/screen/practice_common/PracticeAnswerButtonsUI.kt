@@ -49,6 +49,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ua.syt0r.kanji.core.srs.SrsAnswer
 import ua.syt0r.kanji.presentation.common.resources.string.resolveString
+import ua.syt0r.kanji.presentation.common.sound.LocalPracticeSounds
+import ua.syt0r.kanji.presentation.common.sound.PracticeSoundEffect
 import ua.syt0r.kanji.presentation.common.theme.extraColorScheme
 import kotlin.time.Duration
 
@@ -91,6 +93,7 @@ fun PracticeAnswerButtonsRow(
     modifier: Modifier = Modifier
 ) {
 
+    val practiceSounds = LocalPracticeSounds.current
     val keyboardControlsModifier = if (enableKeyboardControls) {
         val focusRequester = remember { FocusRequester() }
         LaunchedEffect(Unit) { focusRequester.requestFocus() }
@@ -108,7 +111,11 @@ fun PracticeAnswerButtonsRow(
                     else -> null
                 }
 
-                srsCard?.let { onClick(it); true } ?: false
+                srsCard?.let {
+                    practiceSounds.play(PracticeSoundEffect.Click)
+                    onClick(it)
+                    true
+                } ?: false
             }
     } else {
         Modifier
@@ -128,25 +135,37 @@ fun PracticeAnswerButtonsRow(
             SrsAnswerButton(
                 label = resolveString { commonPractice.againButton },
                 interval = answers.again.srsAnswer.card.interval,
-                onClick = { onClick(answers.again) },
+                onClick = {
+                    practiceSounds.play(PracticeSoundEffect.Click)
+                    onClick(answers.again)
+                },
                 color = MaterialTheme.colorScheme.error
             )
             SrsAnswerButton(
                 label = resolveString { commonPractice.hardButton },
                 interval = answers.hard.srsAnswer.card.interval,
-                onClick = { onClick(answers.hard) },
+                onClick = {
+                    practiceSounds.play(PracticeSoundEffect.Click)
+                    onClick(answers.hard)
+                },
                 color = MaterialTheme.extraColorScheme.due
             )
             SrsAnswerButton(
                 label = resolveString { commonPractice.goodButton },
                 interval = answers.good.srsAnswer.card.interval,
-                onClick = { onClick(answers.good) },
+                onClick = {
+                    practiceSounds.play(PracticeSoundEffect.Click)
+                    onClick(answers.good)
+                },
                 color = MaterialTheme.extraColorScheme.success
             )
             SrsAnswerButton(
                 label = resolveString { commonPractice.easyButton },
                 interval = answers.easy.srsAnswer.card.interval,
-                onClick = { onClick(answers.easy) },
+                onClick = {
+                    practiceSounds.play(PracticeSoundEffect.Click)
+                    onClick(answers.easy)
+                },
                 color = MaterialTheme.extraColorScheme.new
             )
         }
@@ -194,6 +213,8 @@ fun FlashcardPracticeAnswerButtonsRow(
     onAnswerClick: (PracticeAnswer) -> Unit
 ) {
 
+    val practiceSounds = LocalPracticeSounds.current
+
     Box(
         modifier = Modifier.height(IntrinsicSize.Max)
     ) {
@@ -204,7 +225,10 @@ fun FlashcardPracticeAnswerButtonsRow(
 
             SrsWholeRowButton(
                 text = resolveString { commonPractice.flashcardRevealButton },
-                onClick = onRevealAnswerClick,
+                onClick = {
+                    practiceSounds.play(PracticeSoundEffect.Click)
+                    onRevealAnswerClick()
+                },
                 modifier = Modifier
                     .graphicsLayer { if (!isVisible) alpha = 0f }
                     .focusable()

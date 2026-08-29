@@ -29,6 +29,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.merge
+import ua.syt0r.kanji.presentation.common.sound.LocalPracticeSounds
+import ua.syt0r.kanji.presentation.common.sound.PracticeSoundEffect
 import ua.syt0r.kanji.presentation.common.ui.kanji.AnimatedStroke
 import ua.syt0r.kanji.presentation.common.ui.kanji.Kanji
 import ua.syt0r.kanji.presentation.common.ui.kanji.Stroke
@@ -44,6 +46,18 @@ fun CharacterWriter(
     state: CharacterWriterState,
     modifier: Modifier = Modifier
 ) {
+
+    // 作答完成（对/错）时播放音效
+    val practiceSounds = LocalPracticeSounds.current
+    val progress by state.progress
+    LaunchedEffect(progress) {
+        val completed = progress as? CharacterWritingProgress.Completed ?: return@LaunchedEffect
+        if (completed is CharacterWritingProgress.Completed.Idle) {
+            practiceSounds.play(
+                if (completed.isCorrect) PracticeSoundEffect.Correct else PracticeSoundEffect.Incorrect
+            )
+        }
+    }
 
     Box(modifier) {
         when (val writerContent = state.content.value) {

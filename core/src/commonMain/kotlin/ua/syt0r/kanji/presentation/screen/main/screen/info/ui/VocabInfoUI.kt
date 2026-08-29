@@ -55,6 +55,12 @@ import ua.syt0r.kanji.presentation.common.ui.kanji.HighlightedLetter
 import ua.syt0r.kanji.presentation.dialog.SaveWordDialog
 import ua.syt0r.kanji.presentation.screen.main.screen.info.InfoScreenContract
 import ua.syt0r.kanji.presentation.screen.main.screen.info.InfoScreenPaddedListIndex
+import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
+import ua.syt0r.kanji.core.tts.WordTtsManager
 import ua.syt0r.kanji.presentation.screen.main.screen.info.VocabInfoData
 import ua.syt0r.kanji.presentation.screen.main.screen.info.infoScreenExpandableSection
 import ua.syt0r.kanji.presentation.screen.main.screen.info.infoScreenExpandableSentenceSection
@@ -180,6 +186,10 @@ private fun VocabReadingSection(word: JapaneseWord) {
     val reading = word.reading
     val readingStyle = MaterialTheme.typography.headlineLarge.copy(textAlign = TextAlign.Center)
 
+    val wordTtsManager = koinInject<WordTtsManager>()
+    val scope = rememberCoroutineScope()
+    val speakText = reading.kanaReading
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -225,6 +235,12 @@ private fun VocabReadingSection(word: JapaneseWord) {
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            IconButton(
+                onClick = { scope.launch { wordTtsManager.speak(speakText) } }
+            ) {
+                Icon(Icons.Default.VolumeUp, contentDescription = "Play pronunciation")
+            }
+
             TextButton(
                 onClick = { showAddToDeckDialog = true },
                 colors = ButtonDefaults.neutralTextButtonColors()

@@ -18,85 +18,15 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
+import com.materialkolor.rememberDynamicColorScheme
 import ua.syt0r.kanji.presentation.common.resources.string.LocalStrings
 import ua.syt0r.kanji.presentation.common.resources.string.getStrings
 import ua.syt0r.kanji.presentation.common.ui.LocalOrientation
 import ua.syt0r.kanji.presentation.common.ui.Orientation
-
-private val LightThemeColors = lightColorScheme(
-    primary = md_theme_light_primary,
-    onPrimary = md_theme_light_onPrimary,
-    primaryContainer = md_theme_light_primaryContainer,
-    onPrimaryContainer = md_theme_light_onPrimaryContainer,
-    secondary = md_theme_light_secondary,
-    onSecondary = md_theme_light_onSecondary,
-    secondaryContainer = md_theme_light_secondaryContainer,
-    onSecondaryContainer = md_theme_light_onSecondaryContainer,
-    tertiary = md_theme_light_tertiary,
-    onTertiary = md_theme_light_onTertiary,
-    tertiaryContainer = md_theme_light_tertiaryContainer,
-    onTertiaryContainer = md_theme_light_onTertiaryContainer,
-    error = md_theme_light_error,
-    errorContainer = md_theme_light_errorContainer,
-    onError = md_theme_light_onError,
-    onErrorContainer = md_theme_light_onErrorContainer,
-    background = md_theme_light_background,
-    onBackground = md_theme_light_onBackground,
-    surface = md_theme_light_surface,
-    onSurface = md_theme_light_onSurface,
-    surfaceVariant = md_theme_light_surfaceVariant,
-    onSurfaceVariant = md_theme_light_onSurfaceVariant,
-    surfaceContainerHigh = md_theme_light_surfaceVariant,
-    surfaceContainerHighest = md_theme_light_surfaceVariant,
-    surfaceDim = lightSurfaceDim,
-    outline = md_theme_light_outline,
-    outlineVariant = md_theme_light_outline_variant,
-    inverseOnSurface = md_theme_light_inverseOnSurface,
-    inverseSurface = md_theme_light_inverseSurface,
-    inversePrimary = md_theme_light_inversePrimary,
-)
-
-private val DarkThemeColors = darkColorScheme(
-    primary = md_theme_dark_primary,
-    onPrimary = md_theme_dark_onPrimary,
-    primaryContainer = md_theme_dark_primaryContainer,
-    onPrimaryContainer = md_theme_dark_onPrimaryContainer,
-    secondary = md_theme_dark_secondary,
-    onSecondary = md_theme_dark_onSecondary,
-    secondaryContainer = md_theme_dark_secondaryContainer,
-    onSecondaryContainer = md_theme_dark_onSecondaryContainer,
-    tertiary = md_theme_dark_tertiary,
-    onTertiary = md_theme_dark_onTertiary,
-    tertiaryContainer = md_theme_dark_tertiaryContainer,
-    onTertiaryContainer = md_theme_dark_onTertiaryContainer,
-    error = md_theme_dark_error,
-    errorContainer = md_theme_dark_errorContainer,
-    onError = md_theme_dark_onError,
-    onErrorContainer = md_theme_dark_onErrorContainer,
-    background = md_theme_dark_background,
-    onBackground = md_theme_dark_onBackground,
-    surface = md_theme_dark_surface,
-    surfaceDim = darkSurfaceDim,
-    onSurface = md_theme_dark_onSurface,
-    surfaceVariant = md_theme_dark_surfaceVariant,
-    surfaceContainerHighest = md_theme_dark_surfaceVariant,
-    onSurfaceVariant = md_theme_dark_onSurfaceVariant,
-    outline = md_theme_dark_outline,
-    inverseOnSurface = md_theme_dark_inverseOnSurface,
-    inverseSurface = md_theme_dark_inverseSurface,
-)
-
-private val AmoledThemeColors = DarkThemeColors.copy(
-    background = amoled_theme_background,
-    surface = amoled_theme_surface,
-    surfaceDim = amoledSurfaceDim,
-)
 
 class ExtraColorsScheme(
     val link: Color,
@@ -135,16 +65,19 @@ fun AppTheme(
     orientation: Orientation = Orientation.Portrait,
     content: @Composable () -> Unit
 ) {
-    val (colors, extraColors) = if (useAmoledTheme) {
-        AmoledThemeColors to DarkExtraColorScheme
-    } else if (!useDarkTheme) {
-        LightThemeColors to LightExtraColorScheme
-    } else {
-        DarkThemeColors to DarkExtraColorScheme
-    }
+    val isDark = useDarkTheme || useAmoledTheme
+
+    // 由品牌 seed 色动态生成明暗 Material 3 配色（跨平台一致；isAmoled 由库处理纯黑）
+    val colorScheme = rememberDynamicColorScheme(
+        seedColor = BrandSeedColor,
+        isDark = isDark,
+        isAmoled = useAmoledTheme
+    )
+
+    val extraColors = if (isDark) DarkExtraColorScheme else LightExtraColorScheme
 
     MaterialTheme(
-        colorScheme = colors,
+        colorScheme = colorScheme,
         typography = AppTypography,
         content = {
             CompositionLocalProvider(
