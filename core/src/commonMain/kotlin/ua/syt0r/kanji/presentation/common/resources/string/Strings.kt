@@ -22,6 +22,7 @@ fun <T> resolveString(resolveScope: StringResolveScope<T>): T {
 fun getStrings(): Strings {
     return when (Locale.current.language) {
         "ja" -> JapaneseStrings
+        "zh" -> ChineseStrings
         else -> EnglishStrings
     }
 }

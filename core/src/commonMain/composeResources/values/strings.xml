@@ -1,44 +1,44 @@
 <resources>
 
-    <string name="study_category_letter">Letter</string>
-    <string name="study_category_vocab">Vocab</string>
-    <string name="practice_type_writing">Writing</string>
-    <string name="practice_type_flashcard">Flashcards</string>
-    <string name="practice_type_reading_picker">Reading Picker</string>
+    <string name="study_category_letter">字母</string>
+    <string name="study_category_vocab">单词</string>
+    <string name="practice_type_writing">写字练习</string>
+    <string name="practice_type_flashcard">单词卡</string>
+    <string name="practice_type_reading_picker">选择题</string>
 
-    <string name="srs_status_new">New</string>
-    <string name="srs_status_due">Due</string>
-    <string name="srs_status_done">Done</string>
+    <string name="srs_status_new">学习</string>
+    <string name="srs_status_due">复习</string>
+    <string name="srs_status_done">已完成</string>
 
-    <string name="dialog_apply">Apply</string>
-    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_apply">应用</string>
+    <string name="dialog_cancel">取消</string>
 
-    <string name="vocab_card_missing_meaning">[No meaning]</string>
-    <string name="error_unknown">Unknown error</string>
+    <string name="vocab_card_missing_meaning">[err:无意义！]</string>
+    <string name="error_unknown">未知错误</string>
 
-    <string name="update_snackbar_title">The app was updated</string>
+    <string name="update_snackbar_title">有可用更新</string>
     <string name="update_snackbar_action">Changes</string>
 
-    <string name="general_dashboard_header_streak_current">Current Streak</string>
-    <string name="general_dashboard_header_streak_longest">Longest Streak</string>
-    <string name="general_dashboard_header_reviews">Reviews Today</string>
+    <string name="general_dashboard_header_streak_current">目前连续记录</string>
+    <string name="general_dashboard_header_streak_longest">最长连续记录</string>
+    <string name="general_dashboard_header_reviews">今日复习数</string>
 
-    <string name="general_dashboard_study_target_title">Study Targets</string>
-    <string name="general_dashboard_study_target_edit">Edit</string>
-    <string name="general_dashboard_study_target_daily_limit">Daily Limit</string>
-    <string name="general_dashboard_study_target_empty">Select</string>
-    <string name="general_dashboard_study_target_no_decks">No decks. Click to create</string>
+    <string name="general_dashboard_study_target_title">学习目标</string>
+    <string name="general_dashboard_study_target_edit">编辑</string>
+    <string name="general_dashboard_study_target_daily_limit">设置每日目标</string>
+    <string name="general_dashboard_study_target_empty">选择目标</string>
+    <string name="general_dashboard_study_target_no_decks">还没设置卡片组.点击创建一个吧</string>
     <string name="general_dashboard_study_target_nothing_left">Nothing left to study today</string>
 
-    <string name="general_dashboard_text_analysis">Text Analysis (Preview)</string>
-    <string name="general_dashboard_social">Social</string>
-    <string name="general_dashboard_downloads">Downloads</string>
-    <string name="general_dashboard_tutorial">Tutorial</string>
+    <string name="general_dashboard_text_analysis">文本分析 (预览)</string>
+    <string name="general_dashboard_social">我们的流媒体账号</string>
+    <string name="general_dashboard_downloads">到官网下载</string>
+    <string name="general_dashboard_tutorial">指南</string>
 
     <string name="social_discord">Discord</string>
-    <string name="social_youtube">YouTube</string>
+    <string name="social_youtube">油管</string>
 
-    <string name="setting_daily_reset_time_item">Daily Reset Time</string>
+    <string name="setting_daily_reset_time_item">每日重置时间</string>
 
     <string name="text_analysis_title">Text Analysis</string>
     <string name="text_analysis_history_title">History</string>
@@ -68,13 +68,13 @@
     <string name="text_analysis_save_letters_apply">Add To Deck</string>
 
     <string name="text_analysis_alternative_words">Alternative words: </string>
-    <string name="text_analysis_word_parse_error">Error</string>
+    <string name="text_analysis_word_parse_error">出错了...?</string>
 
     <string name="text_analysis_preview_text">富士山は日本の象徴で、登山シーズンになると多くの登山者が頂上を目指します。その絶景は一生の思い出になります。</string>
-    <string name="text_analysis_preview_translation">Mount Fuji is a symbol of Japan, and during the climbing season, many climbers aim for the summit. The magnificent view is an unforgettable memory.</string>
+    <string name="text_analysis_preview_translation">富士山是日本的象征，在登山季节，许多登山者以登顶为目标。壮丽的景色是一段难忘的回忆。</string>
 
-    <string name="common_dashboard_deck_details">Details</string>
-    <string name="common_dashboard_deck_edit">Edit</string>
+    <string name="common_dashboard_deck_details">详情</string>
+    <string name="common_dashboard_deck_edit">编辑</string>
 
     <string name="practice_new_cards_config_title">New cards order</string>
     <string name="practice_new_cards_config_subtitle">Position of new cards in the practice queue</string>
@@ -87,17 +87,17 @@
     <string name="practice_summary_header_accuracy">Accuracy</string>
     <string name="practice_summary_item_insights">Total Reviews %1$s・Next Review %2$s</string>
     <string name="practice_summary_empty">No reviews</string>
-    <string name="practice_summary_button">Finish</string>
+    <string name="practice_summary_button">结束!</string>
 
-    <string name="save_letters_dialog_title">Add letters to deck</string>
-    <string name="save_letters_dialog_contains">Already contains: %1$s</string>
-    <string name="save_word_dialog_title">Add %1$s to vocab deck</string>
+    <string name="save_letters_dialog_title">为卡片组添加字母</string>
+    <string name="save_letters_dialog_contains">已经包含了: %1$s</string>
+    <string name="save_word_dialog_title">添加 %1$s 到单词卡片组</string>
     <string name="save_word_dialog_contains_hint">Already contains</string>
     <string name="save_word_dialog_create_deck_button">Create New Deck</string>
     <string name="save_word_dialog_create_deck_title_hint">Enter deck title here...</string>
     <string name="save_word_dialog_saving_state_message">Adding</string>
     <string name="save_word_dialog_completed_state_message">Added</string>
-    <string name="save_word_dialog_button_cancel">Cancel</string>
+    <string name="save_word_dialog_button_cancel">取消</string>
     <string name="save_word_dialog_button_add">Add</string>
 
     <string name="migration_dialog_title">Finalizing Update</string>

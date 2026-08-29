@@ -13,20 +13,140 @@ import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
-import com.materialkolor.rememberDynamicColorScheme
 import ua.syt0r.kanji.presentation.common.resources.string.LocalStrings
 import ua.syt0r.kanji.presentation.common.resources.string.getStrings
 import ua.syt0r.kanji.presentation.common.ui.LocalOrientation
 import ua.syt0r.kanji.presentation.common.ui.Orientation
+
+// 品牌红 (#D32F2F) 为基础的完整 Material 3 配色（明/暗），字段齐全、避免新版 material3 缺省变黑
+private val LightColorScheme: ColorScheme = lightColorScheme(
+    primary = Color(0xFFD32F2F),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFFFFDAD6),
+    onPrimaryContainer = Color(0xFF410002),
+    secondary = Color(0xFF7D5843),
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = Color(0xFFF0DAC9),
+    onSecondaryContainer = Color(0xFF2A1507),
+    tertiary = Color(0xFF7A5900),
+    onTertiary = Color(0xFFFFFFFF),
+    tertiaryContainer = Color(0xFFFFDF9E),
+    onTertiaryContainer = Color(0xFF251900),
+    error = Color(0xFFBA1A1A),
+    onError = Color(0xFFFFFFFF),
+    errorContainer = Color(0xFFFFDAD6),
+    onErrorContainer = Color(0xFF410002),
+    background = Color(0xFFFFFBFF),
+    onBackground = Color(0xFF201A19),
+    surface = Color(0xFFFFFBFF),
+    onSurface = Color(0xFF201A19),
+    surfaceVariant = Color(0xFFF5DDD8),
+    onSurfaceVariant = Color(0xFF53433F),
+    surfaceTint = Color(0xFFD32F2F),
+    inverseSurface = Color(0xFF362F2E),
+    inverseOnSurface = Color(0xFFFBEEEC),
+    inversePrimary = Color(0xFFFFB4A9),
+    outline = Color(0xFF85736E),
+    outlineVariant = Color(0xFFD8C2BC),
+    scrim = Color(0xFF000000),
+    surfaceBright = Color(0xFFFFFBFF),
+    surfaceDim = Color(0xFFE6DEDC),
+    surfaceContainer = Color(0xFFF3EDEB),
+    surfaceContainerHigh = Color(0xFFF5DDD8),
+    surfaceContainerHighest = Color(0xFFEDE4E1),
+    surfaceContainerLow = Color(0xFFFFFCFA),
+    surfaceContainerLowest = Color(0xFFFFFFFF),
+)
+
+private val DarkColorScheme: ColorScheme = darkColorScheme(
+    primary = Color(0xFFFFB4A9),
+    onPrimary = Color(0xFF690005),
+    primaryContainer = Color(0xFF93000A),
+    onPrimaryContainer = Color(0xFFFFDAD6),
+    secondary = Color(0xFFE5BFA8),
+    onSecondary = Color(0xFF442A1A),
+    secondaryContainer = Color(0xFF5D4030),
+    onSecondaryContainer = Color(0xFFF0DAC9),
+    tertiary = Color(0xFFF1BF49),
+    onTertiary = Color(0xFF3F2E00),
+    tertiaryContainer = Color(0xFF5C4300),
+    onTertiaryContainer = Color(0xFFFFDF9E),
+    error = Color(0xFFFFB4AB),
+    onError = Color(0xFF690005),
+    errorContainer = Color(0xFF93000A),
+    onErrorContainer = Color(0xFFFFDAD6),
+    background = Color(0xFF201A19),
+    onBackground = Color(0xFFEDE0DE),
+    surface = Color(0xFF201A19),
+    onSurface = Color(0xFFEDE0DE),
+    surfaceVariant = Color(0xFF53433F),
+    onSurfaceVariant = Color(0xFFD8C2BC),
+    surfaceTint = Color(0xFFFFB4A9),
+    inverseSurface = Color(0xFFEDE0DE),
+    inverseOnSurface = Color(0xFF362F2E),
+    inversePrimary = Color(0xFFD32F2F),
+    outline = Color(0xFFA08C87),
+    outlineVariant = Color(0xFF53433F),
+    scrim = Color(0xFF000000),
+    surfaceBright = Color(0xFF3B3433),
+    surfaceDim = Color(0xFF201A19),
+    surfaceContainer = Color(0xFF2D2524),
+    surfaceContainerHigh = Color(0xFF373030),
+    surfaceContainerHighest = Color(0xFF423A39),
+    surfaceContainerLow = Color(0xFF251D1C),
+    surfaceContainerLowest = Color(0xFF1C1413),
+)
+
+private val AmoledColorScheme: ColorScheme = darkColorScheme(
+    primary = Color(0xFFFFB4A9),
+    onPrimary = Color(0xFF690005),
+    primaryContainer = Color(0xFF93000A),
+    onPrimaryContainer = Color(0xFFFFDAD6),
+    secondary = Color(0xFFE5BFA8),
+    onSecondary = Color(0xFF442A1A),
+    secondaryContainer = Color(0xFF5D4030),
+    onSecondaryContainer = Color(0xFFF0DAC9),
+    tertiary = Color(0xFFF1BF49),
+    onTertiary = Color(0xFF3F2E00),
+    tertiaryContainer = Color(0xFF5C4300),
+    onTertiaryContainer = Color(0xFFFFDF9E),
+    error = Color(0xFFFFB4AB),
+    onError = Color(0xFF690005),
+    errorContainer = Color(0xFF93000A),
+    onErrorContainer = Color(0xFFFFDAD6),
+    background = Color(0xFF000000),
+    onBackground = Color(0xFFEDE0DE),
+    surface = Color(0xFF000000),
+    onSurface = Color(0xFFEDE0DE),
+    surfaceVariant = Color(0xFF53433F),
+    onSurfaceVariant = Color(0xFFD8C2BC),
+    surfaceTint = Color(0xFFFFB4A9),
+    inverseSurface = Color(0xFFEDE0DE),
+    inverseOnSurface = Color(0xFF362F2E),
+    inversePrimary = Color(0xFFD32F2F),
+    outline = Color(0xFFA08C87),
+    outlineVariant = Color(0xFF53433F),
+    scrim = Color(0xFF000000),
+    surfaceBright = Color(0xFF121212),
+    surfaceDim = Color(0xFF121212),
+    surfaceContainer = Color(0xFF121212),
+    surfaceContainerHigh = Color(0xFF1A1A1A),
+    surfaceContainerHighest = Color(0xFF1A1A1A),
+    surfaceContainerLow = Color(0xFF0E0E0E),
+    surfaceContainerLowest = Color(0xFF000000),
+)
 
 class ExtraColorsScheme(
     val link: Color,
@@ -37,19 +157,19 @@ class ExtraColorsScheme(
 )
 
 val LightExtraColorScheme = ExtraColorsScheme(
-    link = lightThemeLinkColor,
-    success = lightThemeSuccessColor,
-    pending = lightThemePendingColor,
-    due = lightThemeDueColor,
-    new = lightThemeNewColor
+    link = Color(0xFF0054D7),
+    success = Color(0xFF2E7D32),
+    pending = Color(0xFF7A5C55),
+    due = Color(0xFFF9A825),
+    new = Color(0xFF0277BD)
 )
 
 val DarkExtraColorScheme = ExtraColorsScheme(
-    link = darkThemeLinkColor,
-    success = darkThemeSuccessColor,
-    pending = darkThemePendingColor,
-    due = darkThemeDueColor,
-    new = darkThemeNewColor
+    link = Color(0xFF5CA9E6),
+    success = Color(0xFF66BB6A),
+    pending = Color(0xFFE0C4BD),
+    due = Color(0xFFFFC94D),
+    new = Color(0xFF4FC3F7)
 )
 
 val LocalExtraColors = compositionLocalOf { LightExtraColorScheme }
@@ -65,16 +185,13 @@ fun AppTheme(
     orientation: Orientation = Orientation.Portrait,
     content: @Composable () -> Unit
 ) {
-    val isDark = useDarkTheme || useAmoledTheme
+    val colorScheme = when {
+        useAmoledTheme -> AmoledColorScheme
+        useDarkTheme -> DarkColorScheme
+        else -> LightColorScheme
+    }
 
-    // 由品牌 seed 色动态生成明暗 Material 3 配色（跨平台一致；isAmoled 由库处理纯黑）
-    val colorScheme = rememberDynamicColorScheme(
-        seedColor = BrandSeedColor,
-        isDark = isDark,
-        isAmoled = useAmoledTheme
-    )
-
-    val extraColors = if (isDark) DarkExtraColorScheme else LightExtraColorScheme
+    val extraColors = if (useDarkTheme || useAmoledTheme) DarkExtraColorScheme else LightExtraColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,
