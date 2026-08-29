@@ -17,7 +17,7 @@
     <string name="error_unknown">未知错误</string>
 
     <string name="update_snackbar_title">有可用更新</string>
-    <string name="update_snackbar_action">Changes</string>
+    <string name="update_snackbar_action">更改</string>
 
     <string name="general_dashboard_header_streak_current">目前连续记录</string>
     <string name="general_dashboard_header_streak_longest">最长连续记录</string>
@@ -28,7 +28,7 @@
     <string name="general_dashboard_study_target_daily_limit">设置每日目标</string>
     <string name="general_dashboard_study_target_empty">选择目标</string>
     <string name="general_dashboard_study_target_no_decks">还没设置卡片组.点击创建一个吧</string>
-    <string name="general_dashboard_study_target_nothing_left">Nothing left to study today</string>
+    <string name="general_dashboard_study_target_nothing_left">今天没有可学习的了</string>
 
     <string name="general_dashboard_text_analysis">文本分析 (预览)</string>
     <string name="general_dashboard_social">我们的流媒体账号</string>
@@ -40,34 +40,34 @@
 
     <string name="setting_daily_reset_time_item">每日重置时间</string>
 
-    <string name="text_analysis_title">Text Analysis</string>
-    <string name="text_analysis_history_title">History</string>
-    <string name="text_analysis_history_empty">No history</string>
+    <string name="text_analysis_title">文本分析</string>
+    <string name="text_analysis_history_title">历史记录</string>
+    <string name="text_analysis_history_empty">暂无历史</string>
 
-    <string name="text_analysis_offer_title">Analyze your own text, save letters and words</string>
-    <string name="text_analysis_offer_subtitle">Requires account. Free during preview until further notice, follow announcements on our Discord server for updates</string>
-    <string name="text_analysis_input_placeholder">Enter text here</string>
-    <string name="text_analysis_translation_placeholder">Translation</string>
+    <string name="text_analysis_offer_title">分析你自己的文本，保存文字和单词</string>
+    <string name="text_analysis_offer_subtitle">需要账户。预览期免费直至另行通知，请关注我们 Discord 服务器上的公告以获取更新</string>
+    <string name="text_analysis_input_placeholder">在这里输入文本</string>
+    <string name="text_analysis_translation_placeholder">翻译</string>
 
-    <string name="text_analysis_configuration_title">Configuration</string>
-    <string name="text_analysis_configuration_analysis_provider">Analysis Provider</string>
-    <string name="text_analysis_ichiran_description">Slow, up to 100 characters</string>
-    <string name="text_analysis_configuration_translation_provider">Translation Provider</string>
+    <string name="text_analysis_configuration_title">配置</string>
+    <string name="text_analysis_configuration_analysis_provider">分析提供方</string>
+    <string name="text_analysis_ichiran_description">较慢，最多 100 个字符</string>
+    <string name="text_analysis_configuration_translation_provider">翻译提供方</string>
 
-    <string name="text_analysis_action_furigana">Furigana</string>
-    <string name="text_analysis_action_highlight">Highlight Part of Speech</string>
-    <string name="text_analysis_action_save_letters">Save Letters</string>
+    <string name="text_analysis_action_furigana">注音</string>
+    <string name="text_analysis_action_highlight">高亮词性</string>
+    <string name="text_analysis_action_save_letters">保存文字</string>
 
-    <string name="text_analysis_save_words_counter">Selected words: %1$s</string>
-    <string name="text_analysis_save_words_cancel">Cancel</string>
-    <string name="text_analysis_save_words_apply">Add To Deck</string>
+    <string name="text_analysis_save_words_counter">已选单词：%1$s</string>
+    <string name="text_analysis_save_words_cancel">取消</string>
+    <string name="text_analysis_save_words_apply">添加到牌组</string>
 
-    <string name="text_analysis_save_letters_counter">Selected letters: %1$s</string>
-    <string name="text_analysis_save_letters_select_kanji">Select All Kanji</string>
-    <string name="text_analysis_save_letters_cancel">Cancel</string>
-    <string name="text_analysis_save_letters_apply">Add To Deck</string>
+    <string name="text_analysis_save_letters_counter">已选文字：%1$s</string>
+    <string name="text_analysis_save_letters_select_kanji">全选汉字</string>
+    <string name="text_analysis_save_letters_cancel">取消</string>
+    <string name="text_analysis_save_letters_apply">添加到牌组</string>
 
-    <string name="text_analysis_alternative_words">Alternative words: </string>
+    <string name="text_analysis_alternative_words">其他词：</string>
     <string name="text_analysis_word_parse_error">出错了...?</string>
 
     <string name="text_analysis_preview_text">富士山は日本の象徴で、登山シーズンになると多くの登山者が頂上を目指します。その絶景は一生の思い出になります。</string>
@@ -76,92 +76,92 @@
     <string name="common_dashboard_deck_details">详情</string>
     <string name="common_dashboard_deck_edit">编辑</string>
 
-    <string name="practice_new_cards_config_title">New cards order</string>
-    <string name="practice_new_cards_config_subtitle">Position of new cards in the practice queue</string>
-    <string name="practice_new_cards_config_first">First</string>
-    <string name="practice_new_cards_config_last">Last</string>
-    <string name="practice_new_cards_config_mixed">Mixed</string>
+    <string name="practice_new_cards_config_title">新卡顺序</string>
+    <string name="practice_new_cards_config_subtitle">新卡在练习队列中的位置</string>
+    <string name="practice_new_cards_config_first">最前</string>
+    <string name="practice_new_cards_config_last">最后</string>
+    <string name="practice_new_cards_config_mixed">混合</string>
 
-    <string name="practice_summary_header_time">Time Spent</string>
-    <string name="practice_summary_header_reviews">Cards Reviewed</string>
-    <string name="practice_summary_header_accuracy">Accuracy</string>
-    <string name="practice_summary_item_insights">Total Reviews %1$s・Next Review %2$s</string>
-    <string name="practice_summary_empty">No reviews</string>
+    <string name="practice_summary_header_time">用时</string>
+    <string name="practice_summary_header_reviews">复习卡片</string>
+    <string name="practice_summary_header_accuracy">正确率</string>
+    <string name="practice_summary_item_insights">总复习 %1$s・下次复习 %2$s</string>
+    <string name="practice_summary_empty">暂无复习</string>
     <string name="practice_summary_button">结束!</string>
 
     <string name="save_letters_dialog_title">为卡片组添加字母</string>
     <string name="save_letters_dialog_contains">已经包含了: %1$s</string>
     <string name="save_word_dialog_title">添加 %1$s 到单词卡片组</string>
-    <string name="save_word_dialog_contains_hint">Already contains</string>
-    <string name="save_word_dialog_create_deck_button">Create New Deck</string>
-    <string name="save_word_dialog_create_deck_title_hint">Enter deck title here...</string>
-    <string name="save_word_dialog_saving_state_message">Adding</string>
-    <string name="save_word_dialog_completed_state_message">Added</string>
+    <string name="save_word_dialog_contains_hint">已包含</string>
+    <string name="save_word_dialog_create_deck_button">创建新牌组</string>
+    <string name="save_word_dialog_create_deck_title_hint">在此输入牌组标题...</string>
+    <string name="save_word_dialog_saving_state_message">添加中</string>
+    <string name="save_word_dialog_completed_state_message">已添加</string>
     <string name="save_word_dialog_button_cancel">取消</string>
-    <string name="save_word_dialog_button_add">Add</string>
+    <string name="save_word_dialog_button_add">添加</string>
 
-    <string name="migration_dialog_title">Finalizing Update</string>
-    <string name="migration_dialog_loading_data">Loading data...</string>
-    <string name="migration_dialog_migrating_vocab_cards">Updating vocab cards...</string>
-    <string name="migration_dialog_saving_changes">Applying changes...</string>
+    <string name="migration_dialog_title">正在完成更新</string>
+    <string name="migration_dialog_loading_data">正在加载数据...</string>
+    <string name="migration_dialog_migrating_vocab_cards">正在更新单词卡...</string>
+    <string name="migration_dialog_saving_changes">正在应用更改...</string>
 
-    <string name="vocab_card_title">Vocab Card</string>
-    <string name="vocab_card_kanji">Kanji Reading</string>
-    <string name="vocab_card_kana">Kana reading</string>
-    <string name="vocab_card_meaning">Meaning</string>
-    <string name="vocab_card_dictionary_meaning">Use dictionary meaning</string>
-    <string name="vocab_card_action_save">Save</string>
-    <string name="vocab_card_action_edit">Edit</string>
-    <string name="vocab_card_action_add">Add</string>
-    <string name="vocab_card_invalid_kanji">Kanji reading enabled but empty</string>
-    <string name="vocab_card_invalid_kana">Kana reading is empty</string>
-    <string name="vocab_card_invalid_meaning">Meaning is empty</string>
+    <string name="vocab_card_title">单词卡</string>
+    <string name="vocab_card_kanji">汉字读音</string>
+    <string name="vocab_card_kana">假名读音</string>
+    <string name="vocab_card_meaning">释义</string>
+    <string name="vocab_card_dictionary_meaning">使用词典释义</string>
+    <string name="vocab_card_action_save">保存</string>
+    <string name="vocab_card_action_edit">编辑</string>
+    <string name="vocab_card_action_add">添加</string>
+    <string name="vocab_card_invalid_kanji">已启用汉字读音但为空</string>
+    <string name="vocab_card_invalid_kana">假名读音为空</string>
+    <string name="vocab_card_invalid_meaning">释义为空</string>
 
     <plurals name="account_subscription_duration_years">
-        <item quantity="one">%1$d Year</item>
-        <item quantity="other">%1$d Years</item>
+        <item quantity="one">%1$d 年</item>
+        <item quantity="other">%1$d 年</item>
     </plurals>
 
     <plurals name="account_subscription_duration_months">
-        <item quantity="one">%1$d Month</item>
-        <item quantity="other">%1$d Months</item>
+        <item quantity="one">%1$d 个月</item>
+        <item quantity="other">%1$d 个月</item>
     </plurals>
 
     <plurals name="account_subscription_duration_days">
-        <item quantity="one">%1$d Day</item>
-        <item quantity="other">%1$d Days</item>
+        <item quantity="one">%1$d 天</item>
+        <item quantity="other">%1$d 天</item>
     </plurals>
 
-    <string name="account_visit_website">View on Web</string>
-    <string name="account_delete">Delete Account</string>
+    <string name="account_visit_website">在网页查看</string>
+    <string name="account_delete">删除账户</string>
 
-    <string name="account_subscription_duration_unknown">Unknown duration format: %1$s</string>
+    <string name="account_subscription_duration_unknown">未知时长格式：%1$s</string>
 
-    <string name="snackbar_sub_expired_message">Your subscription has expired</string>
-    <string name="snackbar_sub_expired_action">Account</string>
+    <string name="snackbar_sub_expired_message">你的订阅已过期</string>
+    <string name="snackbar_sub_expired_action">账户</string>
 
-    <string name="sponsor_recent_donations_title">Recent Donations</string>
-    <string name="sponsor_recent_donations_error">Error: %1$s</string>
+    <string name="sponsor_recent_donations_title">近期捐赠</string>
+    <string name="sponsor_recent_donations_error">错误：%1$s</string>
 
     <string-array name="sponsor_recent_donations_messages">
-        <item>A generous soul donated %1$s¥! Much appreciated!</item>
-        <item>A kind user donated %1$s¥! May your kanji mastery flourish.</item>
-        <item>Someone just donated %1$s¥! More kanji knowledge for everyone!</item>
-        <item>Someone just dropped %1$s¥ into the donation box! ありがとう!</item>
-        <item>Someone contributed %1$s¥! It will help spreading kanji knowledge even more!</item>
-        <item>A generous supporter donated %1$s¥! Keeping the dojo open for all.</item>
-        <item>Thanks to a %1$s¥ donation, Kanji Dojo continues to grow!</item>
-        <item>A generous donation of %1$s¥! More kanji, fewer paywalls!</item>
-        <item>Even kanji radicals appreciate radical generosity—thanks for %1$s¥!</item>
-        <item>Heroes like you keep this dojo free—thank you for %1$s¥!</item>
-        <item>Kanji Dojo bows in gratitude for your %1$s¥ contribution!</item>
-        <item>Someone’s generosity added %1$s¥ to the fund!</item>
-        <item>A diligent learner contributed %1$s¥! May your reviews always be correct.</item>
+        <item>一位慷慨的捐赠者捐了 %1$s 日元！非常感谢！</item>
+        <item>一位好心用户捐了 %1$s 日元！愿你的汉字造诣蒸蒸日上。</item>
+        <item>有人刚刚捐了 %1$s 日元！让更多人受益于汉字知识！</item>
+        <item>有人刚往捐赠箱投入 %1$s 日元！ありがとう！</item>
+        <item>有人捐了 %1$s 日元！这将帮助汉字知识传播得更广！</item>
+        <item>一位慷慨的支持者捐了 %1$s 日元！让道场继续向所有人开放。</item>
+        <item>感谢 %1$s 日元的捐赠，Kanji Dojo 持续成长！</item>
+        <item>一笔 %1$s 日元的慷慨捐赠！更多汉字，更少付费墙！</item>
+        <item>连汉字部首都赞赏这份慷慨——感谢 %1$s 日元！</item>
+        <item>像你这样的英雄让道场保持免费——感谢 %1$s 日元！</item>
+        <item>Kanji Dojo 为你的 %1$s 日元捐款鞠躬致谢！</item>
+        <item>某人的慷慨为基金增添了 %1$s 日元！</item>
+        <item>一位勤奋的学习者捐了 %1$s 日元！愿你复习永远正确。</item>
     </string-array>
 
-    <string name="info_no_data_letter">No data found for letter %1$s</string>
-    <string name="info_no_data_vocab">No data found for vocab %1$s</string>
-    <string name="info_no_data_copy">Copy</string>
-    <string name="info_no_data_jisho">Search on Jisho</string>
+    <string name="info_no_data_letter">未找到字母 %1$s 的数据</string>
+    <string name="info_no_data_vocab">未找到词汇 %1$s 的数据</string>
+    <string name="info_no_data_copy">复制</string>
+    <string name="info_no_data_jisho">在 Jisho 上搜索</string>
 
 </resources>
