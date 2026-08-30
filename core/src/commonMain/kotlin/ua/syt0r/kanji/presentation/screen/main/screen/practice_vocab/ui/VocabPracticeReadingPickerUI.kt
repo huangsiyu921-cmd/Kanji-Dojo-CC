@@ -20,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -30,6 +31,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ua.syt0r.kanji.core.app_data.data.JapaneseWord
+import ua.syt0r.kanji.presentation.common.sound.LocalPracticeSounds
+import ua.syt0r.kanji.presentation.common.sound.PracticeSoundEffect
 import ua.syt0r.kanji.presentation.common.theme.extraColorScheme
 import ua.syt0r.kanji.presentation.common.ui.CenteredBoxWithSide
 import ua.syt0r.kanji.presentation.common.ui.FuriganaText
@@ -52,12 +55,22 @@ fun VocabPracticeReadingPickerUI(
     onFeedbackClick: (JapaneseWord) -> Unit
 ) {
 
+    val practiceSounds = LocalPracticeSounds.current
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
     ) {
 
         val selectedAnswer by reviewState.selectedAnswer
+
+        LaunchedEffect(selectedAnswer) {
+            selectedAnswer?.let {
+                practiceSounds.play(
+                    if (it.isCorrect) PracticeSoundEffect.Correct else PracticeSoundEffect.Incorrect
+                )
+            }
+        }
 
         FuriganaText(
             furiganaString = reviewState.displayReading.value,
@@ -111,7 +124,10 @@ fun VocabPracticeReadingPickerUI(
                             answer = answer,
                             selectedAnswer = selectedAnswer,
                             enabled = selectedAnswer == null,
-                            onClick = { onAnswerSelected(answer) },
+                            onClick = {
+                                practiceSounds.play(PracticeSoundEffect.Click)
+                                onAnswerSelected(answer)
+                            },
                             modifier = Modifier.weight(1f).padding(horizontal = 2.dp)
                         )
                     }
