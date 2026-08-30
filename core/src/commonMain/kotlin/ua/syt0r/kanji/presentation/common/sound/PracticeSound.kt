@@ -6,7 +6,8 @@ import androidx.compose.runtime.compositionLocalOf
 enum class PracticeSoundEffect {
     Click,
     Correct,
-    Incorrect
+    Incorrect,
+    Finish
 }
 
 fun interface PracticeSoundPlayer {

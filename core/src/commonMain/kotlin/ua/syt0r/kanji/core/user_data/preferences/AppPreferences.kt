@@ -130,6 +130,12 @@ class AppPreferences(
         initialValue = { PreferencesTheme.System }
     )
 
+    override val customSeedColor: SuspendedProperty<String> = createProperty(
+        type = StringSuspendedPropertyType,
+        key = "custom_seed_color",
+        initialValue = { "" }
+    )
+
     override val dailyLimitEnabled: SuspendedProperty<Boolean> = createProperty(
         type = BooleanSuspendedPropertyType,
         key = "daily_limit_enabled",

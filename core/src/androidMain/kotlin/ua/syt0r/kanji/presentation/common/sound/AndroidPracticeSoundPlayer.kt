@@ -12,10 +12,13 @@ class AndroidPracticeSoundPlayer(context: Context) : PracticeSoundPlayer {
 
     private val soundPool: SoundPool
     private val correctSoundId: Int
+    private val incorrectSoundId: Int
+    private val clickSoundId: Int
+    private val finishSoundId: Int
 
     init {
         soundPool = SoundPool.Builder()
-            .setMaxStreams(2)
+            .setMaxStreams(4)
             .setAudioAttributes(
                 AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
@@ -24,13 +27,19 @@ class AndroidPracticeSoundPlayer(context: Context) : PracticeSoundPlayer {
             )
             .build()
         correctSoundId = soundPool.load(context, R.raw.whenright, 1)
+        incorrectSoundId = soundPool.load(context, R.raw.whenwrong, 1)
+        clickSoundId = soundPool.load(context, R.raw.whenclick, 1)
+        finishSoundId = soundPool.load(context, R.raw.whenfinish, 1)
     }
 
     override fun play(effect: PracticeSoundEffect) {
-        if (effect == PracticeSoundEffect.Correct) {
-            soundPool.play(correctSoundId, 1f, 1f, 1, 0, 1f)
+        val id = when (effect) {
+            PracticeSoundEffect.Correct -> correctSoundId
+            PracticeSoundEffect.Incorrect -> incorrectSoundId
+            PracticeSoundEffect.Click -> clickSoundId
+            PracticeSoundEffect.Finish -> finishSoundId
         }
-        // Click / Incorrect / Finish 暂无音频资源，暂不发声
+        if (id > 0) soundPool.play(id, 1f, 1f, 1, 0, 1f)
     }
 
 }

@@ -26,6 +26,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import com.materialkolor.rememberDynamicColorScheme
+import ua.syt0r.kanji.core.theme_manager.LocalThemeManager
 import ua.syt0r.kanji.presentation.common.resources.string.LocalStrings
 import ua.syt0r.kanji.presentation.common.resources.string.getStrings
 import ua.syt0r.kanji.presentation.common.sound.LocalPracticeSounds
@@ -123,9 +124,12 @@ fun AppTheme(
 
     val isDark = useDarkTheme || useAmoledTheme
 
-    // 由品牌 seed 生成的核心色（primary/secondary/tertiary/error）—— 随 BrandSeedColor 动态联动
+    // 用户自定义主色（设置里输入的色号）；未设置时回退品牌色
+    val seedColor = LocalThemeManager.current.currentCustomSeedColor.value ?: BrandSeedColor
+
+    // 由品牌 seed 生成的核心色（primary/secondary/tertiary/error）—— 随自定义色/品牌色动态联动
     val seeded = rememberDynamicColorScheme(
-        seedColor = BrandSeedColor,
+        seedColor = seedColor,
         isDark = isDark,
         isAmoled = false
     )

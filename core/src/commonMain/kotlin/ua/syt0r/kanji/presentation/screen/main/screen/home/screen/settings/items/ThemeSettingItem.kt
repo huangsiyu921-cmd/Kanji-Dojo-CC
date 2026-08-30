@@ -1,9 +1,12 @@
 package ua.syt0r.kanji.presentation.screen.main.screen.home.screen.settings.items
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,6 +16,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ua.syt0r.kanji.core.theme_manager.ThemeManager
 import ua.syt0r.kanji.core.user_data.preferences.PreferencesTheme
@@ -49,24 +54,46 @@ class ThemeSettingItem(
 
         val coroutineScope = rememberCoroutineScope()
         var showPicker by rememberSaveable { mutableStateOf(false) }
+        var hexInput by rememberSaveable {
+            mutableStateOf(
+                themeManager.currentCustomSeedColor.value?.let { c ->
+                    "#" + (c.toArgb() and 0xFFFFFF).toString(16).padStart(6, '0').uppercase()
+                } ?: ""
+            )
+        }
 
         val currentTheme = DisplayableTheme.from(themeManager.currentTheme.value)
 
-        ListItem(
-            headlineContent = { Text(resolveString { settings.themeTitle }) },
-            supportingContent = { Text(resolveString(currentTheme.titleResolver)) },
-            modifier = Modifier.clip(MaterialTheme.shapes.medium)
-                .fillMaxWidth()
-                .clickable { showPicker = true },
-        )
+        Column {
+            ListItem(
+                headlineContent = { Text(resolveString { settings.themeTitle }) },
+                supportingContent = { Text(resolveString(currentTheme.titleResolver)) },
+                modifier = Modifier.clip(MaterialTheme.shapes.medium)
+                    .fillMaxWidth()
+                    .clickable { showPicker = true },
+            )
 
-        if (showPicker) {
-            SettingsPreferencePickerDialog(
-                onDismissRequest = { showPicker = false },
-                title = resolveString { settings.themeTitle },
-                options = DisplayableTheme.entries,
-                defaultSelected = currentTheme,
-                onSelected = { coroutineScope.launch { themeManager.changeTheme(it.prefType) } }
+            if (showPicker) {
+                SettingsPreferencePickerDialog(
+                    onDismissRequest = { showPicker = false },
+                    title = resolveString { settings.themeTitle },
+                    options = DisplayableTheme.entries,
+                    defaultSelected = currentTheme,
+                    onSelected = { coroutineScope.launch { themeManager.changeTheme(it.prefType) } }
+                )
+            }
+
+            OutlinedTextField(
+                value = hexInput,
+                onValueChange = { updated ->
+                    hexInput = updated
+                    themeManager.changeCustomSeedColor(updated)
+                },
+                label = { Text("自定义主色 #RRGGBB") },
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             )
         }
 

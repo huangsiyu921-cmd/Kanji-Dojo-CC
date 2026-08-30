@@ -15,7 +15,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
+import ua.syt0r.kanji.core.tts.WordTtsManager
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -51,6 +58,19 @@ fun VocabPracticeFlashcardUI(
             )
         }
     ) {
+
+        val wordTts = koinInject<WordTtsManager>()
+        val scope = rememberCoroutineScope()
+        val readingText = reviewState.reading.compounds.joinToString("") { it.text }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            IconButton(onClick = { scope.launch { wordTts.speak(readingText) } }) {
+                Icon(Icons.Default.VolumeUp, contentDescription = "朗读")
+            }
+        }
 
         val meaningUI = @Composable {
             CenteredBoxWithSide(

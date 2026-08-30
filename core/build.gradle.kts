@@ -91,6 +91,7 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation(libs.sqldelight.jvm.sqlite.driver)
                 implementation(libs.ktor.server.netty)
+                implementation(libs.mp3spi)
             }
         }
         iosMain {

@@ -35,6 +35,8 @@ interface PreferencesContract {
 
         val theme: SuspendedProperty<PreferencesTheme>
 
+        val customSeedColor: SuspendedProperty<String>
+
         val dailyLimitEnabled: SuspendedProperty<Boolean>
         val dailyLimitConfigurationJson: SuspendedProperty<String>
 
