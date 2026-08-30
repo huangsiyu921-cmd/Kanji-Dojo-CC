@@ -15,7 +15,16 @@ class AndroidWordTtsManager(context: Context) : WordTtsManager {
     init {
         textToSpeech = TextToSpeech(context.applicationContext) { status ->
             if (status == TextToSpeech.SUCCESS) {
-                textToSpeech?.language = Locale.JAPAN
+                val tts = textToSpeech
+                tts?.language = Locale.JAPAN
+                // 优先选本地(不联网、更自然)的日语 voice，避免默认音色生硬
+                runCatching {
+                    val bestJapaneseVoice = tts?.voices
+                        ?.filter { it.locale.language == "ja" }
+                        ?.sortedWith(compareByDescending { it.isNetworkConnectionRequired.not() })
+                        ?.firstOrNull { it.isNetworkConnectionRequired.not() }
+                    bestJapaneseVoice?.let { tts.voice = it }
+                }
             }
         }
     }

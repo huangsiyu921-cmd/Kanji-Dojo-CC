@@ -25,127 +25,61 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
+import com.materialkolor.rememberDynamicColorScheme
 import ua.syt0r.kanji.presentation.common.resources.string.LocalStrings
 import ua.syt0r.kanji.presentation.common.resources.string.getStrings
+import ua.syt0r.kanji.presentation.common.sound.LocalPracticeSounds
+import ua.syt0r.kanji.presentation.common.sound.rememberPracticeSoundPlayer
 import ua.syt0r.kanji.presentation.common.ui.LocalOrientation
 import ua.syt0r.kanji.presentation.common.ui.Orientation
 
-// 品牌红 (#D32F2F) 为基础的完整 Material 3 配色（明/暗），字段齐全、避免新版 material3 缺省变黑
-private val LightColorScheme: ColorScheme = lightColorScheme(
-    primary = Color(0xFFD32F2F),
-    onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFFFFDAD6),
-    onPrimaryContainer = Color(0xFF410002),
-    secondary = Color(0xFF7D5843),
-    onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = Color(0xFFF0DAC9),
-    onSecondaryContainer = Color(0xFF2A1507),
-    tertiary = Color(0xFF7A5900),
-    onTertiary = Color(0xFFFFFFFF),
-    tertiaryContainer = Color(0xFFFFDF9E),
-    onTertiaryContainer = Color(0xFF251900),
-    error = Color(0xFFBA1A1A),
-    onError = Color(0xFFFFFFFF),
-    errorContainer = Color(0xFFFFDAD6),
-    onErrorContainer = Color(0xFF410002),
-    background = Color(0xFFFFFBFF),
-    onBackground = Color(0xFF201A19),
-    surface = Color(0xFFFFFBFF),
-    onSurface = Color(0xFF201A19),
-    surfaceVariant = Color(0xFFF5DDD8),
-    onSurfaceVariant = Color(0xFF53433F),
-    surfaceTint = Color(0xFFD32F2F),
-    inverseSurface = Color(0xFF362F2E),
-    inverseOnSurface = Color(0xFFFBEEEC),
-    inversePrimary = Color(0xFFFFB4A9),
-    outline = Color(0xFF85736E),
-    outlineVariant = Color(0xFFD8C2BC),
-    scrim = Color(0xFF000000),
-    surfaceBright = Color(0xFFFFFBFF),
-    surfaceDim = Color(0xFFE6DEDC),
-    surfaceContainer = Color(0xFFF3EDEB),
-    surfaceContainerHigh = Color(0xFFF5DDD8),
-    surfaceContainerHighest = Color(0xFFEDE4E1),
-    surfaceContainerLow = Color(0xFFFFFCFA),
+// 明/暗的固定背景与容器表面（保证永不黑屏；主色系由 seed 动态生成并随 BrandSeedColor 联动）
+private val LightNeutrals = LightSurfaceColors(
+    background = Color(0xFFFFFBFF), onBackground = Color(0xFF201A19),
+    surface = Color(0xFFFFFBFF), onSurface = Color(0xFF201A19),
+    surfaceVariant = Color(0xFFF5DDD8), onSurfaceVariant = Color(0xFF53433F),
+    outline = Color(0xFF85736E), outlineVariant = Color(0xFFD8C2BC),
+    inverseSurface = Color(0xFF362F2E), inverseOnSurface = Color(0xFFFBEEEC),
+    surfaceBright = Color(0xFFFFFBFF), surfaceDim = Color(0xFFE6DEDC),
+    surfaceContainer = Color(0xFFF3EDEB), surfaceContainerHigh = Color(0xFFEDE4E1),
+    surfaceContainerHighest = Color(0xFFE7DEDB), surfaceContainerLow = Color(0xFFFFFCFA),
     surfaceContainerLowest = Color(0xFFFFFFFF),
 )
 
-private val DarkColorScheme: ColorScheme = darkColorScheme(
-    primary = Color(0xFFFFB4A9),
-    onPrimary = Color(0xFF690005),
-    primaryContainer = Color(0xFF93000A),
-    onPrimaryContainer = Color(0xFFFFDAD6),
-    secondary = Color(0xFFE5BFA8),
-    onSecondary = Color(0xFF442A1A),
-    secondaryContainer = Color(0xFF5D4030),
-    onSecondaryContainer = Color(0xFFF0DAC9),
-    tertiary = Color(0xFFF1BF49),
-    onTertiary = Color(0xFF3F2E00),
-    tertiaryContainer = Color(0xFF5C4300),
-    onTertiaryContainer = Color(0xFFFFDF9E),
-    error = Color(0xFFFFB4AB),
-    onError = Color(0xFF690005),
-    errorContainer = Color(0xFF93000A),
-    onErrorContainer = Color(0xFFFFDAD6),
-    background = Color(0xFF201A19),
-    onBackground = Color(0xFFEDE0DE),
-    surface = Color(0xFF201A19),
-    onSurface = Color(0xFFEDE0DE),
-    surfaceVariant = Color(0xFF53433F),
-    onSurfaceVariant = Color(0xFFD8C2BC),
-    surfaceTint = Color(0xFFFFB4A9),
-    inverseSurface = Color(0xFFEDE0DE),
-    inverseOnSurface = Color(0xFF362F2E),
-    inversePrimary = Color(0xFFD32F2F),
-    outline = Color(0xFFA08C87),
-    outlineVariant = Color(0xFF53433F),
-    scrim = Color(0xFF000000),
-    surfaceBright = Color(0xFF3B3433),
-    surfaceDim = Color(0xFF201A19),
-    surfaceContainer = Color(0xFF2D2524),
-    surfaceContainerHigh = Color(0xFF373030),
-    surfaceContainerHighest = Color(0xFF423A39),
-    surfaceContainerLow = Color(0xFF251D1C),
+private val DarkNeutrals = LightSurfaceColors(
+    background = Color(0xFF201A19), onBackground = Color(0xFFEDE0DE),
+    surface = Color(0xFF201A19), onSurface = Color(0xFFEDE0DE),
+    surfaceVariant = Color(0xFF53433F), onSurfaceVariant = Color(0xFFD8C2BC),
+    outline = Color(0xFFA08C87), outlineVariant = Color(0xFF53433F),
+    inverseSurface = Color(0xFFEDE0DE), inverseOnSurface = Color(0xFF362F2E),
+    surfaceBright = Color(0xFF3B3433), surfaceDim = Color(0xFF201A19),
+    surfaceContainer = Color(0xFF2D2524), surfaceContainerHigh = Color(0xFF373030),
+    surfaceContainerHighest = Color(0xFF423A39), surfaceContainerLow = Color(0xFF251D1C),
     surfaceContainerLowest = Color(0xFF1C1413),
 )
 
-private val AmoledColorScheme: ColorScheme = darkColorScheme(
-    primary = Color(0xFFFFB4A9),
-    onPrimary = Color(0xFF690005),
-    primaryContainer = Color(0xFF93000A),
-    onPrimaryContainer = Color(0xFFFFDAD6),
-    secondary = Color(0xFFE5BFA8),
-    onSecondary = Color(0xFF442A1A),
-    secondaryContainer = Color(0xFF5D4030),
-    onSecondaryContainer = Color(0xFFF0DAC9),
-    tertiary = Color(0xFFF1BF49),
-    onTertiary = Color(0xFF3F2E00),
-    tertiaryContainer = Color(0xFF5C4300),
-    onTertiaryContainer = Color(0xFFFFDF9E),
-    error = Color(0xFFFFB4AB),
-    onError = Color(0xFF690005),
-    errorContainer = Color(0xFF93000A),
-    onErrorContainer = Color(0xFFFFDAD6),
-    background = Color(0xFF000000),
-    onBackground = Color(0xFFEDE0DE),
-    surface = Color(0xFF000000),
-    onSurface = Color(0xFFEDE0DE),
-    surfaceVariant = Color(0xFF53433F),
-    onSurfaceVariant = Color(0xFFD8C2BC),
-    surfaceTint = Color(0xFFFFB4A9),
-    inverseSurface = Color(0xFFEDE0DE),
-    inverseOnSurface = Color(0xFF362F2E),
-    inversePrimary = Color(0xFFD32F2F),
-    outline = Color(0xFFA08C87),
-    outlineVariant = Color(0xFF53433F),
-    scrim = Color(0xFF000000),
-    surfaceBright = Color(0xFF121212),
-    surfaceDim = Color(0xFF121212),
-    surfaceContainer = Color(0xFF121212),
-    surfaceContainerHigh = Color(0xFF1A1A1A),
-    surfaceContainerHighest = Color(0xFF1A1A1A),
-    surfaceContainerLow = Color(0xFF0E0E0E),
+private val AmoledNeutrals = LightSurfaceColors(
+    background = Color(0xFF000000), onBackground = Color(0xFFEDE0DE),
+    surface = Color(0xFF000000), onSurface = Color(0xFFEDE0DE),
+    surfaceVariant = Color(0xFF2A2A2A), onSurfaceVariant = Color(0xFFD8C2BC),
+    outline = Color(0xFFA08C87), outlineVariant = Color(0xFF2A2A2A),
+    inverseSurface = Color(0xFFEDE0DE), inverseOnSurface = Color(0xFF362F2E),
+    surfaceBright = Color(0xFF121212), surfaceDim = Color(0xFF121212),
+    surfaceContainer = Color(0xFF121212), surfaceContainerHigh = Color(0xFF1A1A1A),
+    surfaceContainerHighest = Color(0xFF1F1F1F), surfaceContainerLow = Color(0xFF0E0E0E),
     surfaceContainerLowest = Color(0xFF000000),
+)
+
+private class LightSurfaceColors(
+    val background: Color, val onBackground: Color,
+    val surface: Color, val onSurface: Color,
+    val surfaceVariant: Color, val onSurfaceVariant: Color,
+    val outline: Color, val outlineVariant: Color,
+    val inverseSurface: Color, val inverseOnSurface: Color,
+    val surfaceBright: Color, val surfaceDim: Color,
+    val surfaceContainer: Color, val surfaceContainerHigh: Color,
+    val surfaceContainerHighest: Color, val surfaceContainerLow: Color,
+    val surfaceContainerLowest: Color,
 )
 
 class ExtraColorsScheme(
@@ -185,13 +119,76 @@ fun AppTheme(
     orientation: Orientation = Orientation.Portrait,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        useAmoledTheme -> AmoledColorScheme
-        useDarkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val practiceSounds = rememberPracticeSoundPlayer()
+
+    val isDark = useDarkTheme || useAmoledTheme
+
+    // 由品牌 seed 生成的核心色（primary/secondary/tertiary/error）—— 随 BrandSeedColor 动态联动
+    val seeded = rememberDynamicColorScheme(
+        seedColor = BrandSeedColor,
+        isDark = isDark,
+        isAmoled = false
+    )
+
+    val neutrals = when {
+        useAmoledTheme -> AmoledNeutrals
+        isDark -> DarkNeutrals
+        else -> LightNeutrals
     }
 
-    val extraColors = if (useDarkTheme || useAmoledTheme) DarkExtraColorScheme else LightExtraColorScheme
+    val colorScheme = if (isDark) {
+        darkColorScheme(
+            primary = seeded.primary, onPrimary = seeded.onPrimary,
+            primaryContainer = seeded.primaryContainer, onPrimaryContainer = seeded.onPrimaryContainer,
+            secondary = seeded.secondary, onSecondary = seeded.onSecondary,
+            secondaryContainer = seeded.secondaryContainer, onSecondaryContainer = seeded.onSecondaryContainer,
+            tertiary = seeded.tertiary, onTertiary = seeded.onTertiary,
+            tertiaryContainer = seeded.tertiaryContainer, onTertiaryContainer = seeded.onTertiaryContainer,
+            error = seeded.error, onError = seeded.onError,
+            errorContainer = seeded.errorContainer, onErrorContainer = seeded.onErrorContainer,
+            background = neutrals.background, onBackground = neutrals.onBackground,
+            surface = neutrals.surface, onSurface = neutrals.onSurface,
+            surfaceVariant = neutrals.surfaceVariant, onSurfaceVariant = neutrals.onSurfaceVariant,
+            surfaceTint = seeded.primary,
+            inverseSurface = neutrals.inverseSurface, inverseOnSurface = neutrals.inverseOnSurface,
+            inversePrimary = seeded.primary,
+            outline = neutrals.outline, outlineVariant = neutrals.outlineVariant,
+            scrim = Color(0xFF000000),
+            surfaceBright = neutrals.surfaceBright, surfaceDim = neutrals.surfaceDim,
+            surfaceContainer = neutrals.surfaceContainer,
+            surfaceContainerHigh = neutrals.surfaceContainerHigh,
+            surfaceContainerHighest = neutrals.surfaceContainerHighest,
+            surfaceContainerLow = neutrals.surfaceContainerLow,
+            surfaceContainerLowest = neutrals.surfaceContainerLowest,
+        )
+    } else {
+        lightColorScheme(
+            primary = seeded.primary, onPrimary = seeded.onPrimary,
+            primaryContainer = seeded.primaryContainer, onPrimaryContainer = seeded.onPrimaryContainer,
+            secondary = seeded.secondary, onSecondary = seeded.onSecondary,
+            secondaryContainer = seeded.secondaryContainer, onSecondaryContainer = seeded.onSecondaryContainer,
+            tertiary = seeded.tertiary, onTertiary = seeded.onTertiary,
+            tertiaryContainer = seeded.tertiaryContainer, onTertiaryContainer = seeded.onTertiaryContainer,
+            error = seeded.error, onError = seeded.onError,
+            errorContainer = seeded.errorContainer, onErrorContainer = seeded.onErrorContainer,
+            background = neutrals.background, onBackground = neutrals.onBackground,
+            surface = neutrals.surface, onSurface = neutrals.onSurface,
+            surfaceVariant = neutrals.surfaceVariant, onSurfaceVariant = neutrals.onSurfaceVariant,
+            surfaceTint = seeded.primary,
+            inverseSurface = neutrals.inverseSurface, inverseOnSurface = neutrals.inverseOnSurface,
+            inversePrimary = seeded.primary,
+            outline = neutrals.outline, outlineVariant = neutrals.outlineVariant,
+            scrim = Color(0xFF000000),
+            surfaceBright = neutrals.surfaceBright, surfaceDim = neutrals.surfaceDim,
+            surfaceContainer = neutrals.surfaceContainer,
+            surfaceContainerHigh = neutrals.surfaceContainerHigh,
+            surfaceContainerHighest = neutrals.surfaceContainerHighest,
+            surfaceContainerLow = neutrals.surfaceContainerLow,
+            surfaceContainerLowest = neutrals.surfaceContainerLowest,
+        )
+    }
+
+    val extraColors = if (isDark) DarkExtraColorScheme else LightExtraColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,
@@ -201,6 +198,7 @@ fun AppTheme(
                 LocalExtraColors provides extraColors,
                 LocalOrientation provides orientation,
                 LocalStrings provides getStrings(),
+                LocalPracticeSounds provides practiceSounds,
                 LocalTextSelectionColors provides neutralTextSelectionColors()
             ) {
                 content()

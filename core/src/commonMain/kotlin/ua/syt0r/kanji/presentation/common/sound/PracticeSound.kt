@@ -1,5 +1,6 @@
 package ua.syt0r.kanji.presentation.common.sound
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 
 enum class PracticeSoundEffect {
@@ -18,3 +19,7 @@ object NoOpPracticeSoundPlayer : PracticeSoundPlayer {
 }
 
 val LocalPracticeSounds = compositionLocalOf<PracticeSoundPlayer> { NoOpPracticeSoundPlayer }
+
+/** 平台音效播放器：Android 用 SoundPool 播 raw/whenright（答对）；其余平台暂 no-op */
+@Composable
+expect fun rememberPracticeSoundPlayer(): PracticeSoundPlayer
