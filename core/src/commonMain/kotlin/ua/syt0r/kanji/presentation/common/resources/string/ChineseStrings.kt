@@ -130,12 +130,12 @@ object ChineseCommonDashboardStrings : CommonDashboardStrings {
     override val itemReview: String = "待复习"
     override val itemNew: String = "待学习"
     override val dailyPracticeTitle: String = "每日练习"
-    override val dailyPracticeNew: (Int) -> String = { "New ($it)" }
-    override val dailyPracticeDue: (Int) -> String = { "Due ($it)" }
+    override val dailyPracticeNew: (Int) -> String = { "学习 ($it)" }
+    override val dailyPracticeDue: (Int) -> String = { "复习 ($it)" }
     override val itemGraphProgressTitle: String = "完成度"
 
     override val selectedPracticeTypeTemplate: (practiceType: String) -> String = {
-        "Practice Type: $it"
+        "学习模式: $it"
     }
 }
 
@@ -325,11 +325,11 @@ object ChineseFeedbackStrings : FeedbackStrings {
 
 object ChineseSponsorStrings : SponsorStrings {
     override val message: String = """
-        Development of Kanji Dojo started in 2021 by a single person and it remains free for all users who want to learn Japanese
-        
-        If you find the app useful please consider supporting this project financially, every contribution counts
-        
-        Financial support will allow me to focus more on development, bring extra features, add more voiced content and translations
+        Kanji Dojo 的开发始于 2021 年，由一个人，并且它对于所有想要学习日语的用户保持免费。
+
+        如果您觉得这个应用有用，请考虑在经济上支持这个项目，每一份贡献都很重要。
+
+        经济支持将使我能够更专注于开发，带来额外功能，添加更多语音内容和翻译。
     """.trimIndent()
 
 }
@@ -344,16 +344,16 @@ object ChineseDeckPickerStrings : DeckPickerStrings {
     override val kanaDescription = { urlColor: Color ->
         buildAnnotatedString {
             append(
-                "Japanese kana characters are a set of syllabic characters used in the Japanese writing system. There are two main types of kana: \n" +
-                        " • Hiragana - used for native Japanese words and grammatical elements\n" +
-                        " • Katakana - often used for loanwords, names, and technical terms\n" +
-                        "Kana characters represent sound units, making them an essential part of reading and writing in the Japanese language. "
+                "日语假名是日语书写系统中使用的一套音节文字。假名主要有两种类型： \n" +
+                        " • 平假名——用于书写日语固有词汇和语法成分\n" +
+                        " • 片假名——常用于书写外来语、人名和技术术语等\n" +
+                        "假名字符表示音素，因此它们是日语读写中不可或缺的一部分. "
             )
             withClickableUrl(
                 url = "https://en.wikipedia.org/wiki/Kana",
                 color = urlColor
             ) {
-                append("More info.")
+                append("点我了解更多.")
             }
         }
     }
@@ -363,12 +363,12 @@ object ChineseDeckPickerStrings : DeckPickerStrings {
     override val jltpTitle: String = "JLPT"
     override val jlptDescription: StringResolveScope<AnnotatedString> = {
         buildAnnotatedString {
-            append("The Japanese-Language Proficiency Test, or JLPT, is a standardized criterion-referenced test to evaluate and certify Japanese language proficiency for non-native speakers, covering language knowledge, reading ability, and listening ability. ")
+            append("日语能力测试（JLPT）是一项面向非母语者的标准化、标准参照考试，旨在评估和认证日语熟练程度，涵盖语言知识、阅读能力和听力能力. ")
             withClickableUrl(
                 url = "https://en.wikipedia.org/wiki/Japanese-Language_Proficiency_Test",
                 color = MaterialTheme.extraColorScheme.link
             ) {
-                append("More info.")
+                append("点我了解更多.")
             }
         }
     }
@@ -378,16 +378,16 @@ object ChineseDeckPickerStrings : DeckPickerStrings {
     override val gradeDescription = { urlColor: Color ->
         buildAnnotatedString {
             withClickableUrl("https://en.wikipedia.org/wiki/J%C5%8Dy%C5%8D_kanji", urlColor) {
-                append("The Jōyō kanji")
+                append("常用汉字")
             }
-            append(" is a list of 2,136 frequently used characters maintained officially by the Japanese Ministry of Education. ")
-            append("All these characters are taught in Japanese schools:\n")
-            append(" • 1,026 kanji taught in primary school (Grade 1-6) (the ")
+            append(" 常用汉字是日本教育部正式维护的 2136 个常用汉字列表。 ")
+            append("所有这些汉字都在日本学校中教授:\n")
+            append(" •  小学（1-6 年级）教授 1026 个汉字 (the ")
             withClickableUrl("https://en.wikipedia.org/wiki/Ky%C5%8Diku_kanji", urlColor) {
-                append("kyōiku kanji")
+                append("教育汉字")
             }
             append(")\n")
-            append(" • 1,110 additional kanji taught in secondary school (Grade 7-12)")
+            append(" •  中学（7-12 年级）追加教授 1110 个汉字")
         }
     }
     override val gradeItemNumbered: (Int) -> String = { "Grade $it" }
@@ -398,17 +398,17 @@ object ChineseDeckPickerStrings : DeckPickerStrings {
     override val wanikaniTitle: String = "WaniKani"
     override val wanikaniDescription = { urlColor: Color ->
         buildAnnotatedString {
-            append("Kanji lists according to levels on website WaniKani by Tofugu. ")
+            append("这是由 Tofugu 运营的 WaniKani 网站中按级别划分的汉字列表. ")
             withClickableUrl("https://www.wanikani.com/kanji?difficulty=pleasant", urlColor) {
-                append("More info. ")
+                append("点我了解更多. ")
             }
         }
     }
-    override val wanikaniItem: (Int) -> String = { "WaniKani Level $it" }
+    override val wanikaniItem: (Int) -> String = { "WaniKani 第 $it 级" }
 
     override val vocabOtherTitle: String = "其他"
     override val vocabOtherDescription: AnnotatedString = buildAnnotatedString {
-        append("A collection of small vocabulary decks covering common topics to help you get started")
+        append("涵盖常见主题的小型词汇集，助您轻松入门")
     }
 
     override val vocabDeckItemWordsCountLabel: (words: Int) -> String = { "$it words" }
@@ -437,9 +437,9 @@ object ChineseDeckEditStrings : DeckEditStrings {
     override val editingModeDetailsTitle: String = "详情"
     override val vocabDetailsEmptyMessage: (inlineIconId: String) -> AnnotatedString = {
         buildAnnotatedString {
-            append("No cards. To add new cards save this deck and use ")
+            append("暂无卡片。要添加新卡片，请先保存此词库，然后在搜索界面、写复习答案时以及应用内的其他位置使用 ")
             appendInlineContent(it)
-            append(" icon on search screen, during writing reviews and other places in the app")
+            append(" 图标")
         }
     }
     override val completeMessage: String = "完成"
@@ -449,14 +449,14 @@ object ChineseDeckEditStrings : DeckEditStrings {
     override val saveButtonCompleted: String = "完成"
     override val deleteTitle: String = "删除确认"
     override val deleteMessage: (deckTitle: String) -> String = {
-        "Are you sure you want to delete \"$it\" deck?"
+        "确定删除 \"$it\" 词库吗？?"
     }
     override val deleteButtonDefault: String = "删除"
     override val deleteButtonCompleted: String = "完成"
 
     override val unknownTitle: String = "未知文字"
     override val unknownMessage: (characters: List<String>) -> String = {
-        "Some letters were not found: ${it.joinToString()}"
+        "有些字母没被找到: ${it.joinToString()}"
     }
     override val unknownButton: String = "关闭"
 
@@ -470,14 +470,14 @@ object ChineseDeckDetailsStrings : DeckDetailsStrings {
     override val emptyListMessage: String = "这里没有内容"
     override val detailsGroupTitle: (index: Int) -> String = { "Group $it" }
     override val firstTimeReviewMessage: (LocalDateTime?) -> String = {
-        "First review time: " + when (it) {
-            null -> "Never"
+        "第一次学习时间: " + when (it) {
+            null -> "从没看过"
             else -> groupDetailsDateTimeFormatter(it)
         }
     }
     override val lastTimeReviewMessage: (LocalDateTime?) -> String = {
-        "Last review time: " + when (it) {
-            null -> "Never"
+        "上次复习时间: " + when (it) {
+            null -> "从没看过"
             else -> groupDetailsDateTimeFormatter(it)
         }
     }
@@ -566,7 +566,7 @@ object ChineseCommonPracticeStrings : CommonPracticeStrings {
 }
 
 object ChineseLetterPracticeStrings : LetterPracticeStrings {
-    override val configurationTitle: (practiceType: String) -> String = { "Letter Practice・$it" }
+    override val configurationTitle: (practiceType: String) -> String = { "字母练习・$it" }
     override val hintStrokesTitle: String = "笔画提示"
     override val hintStrokesMessage: String = "控制何时显示文字的笔画提示"
     override val hintStrokeNewOnlyMode: String = "仅新"
@@ -574,8 +574,8 @@ object ChineseLetterPracticeStrings : LetterPracticeStrings {
     override val hintStrokeNoneMode: String = "从不"
     override val inputModeTitle: String = "输入模式"
     override val inputModeMessage: String = "选择逐笔验证还是整体验证文字"
-    override val inputModeStroke: String = "笔画"
-    override val inputModeCharacter: String = "文字"
+    override val inputModeStroke: String = "逐笔验证"
+    override val inputModeCharacter: String = "整体验证"
     override val kanaRomajiTitle: String = "在假名练习中显示罗马字"
     override val kanaRomajiMessage: String = "复习假名时显示罗马字而非假名"
     override val noTranslationLayoutTitle: String = "无翻译布局"
@@ -586,7 +586,7 @@ object ChineseLetterPracticeStrings : LetterPracticeStrings {
     override val headerWordsMessage: (count: Int) -> String = {
         "Examples ($it)"
     }
-    override val studyFinishedButton: String = "复习"
+    override val studyFinishedButton: String = "继续"
     override val noKanjiTranslationsLabel: String = "[无翻译]"
 
     override val altStrokeEvaluatorTitle: String = "严格笔画评估器"
@@ -600,7 +600,7 @@ object ChineseLetterPracticeStrings : LetterPracticeStrings {
 
 object ChineseVocabPracticeStrings : VocabPracticeStrings {
     override val configurationTitle: (practiceType: String) -> String = {
-        "Vocab Practice・$it"
+        "词组练习・$it"
     }
     override val readingMeaningConfigurationTitle: String = "始终显示含义"
     override val readingMeaningConfigurationMessage: String = "选择未选择答案时的含义可见性"
@@ -615,28 +615,28 @@ object ChineseInfoScreenStrings : InfoScreenStrings {
     override val strokesMessage: (count: Int) -> AnnotatedString = {
         buildAnnotatedString {
             withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(it.toString()) }
-            if (it == 1) append(" stroke")
-            else append(" strokes")
+            if (it == 1) append(" 画")
+            else append(" 画")
         }
     }
     override val clipboardCopyMessage: String = "已复制"
-    override val radicalsSectionTitle: (count: Int) -> String = { "Radicals ($it)" }
+    override val radicalsSectionTitle: (count: Int) -> String = { "部首 ($it)" }
     override val noRadicalsMessage: String = "无部首"
-    override val wordsSectionTitle: (count: Int) -> String = { "Expressions ($it)" }
+    override val wordsSectionTitle: (count: Int) -> String = { "表达 ($it)" }
     override val romajiMessage: (romaji: List<String>) -> String = {
-        "Romaji readings: ${it.joinToString()}"
+        "罗马音读法: ${it.joinToString()}"
     }
     override val gradeMessage: (grade: Int) -> String = {
         when {
-            it <= 6 -> "Jōyō kanji, taught in $it grade"
-            it == 8 -> "Jōyō kanji, taught in junior high"
-            it >= 9 -> "Jinmeiyō kanji, used in names"
-            else -> throw IllegalStateException("Unknown grade $it")
+            it <= 6 -> "常用汉字, 在 $it 年级教"
+            it == 8 -> "常用汉字, 在初中教"
+            it >= 9 -> "人名用 汉字，用于姓名"
+            else -> throw IllegalStateException("未知年级 $it")
         }
     }
-    override val jlptMessage: (level: Int) -> String = { "JLPT level $it" }
+    override val jlptMessage: (level: Int) -> String = { "JLPT 等级 $it" }
     override val frequencyMessage: (frequency: Int) -> String = {
-        "$it of 2500 most used kanji in newspapers"
+        "$it 报纸最常用的1500个单词"
     }
 
 }
@@ -646,47 +646,47 @@ object ChineseReminderNotificationStrings : ReminderNotificationStrings {
     override val title: String = "复习时间到！"
     override val noDetailsMessage: String = "立即继续学习日语"
     override val newOnlyMessage: (Int) -> String = {
-        "$it new cards to study today"
+        "$it 张卡片今天要学习"
     }
     override val dueOnlyMessage: (Int) -> String = {
-        "$it due cards to review today"
+        "$it 张卡片今天要复习"
     }
     override val message: (Int, Int) -> String = { new, due ->
-        "$new new cards and $due due cards to review today"
+        "$new 张新卡片和 $due 张卡片今天要学习"
     }
 }
 
 
 object ChineseAccountScreenStrings : AccountScreenStrings {
-    override val title = "Account"
-    override val loggedOutMessage = "Logged out"
-    override val signInButton = "Sign in"
-    override val signOutButton = "Sign out"
-    override val emailTitle = "E-mail"
-    override val subscriptionTitle = "Subscription"
-    override val subscriptionStatusActive = "Active"
-    override val subscriptionStatusExpired = "Expired"
-    override val subscriptionStatusInactive = "Inactive"
-    override val subscriptionValidUntilTemplate = "Valid until %s"
-    override val issueNoConnectionTitle = "No Connection"
-    override val issueNoConnectionMessage = "Showing cached data"
-    override val issueSessionExpiredTitle = "Session Expired"
-    override val issueSessionExpiredMessage = "Click to sign in again"
-    override val issueSubscriptionOutdatedTitle = "Subscription status outdated"
-    override val issueSubscriptionOutdatedMessage = "Click to refresh"
-    override val issueOtherTitle = "Error"
-    override val issueOtherMessageFallback = "Unknown error"
+    override val title = "账户"
+    override val loggedOutMessage = "未登陆"
+    override val signInButton = "登陆"
+    override val signOutButton = "登出"
+    override val emailTitle = "电子邮件"
+    override val subscriptionTitle = "订阅"
+    override val subscriptionStatusActive = "有效"
+    override val subscriptionStatusExpired = "已过期"
+    override val subscriptionStatusInactive = "未激活"
+    override val subscriptionValidUntilTemplate = "有效期至 %s"
+    override val issueNoConnectionTitle = "无网络连接"
+    override val issueNoConnectionMessage = "显示缓存数据"
+    override val issueSessionExpiredTitle = "会话已过期"
+    override val issueSessionExpiredMessage = "点击重新登陆"
+    override val issueSubscriptionOutdatedTitle = "订阅状态过期"
+    override val issueSubscriptionOutdatedMessage = "点击刷新"
+    override val issueOtherTitle = "错误"
+    override val issueOtherMessageFallback = "未知错误"
 }
 
 object ChineseSyncScreenStrings : SyncScreenStrings {
     override val title = "Sync (Preview)"
     override val guideTitle: String = "在设备间同步进度"
     override val guideMessage =
-        "Automatically upload your data to the cloud, keep it as a backup and stay in sync across all your devices"
-    override val guideStepAccountTitle = "Create account and sign in"
+        "自动上传你的数据到云端，将其保留为备份，并在所有设备间保持同步"
+    override val guideStepAccountTitle = "创建账户并登录"
     override val guideStepAccountMessage: String = "前往账户"
     override val guideStepSubscriptionTitle =
-        "Might require a paid subscription in future"
+        "将来可能需要付费订阅"
     override val guideStepSubscriptionMessage: String = "预览期间免费，直至另行通知，请关注我们的 Discord 服务器获取更新"
     override val accountErrorMessage: String = "你的账户存在错误"
     override val syncButton = "Sync now"
