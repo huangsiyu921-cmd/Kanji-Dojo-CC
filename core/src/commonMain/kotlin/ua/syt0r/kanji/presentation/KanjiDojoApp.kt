@@ -6,8 +6,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import org.koin.compose.koinInject
+import ua.syt0r.kanji.core.theme_manager.LocalThemeManager
 import ua.syt0r.kanji.core.theme_manager.ThemeManager
 import ua.syt0r.kanji.presentation.common.theme.AppTheme
 import ua.syt0r.kanji.presentation.common.ui.Orientation
@@ -26,16 +28,18 @@ fun KanjiDojoApp(
         else -> Orientation.Portrait
     }
 
-    AppTheme(
-        useDarkTheme = themeManager.isDarkTheme,
-        useAmoledTheme = themeManager.isAmoledTheme,
-        orientation = orientation
-    ) {
-        Surface {
-            Box(
-                modifier = Modifier.safeDrawingPadding()
-            ) {
-                MainScreen(deepLinkHandler)
+    CompositionLocalProvider(LocalThemeManager provides themeManager) {
+        AppTheme(
+            useDarkTheme = themeManager.isDarkTheme,
+            useAmoledTheme = themeManager.isAmoledTheme,
+            orientation = orientation
+        ) {
+            Surface {
+                Box(
+                    modifier = Modifier.safeDrawingPadding()
+                ) {
+                    MainScreen(deepLinkHandler)
+                }
             }
         }
     }
