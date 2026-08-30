@@ -83,6 +83,8 @@ import ua.syt0r.kanji.practice_new_cards_config_mixed
 import ua.syt0r.kanji.practice_new_cards_config_subtitle
 import ua.syt0r.kanji.practice_new_cards_config_title
 import ua.syt0r.kanji.practice_summary_button
+import ua.syt0r.kanji.presentation.common.sound.LocalPracticeSounds
+import ua.syt0r.kanji.presentation.common.sound.PracticeSoundEffect
 import ua.syt0r.kanji.practice_summary_empty
 import ua.syt0r.kanji.practice_summary_header_reviews
 import ua.syt0r.kanji.practice_summary_header_time
@@ -575,6 +577,8 @@ fun PracticeSummaryContainer(
     content: @Composable ColumnScope.() -> Unit
 ) {
 
+    val practiceSounds = LocalPracticeSounds.current
+
     Column(
         modifier = Modifier.fillMaxSize()
             .wrapContentSize()
@@ -625,7 +629,10 @@ fun PracticeSummaryContainer(
         }
 
         Button(
-            onClick = onFinishClick,
+            onClick = {
+                practiceSounds.play(PracticeSoundEffect.Finish)
+                onFinishClick()
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(AppListItemDefaults.ExtraPaddings),
