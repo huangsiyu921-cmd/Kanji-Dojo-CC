@@ -18,6 +18,13 @@ Kanji Dojo CC 是基于 [Kanji Dojo](https://github.com/syt0r/Kanji-Dojo) 的汉
 
 欢迎在 [Issues](https://github.com/huangsiyu921-cmd/Kanji-Dojo-CC/issues) 提 bug、许愿新功能，也欢迎提交 PR。特别欢迎为数据库贡献日英 → 日中的释义翻译。
 
+## 构建
+
+- 需要 JDK 17（AGP 8.5.2 的最低要求；JDK 25 会破坏 Gradle 8.7 内置的 Kotlin 编译器）
+- Android：`./gradlew :app:assembleFdroidDebug`
+- 桌面：`./gradlew :desktopApp:run`
+- 快速校验：`./gradlew :core:compileDebugKotlinAndroid :core:compileKotlinJvm :desktopApp:compileKotlinJvm`
+
 ## Credits
 
 本项目数据库与字形数据沿用原版 Kanji Dojo 的词典与字形资源，特此署名：
