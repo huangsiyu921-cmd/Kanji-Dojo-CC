@@ -279,6 +279,10 @@ object JapaneseAboutStrings : AboutStrings {
     override val githubDescription: String = "ソースコード、バグ報告、議論"
     override val creditsTitle: String = "クレジット"
     override val creditsDescription: String = "使用されるライブラリとデータソース"
+    override val githubDialogTitle: String = "プロジェクトページを開く"
+    override val githubDialogMessage: String = "Kanji Dojo CC のプロジェクトページを開きます"
+    override val githubDialogConfirm: String = "開く"
+    override val githubDialogCancel: String = "キャンセル"
 }
 
 object JapaneseBackupStrings : BackupStrings {

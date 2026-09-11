@@ -201,6 +201,7 @@ interface TutorialDialogStrings {
 
 interface SponsorStrings {
     val message: String
+    val buyCoffee: String
 }
 
 interface FeedbackStrings {
@@ -214,6 +215,8 @@ interface FeedbackStrings {
     val button: String
     val successMessage: String
     val errorMessage: (String?) -> String
+    val githubMessage: String
+    val githubButton: String
 }
 
 interface HomeStrings {
@@ -356,6 +359,10 @@ interface AboutStrings {
     val versionChangesButton: String
     val creditsTitle: String
     val creditsDescription: String
+    val githubDialogTitle: String
+    val githubDialogMessage: String
+    val githubDialogConfirm: String
+    val githubDialogCancel: String
 }
 
 

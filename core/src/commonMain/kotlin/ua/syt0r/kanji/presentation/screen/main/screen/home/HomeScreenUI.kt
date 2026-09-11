@@ -47,11 +47,15 @@ import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,6 +71,7 @@ import org.jetbrains.compose.resources.painterResource
 import ua.syt0r.kanji.PlatformFeature
 import ua.syt0r.kanji.Res
 import ua.syt0r.kanji.github
+import ua.syt0r.kanji.presentation.common.MultiplatformDialog
 import ua.syt0r.kanji.presentation.common.resources.string.resolveString
 import ua.syt0r.kanji.presentation.common.theme.extraColorScheme
 import ua.syt0r.kanji.presentation.common.ui.LocalOrientation
@@ -85,6 +90,18 @@ fun HomeScreenUI(
     onSponsorButtonClick: () -> Unit,
     screenTabContent: @Composable () -> Unit
 ) {
+
+    var showGitHubDialog by remember { mutableStateOf(false) }
+
+    if (showGitHubDialog) {
+        GitHubDialog(
+            onDismiss = { showGitHubDialog = false },
+            onConfirm = {
+                showGitHubDialog = false
+                onGitHubClick()
+            }
+        )
+    }
 
     if (LocalOrientation.current == Orientation.Landscape) {
         Row(
@@ -106,7 +123,7 @@ fun HomeScreenUI(
                     )
 
                     GitHubButton(
-                        onClick = onGitHubClick
+                        onClick = { showGitHubDialog = true }
                     )
                 }
 
@@ -150,7 +167,7 @@ fun HomeScreenUI(
                     },
                     actions = {
                         GitHubButton(
-                            onClick = onGitHubClick
+                            onClick = { showGitHubDialog = true }
                         )
                         if (!PlatformFeature.supported) return@CenterAlignedTopAppBar
                         IconButton(onClick = onSponsorButtonClick) {
@@ -207,6 +224,52 @@ private fun GitHubButton(onClick: () -> Unit) {
             contentDescription = "GitHub",
             modifier = Modifier.size(24.dp)
         )
+    }
+
+}
+
+@Composable
+private fun GitHubDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+
+    MultiplatformDialog(
+        onDismissRequest = onDismiss
+    ) {
+
+        Column(
+            modifier = Modifier.padding(20.dp)
+        ) {
+
+            Text(
+                text = resolveString { about.githubDialogTitle },
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            Text(
+                text = resolveString { about.githubDialogMessage },
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Spacer(Modifier.height(20.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                TextButton(onClick = onDismiss) {
+                    Text(text = resolveString { about.githubDialogCancel })
+                }
+                TextButton(onClick = onConfirm) {
+                    Text(text = resolveString { about.githubDialogConfirm })
+                }
+            }
+
+        }
+
     }
 
 }

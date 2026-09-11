@@ -285,6 +285,10 @@ object ChineseAboutStrings : AboutStrings {
     override val githubDescription: String = "源代码、错误报告、讨论"
     override val creditsTitle: String = "致谢"
     override val creditsDescription: String = "使用的库和数据来源"
+    override val githubDialogTitle: String = "前往项目主页"
+    override val githubDialogMessage: String = "前往 Kanji Dojo CC 的项目主页"
+    override val githubDialogConfirm: String = "前往"
+    override val githubDialogCancel: String = "取消"
 }
 
 object ChineseBackupStrings : BackupStrings {
@@ -321,6 +325,8 @@ object ChineseFeedbackStrings : FeedbackStrings {
     override val button: String = "发送"
     override val successMessage: String = "反馈已发送"
     override val errorMessage: (String?) -> String = { "Error: $it" }
+    override val githubMessage: String = "如有建议或 bug，可前往 GitHub 的项目主页进行反馈"
+    override val githubButton: String = "前往 GitHub"
 }
 
 object ChineseSponsorStrings : SponsorStrings {
@@ -332,6 +338,7 @@ object ChineseSponsorStrings : SponsorStrings {
         经济支持将使我能够更专注于开发，带来额外功能，添加更多语音内容和翻译。
     """.trimIndent()
 
+    override val buyCoffee: String = "给原作者买杯咖啡"
 }
 
 object ChineseDeckPickerStrings : DeckPickerStrings {

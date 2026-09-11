@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
+import ua.syt0r.kanji.presentation.common.resources.string.resolveString
 import ua.syt0r.kanji.presentation.screen.main.screen.sponsor.SponsorScreenContract
 import ua.syt0r.kanji.presentation.screen.main.screen.sponsor.SponsorScreenUI
 
@@ -37,7 +38,7 @@ object FdroidSponsorScreenContent : SponsorScreenContract.Content {
             ) {
                 Icon(Icons.Outlined.Coffee, null)
                 Spacer(Modifier.width(12.dp))
-                Text("Buy Me A Coffee")
+                Text(resolveString { sponsor.buyCoffee })
             }
 
         }

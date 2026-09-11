@@ -287,6 +287,10 @@ object EnglishAboutStrings : AboutStrings {
     override val githubDescription: String = "Source code, bug reports, discussions"
     override val creditsTitle: String = "Credits"
     override val creditsDescription: String = "Used libraries and data sources"
+    override val githubDialogTitle: String = "Open project page"
+    override val githubDialogMessage: String = "Open the Kanji Dojo CC project page"
+    override val githubDialogConfirm: String = "Open"
+    override val githubDialogCancel: String = "Cancel"
 }
 
 object EnglishBackupStrings : BackupStrings {
@@ -324,6 +328,8 @@ object EnglishFeedbackStrings : FeedbackStrings {
     override val button: String = "Send"
     override val successMessage: String = "Feedback sent"
     override val errorMessage: (String?) -> String = { "Error: $it" }
+    override val githubMessage: String = "For suggestions or bug reports, please visit the project page on GitHub"
+    override val githubButton: String = "Go to GitHub"
 }
 
 object EnglishSponsorStrings : SponsorStrings {
@@ -335,6 +341,7 @@ object EnglishSponsorStrings : SponsorStrings {
         Financial support will allow me to focus more on development, bring extra features, add more voiced content and translations
     """.trimIndent()
 
+    override val buyCoffee: String = "Buy the original author a coffee"
 }
 
 object EnglishDeckPickerStrings : DeckPickerStrings {
