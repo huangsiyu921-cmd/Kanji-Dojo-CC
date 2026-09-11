@@ -404,16 +404,16 @@ fun DeckEditItemActionIndicator(
     when (action.value) {
         DeckEditItemAction.Nothing -> {}
         DeckEditItemAction.Add -> Icon(
-            imageVector = Icons.Default.AddCircle,
+            imageVector = Icons.Default.Add,
             contentDescription = null,
-            modifier = modifier.background(MaterialTheme.colorScheme.onError, CircleShape),
+            modifier = modifier.background(MaterialTheme.colorScheme.surface, CircleShape),
             tint = MaterialTheme.extraColorScheme.success
         )
 
         DeckEditItemAction.Remove -> Icon(
             imageVector = Icons.Default.Cancel,
             contentDescription = null,
-            modifier = modifier.background(MaterialTheme.colorScheme.onError, CircleShape),
+            modifier = modifier.background(MaterialTheme.colorScheme.surface, CircleShape),
             tint = MaterialTheme.colorScheme.error
         )
     }

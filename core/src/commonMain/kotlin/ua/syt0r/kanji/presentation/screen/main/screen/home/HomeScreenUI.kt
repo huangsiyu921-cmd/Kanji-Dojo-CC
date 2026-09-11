@@ -63,7 +63,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import ua.syt0r.kanji.PlatformFeature
+import ua.syt0r.kanji.Res
+import ua.syt0r.kanji.github
 import ua.syt0r.kanji.presentation.common.resources.string.resolveString
 import ua.syt0r.kanji.presentation.common.theme.extraColorScheme
 import ua.syt0r.kanji.presentation.common.ui.LocalOrientation
@@ -199,18 +202,11 @@ fun HomeScreenUI(
 private fun GitHubButton(onClick: () -> Unit) {
 
     IconButton(onClick = onClick) {
-        Box(
-            modifier = Modifier
-                .size(24.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "GH",
-                style = MaterialTheme.typography.labelSmall
-            )
-        }
+        Icon(
+            painter = painterResource(Res.drawable.github),
+            contentDescription = "GitHub",
+            modifier = Modifier.size(24.dp)
+        )
     }
 
 }
