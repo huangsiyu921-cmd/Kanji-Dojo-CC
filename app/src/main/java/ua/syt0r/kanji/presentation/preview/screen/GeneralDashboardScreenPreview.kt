@@ -44,10 +44,7 @@ private fun Preview() {
                 navigateToCreateLetterDeck = {},
                 navigateToCreateVocabDeck = {},
                 navigateToLetterPractice = {},
-                navigateToVocabPractice = {},
-                downloadsClick = {},
-                socialClick = {},
-                textAnalysisClick = {}
+                navigateToVocabPractice = {}
             )
         }
     }

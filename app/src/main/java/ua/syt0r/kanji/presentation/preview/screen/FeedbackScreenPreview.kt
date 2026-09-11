@@ -1,38 +1,16 @@
 package ua.syt0r.kanji.presentation.preview.screen
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.tooling.preview.Preview
-import kotlinx.coroutines.flow.flow
 import ua.syt0r.kanji.presentation.common.theme.AppTheme
 import ua.syt0r.kanji.presentation.screen.main.screen.feedback.FeedbackScreenUI
-import ua.syt0r.kanji.presentation.screen.main.screen.feedback.FeedbackState
-import ua.syt0r.kanji.presentation.screen.main.screen.feedback.FeedbackTopic
 
+@Preview
 @Composable
-private fun BasePreview(
-    feedbackState: FeedbackState,
-    feedbackTopic: FeedbackTopic = FeedbackTopic.General
-) {
+private fun Preview() {
     AppTheme {
         FeedbackScreenUI(
-            feedbackTopic = feedbackTopic,
-            feedbackState = rememberUpdatedState(feedbackState),
-            errorFlow = flow { },
-            navigateBack = {},
-            submitFeedback = {}
+            navigateBack = {}
         )
     }
-}
-
-@Preview
-@Composable
-private fun IdlePreview() {
-    BasePreview(feedbackState = FeedbackState.Editing)
-}
-
-@Preview
-@Composable
-private fun CompletePreview() {
-    BasePreview(feedbackState = FeedbackState.Completed)
 }

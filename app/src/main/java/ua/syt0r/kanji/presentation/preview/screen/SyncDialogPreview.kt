@@ -18,8 +18,7 @@ private fun BasePreview(
         SyncDialog(
             state = rememberUpdatedState(state),
             cancelSync = { },
-            resolveConflict = {},
-            navigateToAccount = {}
+            resolveConflict = {}
         )
     }
 }
@@ -82,4 +81,3 @@ private fun ConflictLocalPreview() = BasePreview(
 private fun RemoteUnsupportedPreview() = BasePreview(
     state = SyncDialogState.Error.Unsupported
 )
-
