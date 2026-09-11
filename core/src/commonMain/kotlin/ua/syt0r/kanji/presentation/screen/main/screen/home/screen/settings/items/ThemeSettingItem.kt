@@ -35,12 +35,11 @@ enum class DisplayableTheme(
 
     System(PreferencesTheme.System, { settings.themeSystem }),
     Light(PreferencesTheme.Light, { settings.themeLight }),
-    Dark(PreferencesTheme.Dark, { settings.themeDark }),
-    Amoled(PreferencesTheme.Amoled, { settings.themeAmoled });
+    Dark(PreferencesTheme.Dark, { settings.themeDark });
 
     companion object {
         fun from(prefType: PreferencesTheme): DisplayableTheme =
-            entries.first { it.prefType == prefType }
+            entries.firstOrNull { it.prefType == prefType } ?: Dark
     }
 
 }

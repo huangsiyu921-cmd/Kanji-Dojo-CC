@@ -72,9 +72,6 @@ open class ThemeManager(
             PreferencesTheme.Dark, PreferencesTheme.Amoled -> true
         }
 
-    val isAmoledTheme: Boolean
-        get() = currentTheme.value == PreferencesTheme.Amoled
-
     private fun parseHexColor(hex: String): Color? {
         val cleaned = hex.trim().removePrefix("#")
         return when {

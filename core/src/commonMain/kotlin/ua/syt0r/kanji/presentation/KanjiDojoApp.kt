@@ -31,7 +31,6 @@ fun KanjiDojoApp(
     CompositionLocalProvider(LocalThemeManager provides themeManager) {
         AppTheme(
             useDarkTheme = themeManager.isDarkTheme,
-            useAmoledTheme = themeManager.isAmoledTheme,
             orientation = orientation
         ) {
             Surface {

@@ -25,11 +25,15 @@
    - `ChineseStrings.kt`（镜像 `EnglishStrings`，`getStrings()` 加 `"zh"`）
    - `composeResources/values/strings.xml` 翻成中文
 2. **主题配色（重点）**
-   - 原「动态取色」用 MaterialKolor，与 Compose 1.8/material3 版本不兼容导致**全黑/背景不联动**，已**彻底移除**（依赖 `com.materialkolor:material-kolor` 已从 `libs.versions.toml` + `core/build.gradle.kts` 删除）
-   - 现在 `Theme.kt` 是**静态 M3 配色**（`lightScheme`/`darkScheme`/`amoledScheme`，明/暗/AMOLED 全字段固定）
-   - **自定义主色（静态）**：设置在「主题」项下方输入 `#RRGGBB` → 仅**主色**(`primary`/`onPrimary` 自动黑白对比)变化，其余固定
+   - **动态取色（MaterialKolor）保留**：`Theme.kt` 用 `rememberDynamicColorScheme(seedColor, isDark)` 从 seed 生成明/暗完整配色；`buildColorScheme` 把背景/表面/容器都取自 seed，`on*` 自动对比
+   - **已删除主题设置里的 AMOLED 选项**（用户要求）：
+     - `DisplayableTheme` 去掉了 `Amoled` 项，`from()` 找不到时回退 `Dark`
+     - `AppTheme` 去掉 `useAmoledTheme` 参数；`ThemeManager.isAmoledTheme` 已删；`KanjiDojoApp` 不再传 `useAmoledTheme`
+     - `Theme.kt` 的 `AmoledBackground`/`AmoledDim` 与 `buildColorScheme` 的 amoled 分支已删
+     - ⚠️ `PreferencesTheme.Amoled` **枚举值保留**（兼容旧偏好，避免反序列化崩溃），仅从 UI/主题逻辑移除
+   - **自定义主色**：设置在「主题」项下方输入 `#RRGGBB` → 作为**动态取色的 seed**（主色/背景/表面等随之联动）
      - 链路：`ThemeSettingItem`(输入框) → `ThemeManager.currentCustomSeedColor` → `AppTheme`
-     - 注意：字段名仍是 `customSeedColor`（语义已变为「自定义主色」）
+     - 注意：字段名仍是 `customSeedColor`
 3. **字体 locale**：`Typography.kt` 移除了强制 `LocaleList("ja")`（修中文排版偏移）
 4. **音效（双端）**
    - `PracticeSoundEffect { Click, Correct, Incorrect, Finish }`
@@ -50,7 +54,7 @@
 - push 到 GitHub：需先把 `origin` 换/加为自己的 fork
 
 ## 5. 已知坑
-- 删 `material-kolor` 依赖时，曾出现 `EnglishStrings.kt`/`JapaneseStrings.kt` 的 `Duration` 相关 **overload ambiguity / conflicting overloads**（可用 `:core:compileDebugKotlinAndroid` 复现）。本次删除后编译正常——若再波动，检查是否有重复的顶层函数
+- 曾尝试删 `material-kolor` 依赖时，出现过 `EnglishStrings.kt`/`JapaneseStrings.kt` 的 overload ambiguity；**最终保留该依赖**（动态取色在用）。若将来要移除，先解决该歧义
 - 桌面播 `.mp3` 需要 `mp3spi`；现已统一改用 `.wav`（`javax.sound` 原生支持）
 - 改 `composeResources/files` 下的库后**必须重新 build**，否则 build assets 里还是旧库（app 不会自动感知）
 - 数据库是 SQLite 文件，读写用 `sqlite3`；表：`kanji_meaning(kanji,meaning,priority)`、`vocab_entry` 等
