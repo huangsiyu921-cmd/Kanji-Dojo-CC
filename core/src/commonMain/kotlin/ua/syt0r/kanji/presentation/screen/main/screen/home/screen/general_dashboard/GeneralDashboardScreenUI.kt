@@ -63,7 +63,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.ReorderableColumn
 import ua.syt0r.kanji.Res
@@ -72,18 +71,15 @@ import ua.syt0r.kanji.core.srs.LetterPracticeType
 import ua.syt0r.kanji.core.srs.VocabPracticeType
 import ua.syt0r.kanji.dialog_apply
 import ua.syt0r.kanji.dialog_cancel
-import ua.syt0r.kanji.general_dashboard_downloads
 import ua.syt0r.kanji.general_dashboard_header_reviews
 import ua.syt0r.kanji.general_dashboard_header_streak_current
 import ua.syt0r.kanji.general_dashboard_header_streak_longest
-import ua.syt0r.kanji.general_dashboard_social
 import ua.syt0r.kanji.general_dashboard_study_target_daily_limit
 import ua.syt0r.kanji.general_dashboard_study_target_edit
 import ua.syt0r.kanji.general_dashboard_study_target_empty
 import ua.syt0r.kanji.general_dashboard_study_target_no_decks
 import ua.syt0r.kanji.general_dashboard_study_target_nothing_left
 import ua.syt0r.kanji.general_dashboard_study_target_title
-import ua.syt0r.kanji.general_dashboard_text_analysis
 import ua.syt0r.kanji.general_dashboard_tutorial
 import ua.syt0r.kanji.presentation.common.AppDropdownMenu
 import ua.syt0r.kanji.presentation.common.AppDropdownMenuItem
@@ -115,10 +111,7 @@ fun GeneralDashboardScreenUI(
     navigateToCreateLetterDeck: () -> Unit,
     navigateToCreateVocabDeck: () -> Unit,
     navigateToLetterPractice: (MainDestination.LetterPractice) -> Unit,
-    navigateToVocabPractice: (MainDestination.VocabPractice) -> Unit,
-    downloadsClick: () -> Unit,
-    socialClick: (SocialButton) -> Unit,
-    textAnalysisClick: () -> Unit
+    navigateToVocabPractice: (MainDestination.VocabPractice) -> Unit
 ) {
 
     var showTutorialDialog by remember { mutableStateOf(false) }
@@ -157,22 +150,6 @@ fun GeneralDashboardScreenUI(
         )
 
         ScreenDivider()
-
-        AppListItem(
-            onClick = textAnalysisClick,
-            headlineContent = { Text(stringResource(Res.string.general_dashboard_text_analysis)) },
-            trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
-        )
-
-        SocialButton(
-            selected = socialClick
-        )
-
-        AppListItem(
-            onClick = downloadsClick,
-            headlineContent = { Text(stringResource(Res.string.general_dashboard_downloads)) },
-            trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
-        )
 
         AppListItem(
             onClick = { showTutorialDialog = true },
@@ -249,33 +226,6 @@ private fun StudyTargetsEditDialog(
                 }
             ) {
                 Text(stringResource(Res.string.dialog_apply))
-            }
-        }
-    )
-}
-
-@Composable
-private fun SocialButton(selected: (SocialButton) -> Unit) {
-    var showDropdown by rememberSaveable { mutableStateOf(false) }
-
-    AppListItem(
-        onClick = { showDropdown = true },
-        headlineContent = { Text(stringResource(Res.string.general_dashboard_social)) },
-        trailingContent = {
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
-            AppDropdownMenu(
-                expanded = showDropdown,
-                onDismissRequest = { showDropdown = false }
-            ) {
-                SocialButton.entries.forEach {
-                    AppDropdownMenuItem(
-                        onClick = { selected(it) },
-                        content = {
-                            Icon(painterResource(it.icon), null)
-                            Text(stringResource(it.title))
-                        }
-                    )
-                }
             }
         }
     )

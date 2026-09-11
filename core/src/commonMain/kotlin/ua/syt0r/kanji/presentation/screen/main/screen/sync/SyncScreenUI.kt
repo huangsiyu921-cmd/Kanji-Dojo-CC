@@ -66,7 +66,6 @@ import ua.syt0r.kanji.presentation.screen.main.screen.sync.SyncScreenContract.Sc
 fun SyncScreenUI(
     state: State<ScreenState>,
     onUpClick: () -> Unit,
-    navigateToAccountScreen: () -> Unit,
     navigateToDiscord: () -> Unit,
     sync: () -> Unit,
 ) {
@@ -101,14 +100,6 @@ fun SyncScreenUI(
 
                 GuideListItem(
                     position = 1,
-                    headerText = strings.guideStepAccountTitle,
-                    supportText = strings.guideStepAccountTitle,
-                    isCompleted = screenState.isSignedIn,
-                    onClick = navigateToAccountScreen
-                )
-
-                GuideListItem(
-                    position = 2,
                     headerText = strings.guideStepSubscriptionTitle,
                     supportText = strings.guideStepSubscriptionMessage,
                     isCompleted = false,
@@ -126,8 +117,7 @@ fun SyncScreenUI(
 
                 if (syncState is SyncState.Error.Api) {
                     SyncErrorListItem(
-                        issue = syncState.issue,
-                        navigateToAccountScreen = navigateToAccountScreen
+                        issue = syncState.issue
                     )
                 }
 
@@ -333,43 +323,32 @@ private fun SyncStatusListItem(syncState: SyncState) {
 
 @Composable
 private fun SyncErrorListItem(
-    issue: ApiRequestIssue,
-    navigateToAccountScreen: () -> Unit
+    issue: ApiRequestIssue
 ) {
     val strings = resolveString { sync }
 
     val title: String
     val message: String
-    val trailingIcon: ImageVector?
-    val onClick: (() -> Unit)?
 
     when (issue) {
         ApiRequestIssue.NoConnection -> {
             title = strings.errorNoConnectionTitle
             message = strings.errorNoConnectionMessage
-            trailingIcon = null
-            onClick = null
         }
 
         ApiRequestIssue.NoSubscription -> {
             title = strings.errorNoSubscriptionTitle
             message = strings.errorNoSubscriptionMessage
-            trailingIcon = Icons.AutoMirrored.Default.KeyboardArrowRight
-            onClick = navigateToAccountScreen
         }
 
         ApiRequestIssue.NotAuthenticated -> {
             title = strings.errorSessionExpiredTitle
             message = strings.errorSessionExpiredMessage
-            trailingIcon = Icons.AutoMirrored.Default.KeyboardArrowRight
-            onClick = navigateToAccountScreen
         }
 
         is ApiRequestIssue.Other -> {
             title = strings.errorOtherTitle
             message = issue.throwable.message ?: strings.errorOtherMessageFallback
-            trailingIcon = null
-            onClick = null
         }
     }
 
@@ -377,13 +356,9 @@ private fun SyncErrorListItem(
         leadingContent = { Icon(Icons.Default.Error, null) },
         headlineContent = { Text(title) },
         supportingContent = { Text(message) },
-        trailingContent = trailingIcon?.let {
-            { Icon(it, null) }
-        },
         colors = ListItemDefaults.errorColors(),
         modifier = Modifier
             .clip(MaterialTheme.shapes.medium)
-            .clickable(onClick)
     )
 
 }

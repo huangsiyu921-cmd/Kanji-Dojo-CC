@@ -180,7 +180,7 @@ class MainScreenViewModel(
         val notification = MainSnackbarNotification(
             message = alert,
             isError = false,
-            handleAction = { MainDestination.Account() },
+            handleAction = { null },
             duration = SnackbarDuration.Indefinite
         )
         _notifications.emitWhenWithSubscribers(notification)
@@ -191,7 +191,7 @@ class MainScreenViewModel(
             message = getString(Res.string.snackbar_sub_expired_message),
             actionLabel = getString(Res.string.snackbar_sub_expired_action),
             isError = false,
-            handleAction = { MainDestination.Account() },
+            handleAction = { null },
             duration = SnackbarDuration.Indefinite
         )
         _notifications.emitWhenWithSubscribers(notification)

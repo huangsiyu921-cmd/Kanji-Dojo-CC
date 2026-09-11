@@ -46,8 +46,7 @@ import ua.syt0r.kanji.presentation.screen.main.SyncDialogState
 fun SyncDialog(
     state: State<SyncDialogState>,
     cancelSync: () -> Unit,
-    resolveConflict: (SyncConflictResolveStrategy) -> Unit,
-    navigateToAccount: () -> Unit
+    resolveConflict: (SyncConflictResolveStrategy) -> Unit
 ) {
 
     val strings = resolveString { syncDialog }
@@ -177,18 +176,6 @@ fun SyncDialog(
                 )
             }
             dialogButtons = {
-                when (currentState.issue) {
-                    ApiRequestIssue.NoSubscription,
-                    ApiRequestIssue.NotAuthenticated -> {
-                        DialogButton(
-                            onClick = navigateToAccount,
-                            imageVector = Icons.Outlined.AccountCircle,
-                            label = strings.buttonAccount
-                        )
-                    }
-
-                    else -> Unit
-                }
                 DialogButton(
                     onClick = cancelSync,
                     imageVector = Icons.Outlined.Close,

@@ -76,11 +76,7 @@ fun MainScreen(
     SyncDialog(
         state = viewModel.syncDialogState.collectAsState(),
         cancelSync = viewModel::cancelSync,
-        resolveConflict = viewModel::resolveSyncConflict,
-        navigateToAccount = {
-            viewModel.cancelSync()
-            navigationState.navigate(MainDestination.Account())
-        }
+        resolveConflict = viewModel::resolveSyncConflict
     )
 
 }

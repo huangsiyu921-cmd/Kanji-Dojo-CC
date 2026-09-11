@@ -8,7 +8,6 @@ import org.koin.compose.koinInject
 import ua.syt0r.kanji.presentation.common.ScreenLetterPracticeType
 import ua.syt0r.kanji.presentation.getMultiplatformViewModel
 import ua.syt0r.kanji.presentation.screen.main.screen.about.AboutScreen
-import ua.syt0r.kanji.presentation.screen.main.screen.account.AccountScreenContract
 import ua.syt0r.kanji.presentation.screen.main.screen.backup.BackupScreenContract
 import ua.syt0r.kanji.presentation.screen.main.screen.credits.CreditsScreen
 import ua.syt0r.kanji.presentation.screen.main.screen.daily_limit.DailyLimitScreen
@@ -29,7 +28,6 @@ import ua.syt0r.kanji.presentation.screen.main.screen.practice_vocab.VocabPracti
 import ua.syt0r.kanji.presentation.screen.main.screen.practice_vocab.data.VocabPracticeScreenConfiguration
 import ua.syt0r.kanji.presentation.screen.main.screen.sponsor.SponsorScreenContract
 import ua.syt0r.kanji.presentation.screen.main.screen.sync.SyncScreen
-import ua.syt0r.kanji.presentation.screen.main.screen.text_analysis.TextAnalysisScreen
 import ua.syt0r.kanji.presentation.screen.main.screen.vocab_card.SuggestedVocabCardData
 import ua.syt0r.kanji.presentation.screen.main.screen.vocab_card.VocabCardScreen
 import ua.syt0r.kanji.presentation.screen.main.screen.vocab_card.VocabCardScreenMode
@@ -257,21 +255,6 @@ interface MainDestination {
     }
 
     @Serializable
-    data class Account(
-        val screenData: AccountScreenContract.ScreenData? = null
-    ) : MainDestination {
-
-        override val analyticsName: String = "account"
-
-        @Composable
-        override fun Content(state: MainNavigationState) {
-            val content = koinInject<AccountScreenContract.Content>()
-            content(state, screenData)
-        }
-
-    }
-
-    @Serializable
     object Sync : MainDestination {
 
         override val analyticsName: String = "sync"
@@ -280,20 +263,6 @@ interface MainDestination {
         override fun Content(state: MainNavigationState) {
             SyncScreen(
                 mainNavigationState = state
-            )
-        }
-
-    }
-
-    @Serializable
-    object TextAnalysis : MainDestination {
-
-        override val analyticsName: String = "text_analysis"
-
-        @Composable
-        override fun Content(state: MainNavigationState) {
-            TextAnalysisScreen(
-                navigationState = state
             )
         }
 
@@ -371,7 +340,6 @@ val defaultMainDestinations: List<MainDestinationConfiguration<*>> = listOf(
     MainDestination.Sponsor.configuration(),
     MainDestination.DailyLimit.configuration(),
     MainDestination.Sync.configuration(),
-    MainDestination.TextAnalysis.configuration(),
     MainDestination.VocabCard::class.configuration(),
     MainDestination.DeckPicker::class.configuration(),
     MainDestination.DeckDetails::class.configuration(),
@@ -380,5 +348,4 @@ val defaultMainDestinations: List<MainDestinationConfiguration<*>> = listOf(
     MainDestination.Info::class.configuration(),
     MainDestination.LetterPractice::class.configuration(),
     MainDestination.VocabPractice::class.configuration(),
-    MainDestination.Account::class.configuration(),
 )

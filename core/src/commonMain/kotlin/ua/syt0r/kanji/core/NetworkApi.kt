@@ -36,9 +36,7 @@ interface NetworkApi {
         channelProvider: ChannelProvider
     ): Result<SubscriptionResponse<Unit>>
 
-    suspend fun postFeedback(data: FeedbackApiData): Result<Unit>
     suspend fun postDonationPurchase(data: DonationPurchaseApiData): Result<Unit>
-    suspend fun getDonations(): Result<List<ApiDonation>>
     suspend fun postSubscription(purchaseJson: String): Result<Unit>
     suspend fun postTextAnalysisRequest(
         request: ApiTextAnalysisRequest
@@ -114,22 +112,10 @@ fun ApiSyncDataInfo.toPreferencesType() =
 
 fun PreferencesSyncDataInfo.toApiType() = ApiSyncDataInfo(dataId, dataVersion, dataTimestamp)
 
-data class FeedbackApiData(
-    val topic: String,
-    val message: String,
-    val userData: JsonObject
-)
-
 data class DonationPurchaseApiData(
     val email: String,
     val message: String,
     val purchasesJson: List<String>
-)
-
-@Serializable
-data class ApiDonation(
-    val time: Long,
-    val amountJpy: Float
 )
 
 class DefaultNetworkApi(
@@ -183,21 +169,6 @@ class DefaultNetworkApi(
         responseMapper = { Unit }
     )
 
-    override suspend fun postFeedback(data: FeedbackApiData) = safeRequestUnit {
-        val requestBody = JsonObject(
-            mapOf(
-                "topic" to JsonPrimitive(data.topic),
-                "text" to JsonPrimitive(data.message),
-                "user" to data.userData
-            )
-        )
-
-        networkClients.unauthenticatedClient.post(FEEDBACK_URL) {
-            contentType(ContentType.Application.Json)
-            setBody(requestBody.toString())
-        }
-    }
-
     override suspend fun postDonationPurchase(data: DonationPurchaseApiData) = safeRequestUnit {
         val requestBody = JsonObject(
             mapOf(
@@ -213,11 +184,6 @@ class DefaultNetworkApi(
             contentType(ContentType.Application.Json)
             setBody(requestBody.toString())
         }
-    }
-
-    override suspend fun getDonations(): Result<List<ApiDonation>> {
-        return safeRequest { networkClients.unauthenticatedClient.get(DONATIONS_URL) }
-            .mapCatching { json.decodeFromString(it.bodyAsText()) }
     }
 
     override suspend fun postSubscription(purchaseJson: String): Result<Unit> = safeRequestUnit {
@@ -285,9 +251,7 @@ class DefaultNetworkApi(
         const val GET_SYNC_INFO_URL = "$BASE/sync/info"
         const val GET_SYNC_URL = "$BASE/sync/get"
         const val UPDATE_SYNC_URL = "$BASE/sync/update"
-        const val FEEDBACK_URL = "$BASE/feedback"
         const val SPONSOR_URL = "$BASE/sponsor"
-        const val DONATIONS_URL = "$BASE/donations"
         const val SUBSCRIPTION_URL = "$BASE/play-billing-subscription"
         const val TEXT_ANALYSIS_URL = "$BASE/text-analysis"
 

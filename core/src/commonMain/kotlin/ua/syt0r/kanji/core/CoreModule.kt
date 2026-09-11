@@ -13,10 +13,6 @@ import ua.syt0r.kanji.core.backup.BackupRestoreCompletionNotifier
 import ua.syt0r.kanji.core.backup.BackupRestoreEventsProvider
 import ua.syt0r.kanji.core.backup.BackupRestoreObservable
 import ua.syt0r.kanji.core.backup.DefaultBackupManager
-import ua.syt0r.kanji.core.feedback.DefaultFeedbackManager
-import ua.syt0r.kanji.core.feedback.DefaultFeedbackUserDataProvider
-import ua.syt0r.kanji.core.feedback.FeedbackManager
-import ua.syt0r.kanji.core.feedback.FeedbackUserDataProvider
 import ua.syt0r.kanji.core.japanese.CharacterClassifier
 import ua.syt0r.kanji.core.japanese.DefaultCharacterClassifier
 import ua.syt0r.kanji.core.srs.applySrsDefinitions
@@ -107,17 +103,6 @@ val coreModule = module {
             networkClients = get(),
             json = Json { ignoreUnknownKeys = true }
         )
-    }
-
-    factory<FeedbackManager> {
-        DefaultFeedbackManager(
-            networkApi = get(),
-            userDataProvider = get()
-        )
-    }
-
-    factory<FeedbackUserDataProvider> {
-        DefaultFeedbackUserDataProvider()
     }
 
     single {
