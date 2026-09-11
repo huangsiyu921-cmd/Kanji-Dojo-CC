@@ -56,7 +56,6 @@ kotlin {
                 api(libs.aboutlibraries.core)
 
                 api(libs.compose.reorderable)
-                api(libs.material.kolor)
             }
         }
         val commonTest by getting {

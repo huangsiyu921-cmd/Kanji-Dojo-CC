@@ -32,7 +32,6 @@ build-config = "5.4.0"
 javacv-platform = "1.5.11"
 mockk = "1.13.16"
 mp3spi = "1.9.5.4"
-materialKolor = "2.1.1"
 
 [plugins]
 build-config = { id = "com.github.gmazzo.buildconfig", version.ref="build-config" }
@@ -107,7 +106,6 @@ compose-reorderable = { module = "sh.calvin.reorderable:reorderable", version.re
 javacv-platform = { module = "org.bytedeco:javacv-platform", version.ref = "javacv-platform" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mp3spi = { module = "com.googlecode.soundlibs:mp3spi", version.ref = "mp3spi" }
-material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 
 [bundles]
 firebase-bom = ["firebase-analytics-ktx", "firebase-crashlytics-ktx"]

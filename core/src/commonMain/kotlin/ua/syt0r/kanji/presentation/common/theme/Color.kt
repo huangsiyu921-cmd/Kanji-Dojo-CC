@@ -2,9 +2,6 @@ package ua.syt0r.kanji.presentation.common.theme
 
 import androidx.compose.ui.graphics.Color
 
-// 品牌 seed 主色：MaterialKolor 用它动态生成明暗两套 Material 3 ColorScheme
-val BrandSeedColor = Color(0xFFD32F2F)
-
 // 辅助色（link / success / pending / due / new），供 extraColorScheme 使用
 val lightThemeLinkColor = Color(0xFF0054D7)
 val lightThemeSuccessColor = Color(0xFF2E7D32)
