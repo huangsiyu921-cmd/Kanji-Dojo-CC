@@ -90,9 +90,9 @@ object ChineseCommonDashboardStrings : CommonDashboardStrings {
 
     override val emptyScreenMessage: (inlineIconId: String) -> AnnotatedString = { inlineIconId ->
         buildAnnotatedString {
-            append("Create deck by clicking on ")
+            append("点击")
             appendInlineContent(inlineIconId)
-            append(" button. Decks are used to track your progress")
+            append("来创建一个卡组.这些卡组将记录您的学习进度")
         }
     }
 
@@ -106,7 +106,7 @@ object ChineseCommonDashboardStrings : CommonDashboardStrings {
 
     override val mergeDialogTitle: String = "合并确认"
     override val mergeDialogMessage: (String, List<String>) -> String = { newTitle, mergedTitles ->
-        "Following ${mergedTitles.size} decks will be merged into the new \"$newTitle\" deck: ${mergedTitles.joinToString()}"
+        " ${mergedTitles.size} 个卡片将会被移到新卡组 \"$newTitle\" 卡组: ${mergedTitles.joinToString()}"
     }
     override val mergeDialogCancelButton: String = "取消"
     override val mergeDialogAcceptButton: String = "合并"
