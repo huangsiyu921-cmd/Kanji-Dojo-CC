@@ -40,9 +40,9 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
 
-            packageName = "Kanji Dojo"
+            packageName = "Kanji dojo CC"
             packageVersion = AppVersion.desktopAppVersion
-            vendor = "syt0r"
+            vendor = "huangsy"
 
             modules("jdk.unsupported", "java.sql")
 
@@ -54,7 +54,7 @@ compose.desktop {
             }
 
             macOS {
-                bundleID = "ua.syt0r.kanji-dojo"
+                bundleID = "io.github.huangsy.janjicc"
                 iconFile.set(File("mac_icon.icns"))
             }
 

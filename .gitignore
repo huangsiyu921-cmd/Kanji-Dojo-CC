@@ -99,3 +99,10 @@ lint/tmp/
 google-services.json
 app/linux/**
 .DS_Store
+# Android 签名材料（绝不提交）
+/keystore
+/keystore.jks
+*.keystore
+
+# Generate Signed APK 的输出目录
+/app/fdroid/
