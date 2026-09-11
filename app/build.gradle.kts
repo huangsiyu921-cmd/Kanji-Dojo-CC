@@ -4,9 +4,23 @@ plugins {
     kotlin("kapt")
     kotlin("plugin.parcelize")
     kotlin("plugin.compose")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
+    // Firebase / Google services are only needed by the googlePlay flavor and require a
+    // google-services.json which is not part of this repository, so resolve them here but
+    // apply them conditionally below.
+    id("com.google.gms.google-services") apply false
+    id("com.google.firebase.crashlytics") apply false
     id("com.mikepenz.aboutlibraries.plugin")
+}
+
+// Without google-services.json the Google Services plugin fails the build (e.g. plain
+// `assembleDebug` builds every flavor). Apply it only when the file exists, so fdroid builds
+// and fresh clones keep working.
+val hasGoogleServicesConfig = file("google-services.json").exists() ||
+        file("src/googlePlay/google-services.json").exists()
+
+if (hasGoogleServicesConfig) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
 }
 
 adjustFlavorTasks()
@@ -65,9 +79,9 @@ android {
 
     val signedBuildSigningConfig = signingConfigs.create("signedBuild") {
         storeFile = keystoreFile
-        System.getenv("KEYSTORE_PASS")?.let { storePassword = it }
-        System.getenv("SIGN_KEY")?.let { keyAlias = it }
-        System.getenv("SIGN_PASS")?.let { keyPassword = it }
+        System.getenv("ANDROID_KEYSTORE_PASSWORD")?.let { storePassword = it }
+        System.getenv("ANDROID_KEY_ALIAS")?.let { keyAlias = it }
+        System.getenv("ANDROID_KEY_PASSWORD")?.let { keyPassword = it }
     }
 
     val debugSigningConfig = signingConfigs.getByName("debug")
