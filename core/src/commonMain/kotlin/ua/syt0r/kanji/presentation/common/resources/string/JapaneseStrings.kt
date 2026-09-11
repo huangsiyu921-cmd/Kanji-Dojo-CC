@@ -18,7 +18,7 @@ import kotlin.time.Duration
 
 object JapaneseStrings : Strings {
 
-    override val appName: String = "Kanji Dojo CC"
+    override val appName: String = "Kanji dojo CC"
 
     override val hiragana: String = "ひらがな"
     override val katakana: String = "カタカナ"

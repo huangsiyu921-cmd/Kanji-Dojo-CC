@@ -21,7 +21,7 @@ android {
 
     compileSdk = 36
     defaultConfig {
-        applicationId = "ua.syt0r.kanji"
+        applicationId = "io.github.huangsy.janjicc"
         minSdk = 26
         targetSdk = 36
         versionCode = AppVersion.versionCode
