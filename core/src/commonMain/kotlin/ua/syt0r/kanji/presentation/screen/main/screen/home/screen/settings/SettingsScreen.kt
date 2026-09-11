@@ -18,9 +18,6 @@ fun SettingsScreen(
         onBackupButtonClick = {
             mainNavigationState.navigate(MainDestination.Backup)
         },
-        onSyncButtonClick = {
-            mainNavigationState.navigate(MainDestination.Sync)
-        },
         onFeedbackButtonClick = {
             mainNavigationState.navigate(MainDestination.Feedback(FeedbackTopic.General))
         },

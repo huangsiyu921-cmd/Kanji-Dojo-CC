@@ -1,120 +1,64 @@
 <div align="center">
 
-  <img src="preview_assets//inkscape_icon.svg" height=120 style="border-radius: 20px;">
-
-  # Kanji Dojo
-  ![Version Badge](https://img.shields.io/badge/version-v2.2.1-blue?style=for-the-badge&labelColor=ffffff&color=ff5555)
+# Kanji Dojo CC
+![Version Badge](https://img.shields.io/badge/version-v0.0.1alpha-blue?style=for-the-badge&labelColor=ffffff&color=ff5555)
 
 </div>
 
-## Table of Contents
-- [About this app](#about-this-app)
-- [Screenshots](#screenshots)
-- [Downloads and Installation](#downloads)
-  * [Android](#android)
-  * [Desktop (Windows, Linux, MacOS)](#desktop)
-- [Version Comparison](#version-comparison)
-- [Contributions](#contributions)
-- [Technical Details](#technical-details)
-- [Credits](#credits)
+## 关于本项目
 
-## About this app
-Practice writing Japanese letters, learn their meanings and related words 
+Kanji Dojo CC 是基于 [Kanji Dojo](https://github.com/syt0r/Kanji-Dojo) 的汉化与增强版本，在保留原版练习写字、记假名/汉字、SRS 复习、词典搜索等能力的基础上，提供更完整的中文体验。
 
-### Features
-- Memorize how to write and read kana and kanji
-- Follow JLPT levels or school grades
-- Create your own decks to study, more than 6000 characters in total are available
-- Use SRS reviewing system to avoid forgetting learned information
-- Search letters and words with built-in dictionary
-- Study words with flashcards
-- Available modes to write words and pick correct letter readings
-- Works offline
+### 本项目新增 / 改进
+- 自定义主色：可在设置中配置主题主色
+- TTS 语音：整词/假名发音。目前受 TTS 实现限制，暂时依赖所在系统的外部语音模型；待内置 TTS 完成后再添加对其他系统的支持
+- UI 与 `.sql` 数据库释义汉化（持续推进中）
 
-Repository with dictionary data and parsers here: [Kanji-Dojo-Data](https://github.com/syt0r/Kanji-Dojo-Data)
+## 参与贡献
 
-## Screenshots
-<p float="left">
-<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" height="400"/>
-<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" height="400"/>
-<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" height="400"/>
-<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" height="400"/>
-<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" height="400"/>
-<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" height="400"/>
-</p>
+欢迎在 [Issues](https://github.com/huangsiyu921-cmd/Kanji-Dojo-CC/issues) 提 bug、许愿新功能，也欢迎提交 PR。特别欢迎为数据库贡献日英 → 日中的释义翻译。
 
-## Downloads
-### Android
-[![Play Store](https://img.shields.io/badge/Google_Play-414141?style=for-the-badge&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=ua.syt0r.kanji)
-[![F-Droid](https://img.shields.io/badge/F--Droid-1976D2?style=for-the-badge&logo=f-droid&logoColor=white)](https://f-droid.org/en/packages/ua.syt0r.kanji.fdroid/)
+## Credits
 
-1. Available in [F-Droid](https://f-droid.org/en/packages/ua.syt0r.kanji.fdroid/), the same version is published in [GitHub Releases](https://github.com/syt0r/Kanji-Dojo/releases/latest)
-2. [Google Play](https://play.google.com/store/apps/details?id=ua.syt0r.kanji)
+本项目数据库与字形数据沿用原版 Kanji Dojo 的词典与字形资源，特此署名：
 
-### iOS
-[![App Store](https://img.shields.io/badge/App_Store-blue?style=for-the-badge&logo=appstore&logoColor=blue&color=white)](https://apps.apple.com/ua/app/kanji-dojo/id6745169386)
+- **KanjiVG**
+  - 提供笔画、部首信息
+  - License: Creative Commons Attribution-Share Alike 3.0
+  - Link: https://kanjivg.tagaini.net/
+- **Kanji Dic**
+  - 提供汉字信息（释义、读音、分类等）
+  - License: Creative Commons Attribution-Share Alike 3.0
+  - Link: http://www.edrdg.org/wiki/index.php/KANJIDIC_Project
+- **Tanos by Jonathan Waller**
+  - 提供汉字 JLPT 分级
+  - License: Creative Commons BY
+  - Link: http://www.tanos.co.uk/jlpt/
+- **JMDict**
+  - 日英多语言词典，提供词汇条目
+  - License: Creative Commons Attribution-Share Alike 4.0
+  - Link: https://www.edrdg.org/jmdict/j_jmdict.html
+- **JmdictFurigana**
+  - 为 EDICT/JMDict 与 ENAMDICT/JMnedict 补充振假名的开源资源
+  - License: Creative Commons Attribution-Share Alike 4.0
+  - Link: https://github.com/Doublevil/JmdictFurigana
+- **Frequency list by Leeds university**
+  - 提供词汇网络使用频率排名
+  - License: Creative Commons BY
+  - Link: http://corpus.leeds.ac.uk/list.html
+- **yomichan-jlpt-vocab**
+  - 为 Yomichan 词汇添加 JLPT 分级标签，关联 Tanos 与 JMDict
+  - License: Creative Commons Attribution-Share Alike 4.0
+  - Link: https://github.com/stephenmk/yomichan-jlpt-vocab
 
-### Desktop
+## License
 
-#### Windows
-- Download `.msi` installer from [Github Releases](https://github.com/syt0r/Kanji-Dojo/releases)
-#### Mac
-1. Download `.dmg` installer from [Github Releases](https://github.com/syt0r/Kanji-Dojo/releases) for your platform
-   - `Kanji Dojo-arm-*.dmg` for Apple Silicon
-   - `Kanji Dojo-intel-*.dmg` for devices with older Intel CPU
-2. Install the app
-   - Go to `Privacy & Security` screen in system settings and click on `Open Anyway` button under security section for `Kanji Dojo.app`
-#### Linux
-- Download `.AppImage` executable from [Github Releases](https://github.com/syt0r/Kanji-Dojo/releases)
+本项目沿用原版 [Kanji Dojo](https://github.com/syt0r/Kanji-Dojo) 的 GPL-3.0 许可证。
 
-## Version comparison
-| Google Play                                                                         | F-Droid | Desktop |
-|-------------------------------------------------------------------------------------|---------|---------|
-| Firebase Analytics </br>Play services for in app review </br> Billing for donations | -       | -       |
-
-## Contributions
-- Pull-Requests are welcome!
-- Before making PR create and discuss your issue
-- Use proper code formatting
-
-### Technical details
-Used Libraries: `Compose Multiplatform`, `Kotlin Coroutines`, `Koin`, `SqlDelight`
-
-### Credits
-* **KanjiVG**</br>
-  Provides writing strokes, radicals information </br>
-  License: Creative Commons Attribution-Share Alike 3.0</br>
-  Link: https://kanjivg.tagaini.net/
-* **Kanji Dic**</br>
-  Provides characters info, such as meanings, readings and classifications </br>
-  License: Creative Commons Attribution-Share Alike 3.0</br>
-  Link: http://www.edrdg.org/wiki/index.php/KANJIDIC_Project
-* **Tanos by Jonathan Waller**</br>
-  Provides JLPT classification for kanji </br>
-  License: Creative Commons BY</br>
-  Link: http://www.tanos.co.uk/jlpt/
-* **JMDict**</br>
-  Japanese-Multilingual dictionary, provides expressions </br>
-  License: Creative Commons Attribution-Share Alike 4.0</br>
-  Link: https://www.edrdg.org/jmdict/j_jmdict.html
-* **JmdictFurigana**</br>
-  Open-source furigana resource to complement the EDICT/Jmdict and ENAMDICT/Jmnedict dictionary files </br>
-  License: Creative Commons Attribution-Share Alike 4.0</br>
-  Link: https://github.com/Doublevil/JmdictFurigana
-* **Frequency list by Leeds university**</br>
-  Words ranking by frequency of usage in internet </br>
-  License: Creative Commons BY</br>
-  Link: http://corpus.leeds.ac.uk/list.html
-* **yomichan-jlpt-vocab**</br>
-  This meta dictionary adds JLPT-level tags to words in Yomichan. Provides associations between JLPT words from Tanos and JMDict</br>
-  License: Creative Commons Attribution-Share Alike 4.0</br>
-  Link: https://github.com/stephenmk/yomichan-jlpt-vocab</br>
-
-### License
 > (c) 2022-2023 Yaroslav Shuliak
-> 
+>
 > This is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-> 
+>
 > This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-> 
+>
 > You should have received a copy of the GNU General Public License along with this app. If not, see https://www.gnu.org/licenses/.

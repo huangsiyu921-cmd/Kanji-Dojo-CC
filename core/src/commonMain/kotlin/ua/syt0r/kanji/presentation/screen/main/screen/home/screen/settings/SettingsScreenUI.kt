@@ -49,7 +49,6 @@ import kotlin.enums.EnumEntries
 fun SettingsScreenUI(
     state: State<ScreenState>,
     onBackupButtonClick: () -> Unit,
-    onSyncButtonClick: () -> Unit,
     onFeedbackButtonClick: () -> Unit,
     onAboutButtonClick: () -> Unit,
     loadedContent: @Composable ColumnScope.(ScreenState.Loaded) -> Unit
@@ -71,7 +70,6 @@ fun SettingsScreenUI(
                     loadedContent(screenState)
 
                     SettingsBackupButton(onBackupButtonClick)
-                    SettingsSyncButton(onSyncButtonClick)
                     SettingsFeedbackButton(onFeedbackButtonClick)
                     SettingsAboutButton(onAboutButtonClick)
 
@@ -136,14 +134,6 @@ fun SettingsSwitchRow(
 fun SettingsBackupButton(onClick: () -> Unit) {
     SettingsTextButton(
         title = resolveString { settings.backupTitle },
-        onClick = onClick
-    )
-}
-
-@Composable
-fun SettingsSyncButton(onClick: () -> Unit) {
-    SettingsTextButton(
-        title = resolveString { settings.sync },
         onClick = onClick
     )
 }

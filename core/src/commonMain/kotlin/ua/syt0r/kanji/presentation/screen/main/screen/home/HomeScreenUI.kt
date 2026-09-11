@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -76,9 +77,8 @@ private val SponsorIcon: ImageVector = Icons.Outlined.Handshake
 fun HomeScreenUI(
     availableTabs: List<HomeScreenTab>,
     selectedTabState: State<HomeScreenTab>,
-    syncIconState: State<SyncIconState>,
     onTabSelected: (HomeScreenTab) -> Unit,
-    onSyncButtonClick: () -> Unit,
+    onGitHubClick: () -> Unit,
     onSponsorButtonClick: () -> Unit,
     screenTabContent: @Composable () -> Unit
 ) {
@@ -102,9 +102,8 @@ fun HomeScreenUI(
                         modifier = Modifier.align(Alignment.Bottom)
                     )
 
-                    SyncButton(
-                        state = syncIconState,
-                        onClick = onSyncButtonClick
+                    GitHubButton(
+                        onClick = onGitHubClick
                     )
                 }
 
@@ -147,9 +146,8 @@ fun HomeScreenUI(
                         }
                     },
                     actions = {
-                        SyncButton(
-                            state = syncIconState,
-                            onClick = onSyncButtonClick
+                        GitHubButton(
+                            onClick = onGitHubClick
                         )
                         if (!PlatformFeature.supported) return@CenterAlignedTopAppBar
                         IconButton(onClick = onSponsorButtonClick) {
@@ -198,108 +196,23 @@ fun HomeScreenUI(
 }
 
 @Composable
-private fun SyncButton(
-    state: State<SyncIconState>,
-    onClick: () -> Unit
-) {
+private fun GitHubButton(onClick: () -> Unit) {
 
-    Box(
-        modifier = Modifier
-    ) {
-
-        IconButton(
-            onClick = onClick
+    IconButton(onClick = onClick) {
+        Box(
+            modifier = Modifier
+                .size(24.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surfaceVariant),
+            contentAlignment = Alignment.Center
         ) {
-
-            val loadingState = remember { derivedStateOf { state.value.loading } }
-            val rotation = rememberSyncIconRotation(loadingState)
-
-            Icon(
-                imageVector = Icons.Default.Sync,
-                contentDescription = null,
-                modifier = Modifier.graphicsLayer { rotationZ = rotation.value }
+            Text(
+                text = "GH",
+                style = MaterialTheme.typography.labelSmall
             )
-
-        }
-
-        AnimatedContent(
-            targetState = state.value.indicator,
-            transitionSpec = { scaleIn() togetherWith scaleOut() },
-            modifier = Modifier.align(Alignment.TopEnd).padding(8.dp)
-        ) {
-            when (it) {
-                SyncIconIndicator.Disabled,
-                SyncIconIndicator.Conflict -> {
-                    Box(Modifier.size(10.dp))
-                }
-
-                SyncIconIndicator.PendingUpload -> {
-                    IndicatorCircle(MaterialTheme.extraColorScheme.due)
-                }
-
-                SyncIconIndicator.UpToDate -> {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(10.dp)
-                            .background(
-                                color = MaterialTheme.extraColorScheme.success,
-                                shape = MaterialTheme.shapes.extraSmall
-                            ),
-                        tint = MaterialTheme.colorScheme.surface
-                    )
-                }
-
-                SyncIconIndicator.Canceled -> {
-                    Box(
-                        modifier = Modifier
-                            .size(7.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                shape = RoundedCornerShape(2.dp)
-                            )
-                    )
-                }
-
-                SyncIconIndicator.Error -> {
-                    IndicatorCircle(MaterialTheme.colorScheme.primary)
-                }
-            }
-
-        }
-
-    }
-
-}
-
-@Composable
-private fun rememberSyncIconRotation(animate: State<Boolean>): Animatable<Float, AnimationVector1D> {
-    val rotation = remember { Animatable(360f) }
-
-    LaunchedEffect(Unit) {
-        var shouldLoop = false
-
-        val animateLoop = suspend {
-            while (shouldLoop) {
-                rotation.snapTo(360f)
-                rotation.animateTo(0f, tween(2000, 200))
-            }
-        }
-
-        var animateLoopJob: Job? = null
-
-        snapshotFlow { animate.value }.collect { shouldAnimate ->
-            shouldLoop = shouldAnimate
-            if (shouldAnimate) {
-                val currentJob = animateLoopJob
-                if (currentJob == null || currentJob.isCompleted)
-                    animateLoopJob = launch { animateLoop() }
-            }
         }
     }
 
-    return rotation
 }
 
 @Composable

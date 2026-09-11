@@ -8,4 +8,4 @@ interface AboutScreenContract {
 
 }
 
-const val KanjiDojoGithubLink = "https://github.com/syt0r/Kanji-Dojo"
+const val KanjiDojoGithubLink = "https://github.com/huangsiyu921-cmd/Kanji-Dojo-CC"
