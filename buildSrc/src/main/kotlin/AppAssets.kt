@@ -16,7 +16,7 @@ object AppAssets {
     // 词典库内容版本：每次替换/更新库都要 +1。
     // 运行时会和已安装副本的 PRAGMA user_version 比对，不一致就用新资源覆盖，
     // 否则老用户会一直用第一次安装时复制过去的旧库。
-    const val AppDataDatabaseVersion = 16
+    const val AppDataDatabaseVersion = 17
 
     val kanaVoiceOpus = Asset(
         fileName = "ja-JP-Neural2-B.opus",
