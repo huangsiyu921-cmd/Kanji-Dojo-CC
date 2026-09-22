@@ -106,3 +106,7 @@ app/linux/**
 
 # Generate Signed APK 的输出目录
 /app/fdroid/
+
+# 音效资源需要随仓库分发（Android: res/raw, 桌面: composeResources/files/sounds）
+!core/src/androidMain/res/raw/*.wav
+!core/src/commonMain/composeResources/files/sounds/*.wav

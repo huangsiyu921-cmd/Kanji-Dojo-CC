@@ -54,7 +54,7 @@ compose.desktop {
             }
 
             macOS {
-                bundleID = "io.github.huangsy.janjicc"
+                bundleID = "io.github.huangsy.kanjicc"
                 iconFile.set(File("mac_icon.icns"))
             }
 
