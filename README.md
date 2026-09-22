@@ -1,7 +1,7 @@
 <div align="center">
 
 # Kanji Dojo CC
-![Version Badge](https://img.shields.io/badge/version-v0.0.2alpha-blue?style=for-the-badge&labelColor=ffffff&color=ff5555)
+![Version Badge](https://img.shields.io/badge/version-v0.0.3-blue?style=for-the-badge&labelColor=ffffff&color=ff5555)
 
 </div>
 
