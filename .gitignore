@@ -110,3 +110,6 @@ app/linux/**
 # 音效资源需要随仓库分发（Android: res/raw, 桌面: composeResources/files/sounds）
 !core/src/androidMain/res/raw/*.wav
 !core/src/commonMain/composeResources/files/sounds/*.wav
+
+# 汉化后的词典数据库随仓库分发（构建 app 必需）
+!core/src/commonMain/composeResources/files/kanji-dojo-data-base-v15.sql
