@@ -86,12 +86,23 @@ android {
 
     val debugSigningConfig = signingConfigs.getByName("debug")
 
-    buildTypes.forEach {
-        it.signingConfig = if (keystoreFile.exists()) {
-            signedBuildSigningConfig
-        } else {
-            debugSigningConfig
-        }
+    // debug：本地 run / 测试固定使用 Android 默认 debug 签名，不需要 keystore 密码
+    buildTypes.getByName("debug").signingConfig = debugSigningConfig
+
+    // release：keystore.jks 在场时使用正式签名；打包该变体时需要
+    // ANDROID_KEYSTORE_PASSWORD / ANDROID_KEY_ALIAS / ANDROID_KEY_PASSWORD 环境变量。
+    buildTypes.getByName("release").signingConfig = if (keystoreFile.exists()) {
+        signedBuildSigningConfig
+    } else {
+        debugSigningConfig
+    }
+
+    if (keystoreFile.exists() && System.getenv("ANDROID_KEYSTORE_PASSWORD").isNullOrEmpty()) {
+        logger.warn(
+            "keystore.jks 存在但未设置 ANDROID_KEYSTORE_PASSWORD：debug 构建不受影响，" +
+                "但 release 打包会失败。发布前请设置 ANDROID_KEYSTORE_PASSWORD / " +
+                "ANDROID_KEY_ALIAS / ANDROID_KEY_PASSWORD。"
+        )
     }
 
     dependenciesInfo {
