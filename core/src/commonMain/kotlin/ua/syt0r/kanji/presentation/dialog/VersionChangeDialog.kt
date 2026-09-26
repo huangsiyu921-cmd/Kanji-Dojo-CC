@@ -49,356 +49,36 @@ fun VersionChangeDialog(
             LazyColumn(
                 modifier = Modifier.weight(1f).fillMaxWidth()
             ) {
-                version("2.2.1", LocalDate(2026, 2, 25)) {
-                    append(
-                        """
-                        - Performance optimization (by kedtol)
-                        - Removed grades on the writing summary screen
-                        - Increased default desktop window size
-                        - Small update of the Account screen                        
-                        """.trimIndent()
-                    )
-                }
-                version("2.2.0", LocalDate(2025, 12, 22)) {
-                    append(
-                        """
-                        - Added daily SRS reset time in Settings
-                        - Added option to show kana reading during vocab writing (by cartr)
-                        - Fixed wrong vocab reading used in practice for some edited vocab cards
-                        - Fixed dropdown behaviour on vocab edit screen
-                        - Fixed issue preventing account switching without app restart
-                        """.trimIndent()
-                    )
-                }
-                version("2.1.9", LocalDate(2025, 8, 15)) {
-                    append(
-                        """
-                        - Added furigana for sentences
-                        - Improved sentences ranking
-                        - Added saving for the last selected shuffle and new cards order practice configurations
-                        - Added more detailed card suggestions for text analysis for words with multiple dictionary entries
-                        - Added clipboard copy and Jisho search for unknown dictionary terms
-                        - Added readings shuffling for each review when doing reading picker vocab practice
-                        - Added account deletion button
-                        """.trimIndent()
-                    )
-                }
-                version("2.1.8", LocalDate(2025, 5, 24)) {
-                    append(
-                        """
-                        - Updated UI for home tab, practice summary and other minor changes
-                        - Added experimental Text Analysis screen
-                        - Added option to save custom vocab cards
-                        - Added example sentences to vocab flashcards practice
-                        - Optimized word examples loading for letter practice
-                        - Optimized vocab deck edit loading time
-                        """.trimIndent()
-                    )
-                }
-                version("2.1.7", LocalDate(2025, 3, 25)) {
-                    append(
-                        """
-                        - Added submit button for stroke input mode to skip review for forgotten letters and see the result immediately
-                        - Updated top vocabulary examples for most letters
-                        - Fixed missing senses on vocabulary info screen
-                        - Fixed overlapping kana readings on vocabulary info screen
-                        - Fixed some vocabulary reading priorities
-                        - Updated several incorrect readings and senses for JLPT vocabulary decks, changed ordering
-                        - Added hints when adding vocabulary to a deck that already contains it
-                        - Added recent donations section for donations made through the app and more donation options
-                        - Small UI updates
-                        """.trimIndent()
-                    )
-                }
-                version("2.1.6", LocalDate(2025, 3, 1)) {
-                    append(
-                        """
-                        - Updated vocab decks behavior
-                        - Now vocab cards correspond to specific word readings instead of dictionary entries
-                        - The reading priority configuration was removed. Now readings can be edited on the deck edit screen
-                        - Updated JLPT vocab decks, removed uncommon variants of the same words
-                        - Added a new vocab info screen
-                        - Added example sentences to letter info screen
-                        - Fixed links not opening on macOS
-                        - Fixed missing sync cancel button in Japanese language
-                        - Added several missing Japanese translations
-                        """.trimIndent()
-                    )
-                }
 
-                version("2.1.5", LocalDate(2025, 1, 31)) {
+                version("0.4", LocalDate(2026, 9, 26)) {
                     append(
                         """
-                        - Updated installers for Windows and Linux, now it's not required to have Java installed
-                        - Renamed executable for MacOS, please manually delete the old `kanji-dojo` app, tha app name is `Kanji Dojo` now
-                        - Fixed a sync issue with incorrectly applied timestamp after downloading data from the cloud
+                        - 添加并替换TTS语音为内置TTS
+                        - 添加了部分准备为多平台发布版的兼容代码
                         """.trimIndent()
                     )
                 }
-                version("2.1.4", LocalDate(2025, 1, 17)) {
+                version("0.3", LocalDate(2026, 9, 23)) {
                     append(
                         """
-                        - Added an option to the Settings tab to select the default tab opened when starting the app
-                        - Added controls to calendars on the Stats tab to view stats from the past
-                        - Added new cloud sync feature
-                        - Updated FSRS v5 algorithm with new weights, implemented standard rounding to days and fixed incorrect hard interval in some cases
-                        - Minor UI changes
-                        - Fixed crash when overusing Again button
+                        - 翻译了绝大部分的.sql
                         """.trimIndent()
                     )
                 }
-                version("2.1.3", LocalDate(2024, 9, 30)) {
+                version("0.2", LocalDate(2026, 9, 22)) {
                     append(
                         """
-                        - Updated JLPT vocab decks using data from yomichan-jlpt-vocab open source project
-                        - Fixed several misclassified letters from grade 4-6 and secondary school decks
-                        - Fixed daily limit toggle value not being saved
-                        - Updated vocab reading picker mode, now meanings are shown for all kana words
-                        - Small UI updates
+                        - 添加了部分.sql汉化
+                        - 修复部分bug
                         """.trimIndent()
                     )
                 }
-                version("2.1.2", LocalDate(2024, 9, 20)) {
+                version("0.1", LocalDate(2026, 9, 12)) {
                     append(
                         """
-                        - Note for old users: read the migration notice down below!
-                        - Added daily limit for vocab practice
-                        - Added more daily limit configurations
-                        - Added new sorting option by expected review date on letter deck details screen
-                        - Added pending review indicators to dropdown menus when selecting practice types
-                        - New MacOS redistributable
-                        - Fixed translations being visible when doing letter reading practice and card is hidden
-                        - Fixed letters being hidden when learning writing with hints
-                        - Fixed timezone not being considered when calculating daily streak
-                        - Migration notice: after migration to the FSRS, which is far less strict than the old algorithm that was resetting study progress each time you do a mistake, the next review intervals for the letters practiced before the migration can end up quite big
-                        - To reduce the intervals visit the letter deck details screen (> button next to the deck on the Letters tab)
-                        - Then sort letters with the new Expected Review option and review them using Again button
-                        - Always use Again button to reduce given intervals if you are not confident about your recall ability
-                        """.trimIndent()
-                    )
-                }
-                version("2.1.1", LocalDate(2024, 9, 5)) {
-                    append(
-                        """
-                        - Added daily streak section to home screen
-                        - Added fancy kana voice button to letter practice
-                        - Upgraded FSRS algorithm to version 5
-                        - Fixed issue with FSRS intervals not decreasing when using Again and Hard buttons
-                        - Fixed issue with redundant filtering of some letters in search
-                        """.trimIndent()
-                    )
-                }
-                version("2.1.0", LocalDate(2024, 8, 30)) {
-                    append(
-                        """
-                        - Added new home screen with aggregated review data
-                        - Added tutorial
-                        - Replaced previous custom SRS algorithm for letter practice with FSRS 
-                        - Now letter practice is saving review results in the middle of practice
-                        - Added ability to merge and sort vocab decks
-                        - Added experimental JLPT vocab decks
-                        - Added vocab deck details screen with ability to filter and select individual words for practice
-                        - Added tracking for vocab reviews so now they accounted in stats too
-                        - Fixed issues with FSRS algorithm
-                        """.trimIndent()
-                    )
-                }
-                version("2.0.9", LocalDate(2024, 7, 26)) {
-                    append(
-                        """
-                        - Added option to animate character strokes after character is drawn
-                        - Added finish confirmation dialog on back click during vocab practice
-                        - Not completed words will show up in summary when finishing vocab practice
-                        - SRS review adjustments
-                        - Small UI updates
-                        - Bug fixes and improvements
-                        """.trimIndent()
-                    )
-                }
-                version("2.0.8", LocalDate(2024, 7, 16)) {
-                    append(
-                        """
-                        - Implemented FSRS support for vocab practice
-                        - Added text field in addition to slider for items selection when configuring practice
-                        - Added more info about radicals on kanji info screen
-                        - UI updates
-                        - Added MacOS builds to Github Releases
-                        """.trimIndent()
-                    )
-                }
-                version("2.0.7", LocalDate(2024, 6, 27)) {
-                    append(
-                        """
-                        - Added more vocab practice modes
-                        - Small redesigns of home screen in landscape mode and bottom sheets
-                        - Fixed crash with multiple click on leave confirmation dialog
-                        - Added a sponsor screen and the option to financially support the app in the Google Play version
-                        """.trimIndent()
-                    )
-                }
-                version("2.0.6", LocalDate(2024, 6, 14)) {
-                    append(
-                        """
-                        - Renamed practice sets, now they are referred as decks
-                        - Added option to create custom vocab decks
-                        - Added more into to app credits to include information about used libraries       
-                        """.trimIndent()
-                    )
-                }
-                version("2.0.5", LocalDate(2024, 5, 28)) {
-                    append(
-                        """
-                        - Added vocab practice, only predefined decks and reading picker mode for now
-                        - Clickable radicals on kanji details screen
-                        - Small updated to expressions ranking and reading priorities
-                        - Fix kana sound autoplay not saved on reading practice
-                        - Fix crash when pressing buttons on writing practice screen during animation
-                        """.trimIndent()
-                    )
-                }
-                version("2.0.4", LocalDate(2024, 5, 3)) {
-                    append(
-                        """
-                        - Added Input Mode configuration for writing practice, allowing to write characters instead of strokes
-                        - Removed practice type dialog on practice details screen, now it's togglable button
-                        - Small improvements in ranking of expressions and translations
-                        """.trimIndent()
-                    )
-                }
-                version("2.0.3", LocalDate(2024, 3, 28)) {
-                    append(
-                        """
-                        - Improved filter configuration on practice details screen
-                        - Added more expressions for better character coverage
-                        - Updated expressions ranking
-                        - Added feedback option to settings screen and alternative expressions dialogs
-                        - Added Linux and Windows builds to GitHub's releases
-                        """.trimIndent()
-                    )
-                }
-                version("2.0.2", LocalDate(2024, 3, 11)) {
-                    append(
-                        """
-                        - Fix migration issue that caused crash on practice preview screen and during backup
-                        - Handle database connection getting broken when backup creation is failing
-                        """.trimIndent()
-                    )
-                }
-                version("2.0.1", LocalDate(2024, 3, 11)) {
-                    append(
-                        """
-                        - Implemented app data backup, available in the settings screen
-                        - Updated default daily limit
-                        - Fixed incorrectly saved alternative stroke evaluator configuration when using left handed mode
-                        - Fixed no translation layout and alternative stroke evaluator mistakenly enabled by default
-                        """.trimIndent()
-                    )
-                }
-                version("2.0.0", LocalDate(2024, 3, 3)) {
-                    append(
-                        """
-                        - Added kana voice sounds to practice
-                        - Added option to see romaji for kana practice
-                        - Now labels next to practice progress chart are clickable, making it possible to quickly start practice from there
-                        - Added kanji variants information to writing practice
-                        - Fixed chinese character versions showing up in the labels across the app
-                        - Updated Japanese translations, thanks to AttractLight
-                        - Updated alternative stroke evaluator, thanks to sl08154711
-                        """.trimIndent()
-                    )
-                }
-                version("1.9", LocalDate(2024, 1, 28)) {
-                    append(
-                        """
-                        - Added options to merge and sort practice sets
-                        - Added monochrome icon
-                        - Added alternative stroke detection algorithm by sl08154711
-                        - Added a limit for single character review duration when calculating data on Stats Screen to ignore inactive sessions
-                        - Added total studied characters count to Stats Screen
-                        - Bug fixes and small UI changes
-                        """.trimIndent()
-                    )
-                }
-
-                version("1.7", LocalDate(2023, 11, 30)) {
-                    append(
-                        """
-                        - Added statistics screen
-                        - Daily goal was renamed to daily limit and it can be disabled now
-                        - Added indicators to practice dashboard when daily limit is enabled
-                        - New practice details screen layout and share button
-                        - More options on practice configuration
-                        """.trimIndent()
-                    )
-                }
-                version("1.6", LocalDate(2023, 10, 7)) {
-                    append(
-                        """
-                        - Bug fixes: wrong daily progress, missing group details data and others
-                        - UI improvements for large screens
-                        """.trimIndent()
-                    )
-                }
-                version("1.5", LocalDate(2023, 10, 3)) {
-                    append(
-                        """
-                        - Reminder notification. Enable in settings
-                        - Daily goal and quick practice menu on home screen
-                        - Version change dialog
-                        - Additional menu for practice configuration and flexible practice saving
-                        - Manual app theme toggle support for older versions of Android
-                        """.trimIndent()
-                    )
-                }
-                version("1.4", LocalDate(2023, 3, 29)) {
-                    append(
-                        """
-                        - Fix migration crash when custom sorting was applied
-                        """.trimIndent()
-                    )
-                }
-                version("1.3", LocalDate(2023, 3, 28)) {
-                    append(
-                        """
-                        - Loading time optimizations
-                        - Left-handed mode
-                        - Landscape mode for character info screen
-                        - First desktop version
-                        - Fix crash with unknown 々 character
-                        - Fix stuck issue on writing practice screen when drawing strokes too fast
-                        - Fix crash with in app review dialog for devices with faulty Play Services and Chromebooks
-                        """.trimIndent()
-                    )
-                }
-                version("1.2", LocalDate(2023, 3, 6)) {
-                    append(
-                        """
-                        - Fixed bug with incorrect group selected on multiselect dialog when filter is used
-                        - Fixed bug with low resolution input and characters on Android 8
-                        - Added new reading practice mode and additional filter option
-                        - Added select/deselect all buttons when selecting groups for multiselect mode
-                        - Added WaniKani levels to Select screen
-                        - Removed extra delays when using search
-                        """.trimIndent()
-                    )
-                }
-                version("1.1", LocalDate(2023, 2, 16)) {
-                    append(
-                        """
-                        - Added option to search by kanji radicals
-                        - Added option to see only characters that need review
-                        - Added alternative expressions dialog to writing practice screen
-                        - Improved review indicator algorithm
-                        - Landscape mode improvements
-                        """.trimIndent()
-                    )
-                }
-                version("1.0", LocalDate(2023, 1, 30)) {
-                    append(
-                        """
-                        - Added search screen
-                        - Added highlighting to review groups based on last review date
-                        - Added button to view alternative readings and translations of expression items
+                        - 添加了UI汉化
+                        - 移除了原作者的链接
+                        - 删除了所有联网请求
                         """.trimIndent()
                     )
                 }
