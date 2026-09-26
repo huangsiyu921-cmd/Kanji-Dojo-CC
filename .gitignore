@@ -116,3 +116,9 @@ app/linux/**
 
 # SQL 翻译工作区（数据库 / 进度 / 备份，不进仓库）
 /SQL翻译中/
+
+# 本地交接文档（不进仓库）
+/TTS-HANDOFF.md
+
+# VOICEVOX 运行时资源（约 180MB，用 tools/voicevox/fetch-runtime.ps1 组装，不进仓库）
+/tools/voicevox/runtime/

@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.onEach
 import org.koin.compose.koinInject
 import ua.syt0r.kanji.core.analytics.AnalyticsManager
 import ua.syt0r.kanji.core.user_data.database.DatabaseMigrationState
-import ua.syt0r.kanji.presentation.dialog.VersionChangeDialog
 import ua.syt0r.kanji.presentation.getMultiplatformViewModel
 import ua.syt0r.kanji.presentation.screen.main.features.DeepLinkHandler
 import ua.syt0r.kanji.presentation.screen.main.features.MigrationDialog
@@ -59,11 +58,6 @@ fun MainScreen(
         MigrationDialog(
             currentState = currentMigrationState
         )
-        return
-    }
-
-    if (viewModel.showVersionChangeDialog.value) {
-        VersionChangeDialog { viewModel.showVersionChangeDialog.value = false }
         return
     }
 

@@ -92,6 +92,17 @@ kotlin {
                 implementation(libs.sqldelight.jvm.sqlite.driver)
                 implementation(libs.ktor.server.netty)
                 implementation(libs.mp3spi)
+
+                // Offline Japanese TTS engine for the desktop word pronunciation (see
+                // TTS-HANDOFF.md). The jar ships the native library for every desktop platform and
+                // unpacks the matching one at runtime, so no extra packaging step is needed yet.
+                implementation(files("libs/voicevoxcore-0.17.0.jar"))
+                implementation(libs.gson)
+            }
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
             }
         }
         iosMain {
@@ -186,4 +197,7 @@ buildConfig {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    // The VOICEVOX runtime files live outside the repository's sources (tools/voicevox/runtime,
+    // assembled by tools/voicevox/fetch-runtime.ps1); point the tests at them explicitly.
+    systemProperty("kanjidojo.voicevox.dir", rootProject.file("tools/voicevox/runtime").absolutePath)
 }
