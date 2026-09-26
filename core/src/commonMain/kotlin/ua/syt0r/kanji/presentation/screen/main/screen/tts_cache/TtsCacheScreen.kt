@@ -1,5 +1,6 @@
 package ua.syt0r.kanji.presentation.screen.main.screen.tts_cache
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,6 +65,7 @@ fun TtsCacheScreen(
 
     val cache = koinInject<WordTtsCache>()
     val archive = koinInject<WordTtsCacheArchive>()
+    val getPreCacheDecks = koinInject<GetVocabPreCacheDecksUseCase>()
     val wordTtsManager = koinInject<WordTtsManager>()
     val coroutineScope = rememberCoroutineScope()
 
@@ -73,6 +75,7 @@ fun TtsCacheScreen(
     var busy by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf<String?>(null) }
     var showClearDialog by remember { mutableStateOf(false) }
+    var showDeckDialog by remember { mutableStateOf(false) }
 
     // Only the synthesis wait gets a spinner; cached entries start playing right away.
     val preparing by wordTtsManager.isPreparing.collectAsState()
@@ -172,6 +175,12 @@ fun TtsCacheScreen(
                 }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TextButton(
+                        enabled = !busy,
+                        onClick = { showDeckDialog = true }
+                    ) {
+                        Text("导入牌组")
+                    }
                     TextButton(
                         enabled = !busy,
                         onClick = {
@@ -306,6 +315,66 @@ fun TtsCacheScreen(
             }
         )
     }
+
+    if (showDeckDialog) {
+        PreCacheDecksDialog(
+            loadDecks = { getPreCacheDecks.getDecks() },
+            onCache = { readings -> preCache(readings) },
+            onDismissRequest = { showDeckDialog = false }
+        )
+    }
+
+}
+
+/**
+ * Lists the user's own vocabulary decks and pre-caches the readings of the one that is picked. The
+ * readings are the ones saved with each card, so what gets spoken matches what the app shows.
+ */
+@Composable
+private fun PreCacheDecksDialog(
+    loadDecks: suspend () -> List<VocabPreCacheDeck>,
+    onCache: (List<String>) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+
+    var decks by remember { mutableStateOf<List<VocabPreCacheDeck>?>(null) }
+
+    LaunchedEffect(Unit) {
+        decks = loadDecks()
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text("按牌组预热") },
+        text = {
+            val loaded = decks
+            when {
+                loaded == null -> Text("正在读取牌组…")
+
+                loaded.isEmpty() -> Text("还没有自建牌组。")
+
+                loaded.none { !it.isEmpty } -> Text("牌组里还没有词。")
+
+                else -> LazyColumn {
+                    items(items = loaded, key = { it.id }) { deck ->
+                        ListItem(
+                            headlineContent = { Text(deck.title) },
+                            supportingContent = { Text("${deck.readings.size} 个词") },
+                            modifier = Modifier.clickable(enabled = !deck.isEmpty) {
+                                onCache(deck.readings)
+                                onDismissRequest()
+                            }
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("关闭")
+            }
+        }
+    )
 
 }
 
