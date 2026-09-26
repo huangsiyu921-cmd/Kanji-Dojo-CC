@@ -86,7 +86,7 @@ fun LetterInfoUI(
                 }
                 val radicalsData = letterData.radicalsSectionData
                 infoScreenExpandableSection(
-                    headerText = "Radicals",
+                    headerText = "部首",
                     headerCount = radicalsData.radicals.size,
                     expanded = radicalsExpanded,
                     expandedContent = {

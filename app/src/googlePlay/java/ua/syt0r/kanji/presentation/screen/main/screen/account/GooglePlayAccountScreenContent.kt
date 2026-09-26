@@ -213,7 +213,7 @@ private fun ColumnScope.SubscriptionOffersContent(
 ) {
 
     Text(
-        text = "Subscribe now to",
+        text = "立即订阅即可",
         style = MaterialTheme.typography.titleMedium
     )
 
@@ -231,7 +231,7 @@ private fun ColumnScope.SubscriptionOffersContent(
                 tint = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "Access Cloud Sync Feature"
+                text = "使用云同步功能"
             )
         }
 
@@ -246,7 +246,7 @@ private fun ColumnScope.SubscriptionOffersContent(
                 tint = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "Support app development"
+                text = "支持应用开发"
             )
         }
     }
@@ -342,11 +342,11 @@ fun OfferError(state: SubscriptionOffersState.Error) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Couldn't load offers: ${state.message}",
+            text = "无法加载商品：${state.message}",
             style = MaterialTheme.typography.labelLarge
         )
         Text(
-            text = "Retry",
+            text = "重试",
             style = MaterialTheme.typography.labelSmall
         )
     }

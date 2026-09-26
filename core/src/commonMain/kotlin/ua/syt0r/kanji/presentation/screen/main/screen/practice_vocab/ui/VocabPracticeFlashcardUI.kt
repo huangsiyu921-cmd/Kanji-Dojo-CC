@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,30 +68,21 @@ fun VocabPracticeFlashcardUI(
     ) {
 
         val wordTts = koinInject<WordTtsManager>()
+
+        // Only the synthesis wait is worth a spinner: once the audio plays, the word is already
+        // being read out. Tapping again should interrupt and re-read instead of being blocked.
+        val preparing by wordTts.isPreparing.collectAsState()
         val scope = rememberCoroutineScope()
         val readingText = reviewState.reading.toKanaReading()
-
-        // Synthesis takes ~0.3–1.5s, so show that something is happening while it runs.
-        var speaking by remember { mutableStateOf(false) }
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
             IconButton(
-                enabled = !speaking,
-                onClick = {
-                    scope.launch {
-                        speaking = true
-                        try {
-                            wordTts.speak(readingText)
-                        } finally {
-                            speaking = false
-                        }
-                    }
-                }
+                onClick = { scope.launch { wordTts.speak(readingText) } }
             ) {
-                if (speaking) {
+                if (preparing) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),
                         strokeWidth = 2.dp

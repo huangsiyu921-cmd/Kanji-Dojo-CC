@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -193,8 +194,8 @@ private fun VocabReadingSection(word: JapaneseWord) {
     val scope = rememberCoroutineScope()
     val speakText = reading.kanaReading
 
-    // Synthesis takes ~0.3–1.5s, so show that something is happening while it runs.
-    var speaking by remember { mutableStateOf(false) }
+    // Only the synthesis wait is worth a spinner; while the audio plays there is nothing to wait for.
+    val preparing by wordTtsManager.isPreparing.collectAsState()
 
     Column(
         modifier = Modifier
@@ -242,19 +243,9 @@ private fun VocabReadingSection(word: JapaneseWord) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             IconButton(
-                enabled = !speaking,
-                onClick = {
-                    scope.launch {
-                        speaking = true
-                        try {
-                            wordTtsManager.speak(speakText)
-                        } finally {
-                            speaking = false
-                        }
-                    }
-                }
+                onClick = { scope.launch { wordTtsManager.speak(speakText) } }
             ) {
-                if (speaking) {
+                if (preparing) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),
                         strokeWidth = 2.dp
@@ -268,7 +259,7 @@ private fun VocabReadingSection(word: JapaneseWord) {
                 onClick = { showAddToDeckDialog = true },
                 colors = ButtonDefaults.neutralTextButtonColors()
             ) {
-                Text("Add to deck", Modifier.padding(end = 8.dp))
+                Text("添加到牌组", Modifier.padding(end = 8.dp))
                 Icon(Icons.Default.Add, null)
             }
 
@@ -299,7 +290,7 @@ private fun LazyListScope.expandableVocabLettersSection(
     val letters = text.map { it.toString() }.distinct()
 
     infoScreenExpandableSection(
-        headerText = "Letters",
+        headerText = "字母",
         headerCount = letters.size,
         expanded = expanded,
         expandedContent = {
@@ -328,7 +319,7 @@ private fun LazyListScope.expandableSenseSection(
     expanded: MutableState<Boolean>
 ) {
     infoScreenExpandableSection(
-        headerText = "Sense",
+        headerText = "释义",
         headerCount = senseList.size,
         expanded = expanded,
         expandedContent = {

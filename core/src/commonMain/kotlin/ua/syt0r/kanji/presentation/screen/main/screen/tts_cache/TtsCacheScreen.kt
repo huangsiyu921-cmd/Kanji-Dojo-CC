@@ -30,6 +30,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,9 +69,11 @@ fun TtsCacheScreen(
     var stats by remember { mutableStateOf<WordTtsCacheStats?>(null) }
     var input by rememberSaveable { mutableStateOf("") }
     var busy by remember { mutableStateOf(false) }
-    var playingWord by remember { mutableStateOf<String?>(null) }
     var message by remember { mutableStateOf<String?>(null) }
     var showClearDialog by remember { mutableStateOf(false) }
+
+    // Only the synthesis wait gets a spinner; cached entries start playing right away.
+    val preparing by wordTtsManager.isPreparing.collectAsState()
 
     suspend fun refresh() {
         entries = cache.entries()
@@ -186,19 +189,13 @@ fun TtsCacheScreen(
                             trailingContent = {
                                 Row {
                                     IconButton(
-                                        enabled = playingWord == null,
                                         onClick = {
                                             coroutineScope.launch {
-                                                playingWord = entry.word
-                                                try {
-                                                    wordTtsManager.speak(entry.word)
-                                                } finally {
-                                                    playingWord = null
-                                                }
+                                                wordTtsManager.speak(entry.word)
                                             }
                                         }
                                     ) {
-                                        if (playingWord == entry.word) {
+                                        if (preparing) {
                                             CircularProgressIndicator(
                                                 modifier = Modifier.size(20.dp),
                                                 strokeWidth = 2.dp
@@ -216,7 +213,6 @@ fun TtsCacheScreen(
                                         onClick = {
                                             coroutineScope.launch {
                                                 cache.remove(entry.word)
-                                                if (entry.word == playingWord) playingWord = null
                                                 refresh()
                                             }
                                         }

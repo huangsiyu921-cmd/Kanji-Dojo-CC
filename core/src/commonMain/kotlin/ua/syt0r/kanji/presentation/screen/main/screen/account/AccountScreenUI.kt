@@ -212,7 +212,7 @@ fun AccountScreenSignedIn(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
         ) {
             Icon(Icons.Outlined.Refresh, null)
-            Text(text = "Refresh")
+            Text(text = "刷新")
         }
 
     }

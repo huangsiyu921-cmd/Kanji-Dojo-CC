@@ -7,12 +7,15 @@ import jp.hiroshiba.voicevoxcore.blocking.VoiceModelFile
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.util.concurrent.atomic.AtomicInteger
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.Clip
 import javax.sound.sampled.LineEvent
@@ -184,6 +187,10 @@ class VoicevoxJvmTtsManager(
     @Volatile
     private var activeClip: Clip? = null
 
+    private val preparingCount = AtomicInteger(0)
+    private val _isPreparing = MutableStateFlow(false)
+    override val isPreparing: StateFlow<Boolean> = _isPreparing
+
     override suspend fun isAvailable(): Boolean = config.isComplete()
 
     override val unavailableMessage: String
@@ -195,7 +202,7 @@ class VoicevoxJvmTtsManager(
 
         val wav = try {
             // A cached utterance is played instantly; only a miss costs a synthesis.
-            cached(word) ?: withContext(dispatcher) { synthesize(word) }.also { store(word, it) }
+            cached(word) ?: synthesizeTracking(word).also { store(word, it) }
         } catch (cancellation: CancellationException) {
             // Cancellation is not a failure; swallowing it would fall back to the OS voice whenever
             // the screen (or the next auto-play) cancels the calling coroutine.
@@ -220,12 +227,23 @@ class VoicevoxJvmTtsManager(
         if (cached(word) != null) return true
 
         return try {
-            store(word, withContext(dispatcher) { synthesize(word) })
+            store(word, synthesizeTracking(word))
             true
         } catch (cancellation: CancellationException) {
             throw cancellation
         } catch (e: Exception) {
             false
+        }
+    }
+
+    /** Keeps [isPreparing] true exactly while the synthesizer runs, so screens can show a spinner. */
+    private suspend fun synthesizeTracking(word: String): ByteArray {
+        preparingCount.incrementAndGet()
+        _isPreparing.value = true
+        try {
+            return withContext(dispatcher) { synthesize(word) }
+        } finally {
+            if (preparingCount.decrementAndGet() <= 0) _isPreparing.value = false
         }
     }
 
