@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
@@ -56,7 +57,9 @@ import ua.syt0r.kanji.presentation.dialog.SaveWordDialog
 import ua.syt0r.kanji.presentation.screen.main.screen.info.InfoScreenContract
 import ua.syt0r.kanji.presentation.screen.main.screen.info.InfoScreenPaddedListIndex
 import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -190,6 +193,9 @@ private fun VocabReadingSection(word: JapaneseWord) {
     val scope = rememberCoroutineScope()
     val speakText = reading.kanaReading
 
+    // Synthesis takes ~0.3–1.5s, so show that something is happening while it runs.
+    var speaking by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -236,9 +242,26 @@ private fun VocabReadingSection(word: JapaneseWord) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             IconButton(
-                onClick = { scope.launch { wordTtsManager.speak(speakText) } }
+                enabled = !speaking,
+                onClick = {
+                    scope.launch {
+                        speaking = true
+                        try {
+                            wordTtsManager.speak(speakText)
+                        } finally {
+                            speaking = false
+                        }
+                    }
+                }
             ) {
-                Icon(Icons.Default.VolumeUp, contentDescription = "Play pronunciation")
+                if (speaking) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(Icons.Default.VolumeUp, contentDescription = "Play pronunciation")
+                }
             }
 
             TextButton(

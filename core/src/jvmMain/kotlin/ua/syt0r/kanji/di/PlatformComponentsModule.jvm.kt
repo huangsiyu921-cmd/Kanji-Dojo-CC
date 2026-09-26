@@ -1,5 +1,7 @@
 package ua.syt0r.kanji.di
 
+import java.io.File
+
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import org.koin.core.module.Module
@@ -15,9 +17,11 @@ import ua.syt0r.kanji.core.getUserPreferencesFile
 import ua.syt0r.kanji.core.logger.LoggerConfiguration
 import ua.syt0r.kanji.core.sync.JvmSyncBackupFileProvider
 import ua.syt0r.kanji.core.sync.SyncBackupFileProvider
+import ua.syt0r.kanji.core.tts.FileWordTtsCache
 import ua.syt0r.kanji.core.tts.JavaKanaTtsManager
 import ua.syt0r.kanji.core.tts.JavaWordTtsManager
 import ua.syt0r.kanji.core.tts.KanaTtsManager
+import ua.syt0r.kanji.core.tts.WordTtsCache
 import ua.syt0r.kanji.core.tts.WordTtsManager
 import ua.syt0r.kanji.core.tts.VoicevoxJvmTtsManager
 import ua.syt0r.kanji.core.tts.Neural2BKanaVoiceData
@@ -46,11 +50,18 @@ actual val platformComponentsModule: Module = module {
         )
     }
 
+    single<WordTtsCache> {
+        // Synthesized audio lives under the user's home so it survives reinstalls and is easy to
+        // inspect from the settings screen.
+        FileWordTtsCache(File(System.getProperty("user.home"), ".kanji-dojo-cc/tts-cache"))
+    }
+
     single<WordTtsManager> {
         // Bundled VOICEVOX engine first; the OS-voice implementation stays as the fallback for
         // machines where the engine cannot be loaded (see TTS-HANDOFF.md, M1).
         VoicevoxJvmTtsManager(
-            fallback = JavaWordTtsManager(kanaFallback = get())
+            fallback = JavaWordTtsManager(kanaFallback = get()),
+            cache = get()
         )
     }
 

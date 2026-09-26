@@ -50,6 +50,15 @@ fun VersionChangeDialog(
                 modifier = Modifier.weight(1f).fillMaxWidth()
             ) {
 
+                version("0.6", LocalDate(2026, 9, 27)) {
+                    append(
+                        """
+                        - 合成过的语音会缓存下来，同一个词再读到就是瞬时的
+                        - 设置页新增「TTS 缓存」：可以提前把词语缓存好、看占用、一键清空
+                        - 朗读按钮在合成期间会显示加载圈，不再像是没反应
+                        """.trimIndent()
+                    )
+                }
                 version("0.5", LocalDate(2026, 9, 26)) {
                     append(
                         """

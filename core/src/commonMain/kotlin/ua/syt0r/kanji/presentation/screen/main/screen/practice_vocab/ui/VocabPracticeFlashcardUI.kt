@@ -17,9 +17,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import ua.syt0r.kanji.core.tts.WordTtsManager
@@ -64,12 +70,34 @@ fun VocabPracticeFlashcardUI(
         val scope = rememberCoroutineScope()
         val readingText = reviewState.reading.toKanaReading()
 
+        // Synthesis takes ~0.3–1.5s, so show that something is happening while it runs.
+        var speaking by remember { mutableStateOf(false) }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            IconButton(onClick = { scope.launch { wordTts.speak(readingText) } }) {
-                Icon(Icons.Default.VolumeUp, contentDescription = "朗读")
+            IconButton(
+                enabled = !speaking,
+                onClick = {
+                    scope.launch {
+                        speaking = true
+                        try {
+                            wordTts.speak(readingText)
+                        } finally {
+                            speaking = false
+                        }
+                    }
+                }
+            ) {
+                if (speaking) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(Icons.Default.VolumeUp, contentDescription = "朗读")
+                }
             }
         }
 

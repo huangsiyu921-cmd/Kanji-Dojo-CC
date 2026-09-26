@@ -10,6 +10,13 @@ interface WordTtsManager {
     suspend fun speak(word: String)
 
     /**
+     * Prepares the audio for [word] without playing it, so that a later [speak] is instant.
+     *
+     * @return whether something was cached. Platforms without a cache keep the default.
+     */
+    suspend fun preCache(word: String): Boolean = false
+
+    /**
      * Whether a Japanese voice is currently available. On Android/iOS this is essentially always
      * true; on Desktop/JVM it reflects whether the OS has a Japanese voice installed.
      */

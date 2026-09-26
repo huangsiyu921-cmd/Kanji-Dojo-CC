@@ -155,6 +155,7 @@ data class VoicevoxConfig(
 class VoicevoxJvmTtsManager(
     private val fallback: WordTtsManager,
     private val config: VoicevoxConfig = VoicevoxConfig.resolve(),
+    private val cache: WordTtsCache? = null,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : WordTtsManager {
 
@@ -182,8 +183,10 @@ class VoicevoxJvmTtsManager(
     override suspend fun speak(word: String) {
         if (word.isBlank()) return
 
+        val key = cacheKey(word)
         val wav = try {
-            withContext(dispatcher) { synthesize(word) }
+            // A cached utterance is played instantly; only a miss costs a synthesis.
+            cached(key) ?: withContext(dispatcher) { synthesize(word) }.also { store(key, it) }
         } catch (cancellation: CancellationException) {
             // Cancellation is not a failure; swallowing it would fall back to the OS voice whenever
             // the screen (or the next auto-play) cancels the calling coroutine.
@@ -201,6 +204,37 @@ class VoicevoxJvmTtsManager(
             speakWithSystemVoice(word)
         }
     }
+
+    override suspend fun preCache(word: String): Boolean {
+        if (word.isBlank()) return false
+
+        val key = cacheKey(word)
+        if (cached(key) != null) return true
+
+        return try {
+            store(key, withContext(dispatcher) { synthesize(word) })
+            true
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    private suspend fun cached(key: String): ByteArray? =
+        cache?.let { runCatching { it.get(key) }.getOrNull() }
+
+    private suspend fun store(key: String, wav: ByteArray) {
+        cache?.let { runCatching { it.put(key, wav) } }
+    }
+
+    /**
+     * Everything that changes the synthesized audio belongs in the key, so changing a settled
+     * synthesis setting automatically invalidates the cache.
+     */
+    private fun cacheKey(word: String): String =
+        "${config.styleId}|${config.speedScale}|${config.pitchScale}|${config.intonationScale}|" +
+            "${config.prePhonemeLength}|${config.postPhonemeLength}|$word"
 
     private suspend fun speakWithSystemVoice(word: String) {
         runCatching { withContext(NonCancellable) { fallback.speak(word) } }

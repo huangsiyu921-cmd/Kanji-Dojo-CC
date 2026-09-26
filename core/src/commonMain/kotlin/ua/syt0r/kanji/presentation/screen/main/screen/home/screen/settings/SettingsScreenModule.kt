@@ -2,9 +2,11 @@ package ua.syt0r.kanji.presentation.screen.main.screen.home.screen.settings
 
 import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
+import ua.syt0r.kanji.core.tts.WordTtsCache
 import ua.syt0r.kanji.presentation.multiplatformViewModel
 import ua.syt0r.kanji.presentation.screen.main.screen.home.screen.settings.items.DefaultHomeTabSettingItem
 import ua.syt0r.kanji.presentation.screen.main.screen.home.screen.settings.items.ThemeSettingItem
+import ua.syt0r.kanji.presentation.screen.main.screen.home.screen.settings.items.TtsCacheSettingItem
 import ua.syt0r.kanji.presentation.screen.main.screen.home.screen.settings.items.DailyResetTimeSettingItem
 
 val defaultSettingItemsQualifier = qualifier("default_setting_items")
@@ -21,10 +23,15 @@ val settingsScreenModule = module {
     }
 
     factory(defaultSettingItemsQualifier) {
-        listOf(
+        listOfNotNull(
             ThemeSettingItem(themeManager = get()),
             DefaultHomeTabSettingItem(appPreferences = get()),
-            DailyResetTimeSettingItem(appPreferences = get())
+            DailyResetTimeSettingItem(appPreferences = get()),
+            // Platforms without a cache (currently iOS, whose TTS is not hooked up to VOICEVOX yet)
+            // simply do not show the entry.
+            getOrNull<WordTtsCache>()?.let { cache ->
+                TtsCacheSettingItem(cache = cache, wordTtsManager = get())
+            }
         )
     }
 
