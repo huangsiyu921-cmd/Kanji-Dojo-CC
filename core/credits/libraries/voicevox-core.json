@@ -1,0 +1,10 @@
+{
+  "uniqueId": "voicevox-core",
+  "developers": [],
+  "name": "VOICEVOX CORE",
+  "description": "Offline Japanese speech synthesis engine (0.17.0) bundled with the app to pronounce vocabulary words",
+  "website": "https://github.com/VOICEVOX/voicevox_core",
+  "licenses": [
+    "MIT"
+  ]
+}

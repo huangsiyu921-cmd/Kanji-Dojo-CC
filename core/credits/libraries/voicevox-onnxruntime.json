@@ -1,0 +1,10 @@
+{
+  "uniqueId": "voicevox-onnxruntime",
+  "developers": [],
+  "name": "ONNX Runtime (voicevox_onnxruntime)",
+  "description": "Inference engine VOICEVOX CORE runs the voice models on",
+  "website": "https://github.com/VOICEVOX/onnxruntime-builder",
+  "licenses": [
+    "MIT"
+  ]
+}

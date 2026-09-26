@@ -15,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.VolumeUp
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,6 +22,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -40,6 +40,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -48,6 +49,7 @@ import ua.syt0r.kanji.core.tts.WordTtsCacheArchive
 import ua.syt0r.kanji.core.tts.WordTtsCacheEntry
 import ua.syt0r.kanji.core.tts.WordTtsCacheStats
 import ua.syt0r.kanji.core.tts.WordTtsManager
+import ua.syt0r.kanji.presentation.common.MultiplatformDialog
 import ua.syt0r.kanji.presentation.screen.main.MainNavigationState
 
 /**
@@ -291,11 +293,16 @@ fun TtsCacheScreen(
     }
 
     if (showClearDialog) {
-        AlertDialog(
+        MultiplatformDialog(
             onDismissRequest = { showClearDialog = false },
             title = { Text("清空 TTS 缓存") },
-            text = { Text("将删除全部 ${stats?.entries ?: 0} 条已缓存的语音，之后朗读需要重新合成。") },
-            confirmButton = {
+            content = {
+                Text("将删除全部 ${stats?.entries ?: 0} 条已缓存的语音，之后朗读需要重新合成。")
+            },
+            buttons = {
+                TextButton(onClick = { showClearDialog = false }) {
+                    Text("取消")
+                }
                 TextButton(
                     onClick = {
                         showClearDialog = false
@@ -306,11 +313,6 @@ fun TtsCacheScreen(
                     }
                 ) {
                     Text("清空")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showClearDialog = false }) {
-                    Text("取消")
                 }
             }
         )
@@ -343,10 +345,10 @@ private fun PreCacheDecksDialog(
         decks = loadDecks()
     }
 
-    AlertDialog(
+    MultiplatformDialog(
         onDismissRequest = onDismissRequest,
         title = { Text("按牌组预热") },
-        text = {
+        content = {
             val loaded = decks
             when {
                 loaded == null -> Text("正在读取牌组…")
@@ -355,21 +357,28 @@ private fun PreCacheDecksDialog(
 
                 loaded.none { !it.isEmpty } -> Text("牌组里还没有词。")
 
-                else -> LazyColumn {
-                    items(items = loaded, key = { it.id }) { deck ->
+                // A plain Column: the dialog already scrolls its content, and a LazyColumn inside a
+                // scrollable parent has no bounded height to work with.
+                else -> Column {
+                    loaded.forEach { deck ->
                         ListItem(
                             headlineContent = { Text(deck.title) },
                             supportingContent = { Text("${deck.readings.size} 个词") },
-                            modifier = Modifier.clickable(enabled = !deck.isEmpty) {
-                                onCache(deck.readings)
-                                onDismissRequest()
-                            }
+                            colors = ListItemDefaults.colors(
+                                containerColor = MaterialTheme.colorScheme.surface
+                            ),
+                            modifier = Modifier
+                                .clip(MaterialTheme.shapes.large)
+                                .clickable(enabled = !deck.isEmpty) {
+                                    onCache(deck.readings)
+                                    onDismissRequest()
+                                }
                         )
                     }
                 }
             }
         },
-        confirmButton = {
+        buttons = {
             TextButton(onClick = onDismissRequest) {
                 Text("关闭")
             }

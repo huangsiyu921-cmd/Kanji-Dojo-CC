@@ -1,7 +1,7 @@
 <div align="center">
 
 # Kanji Dojo CC
-![Version Badge](https://img.shields.io/badge/version-v0.0.3-blue?style=for-the-badge&labelColor=ffffff&color=ff5555)
+![Version Badge](https://img.shields.io/badge/version-v0.0.6-blue?style=for-the-badge&labelColor=ffffff&color=ff5555)
 
 </div>
 
@@ -11,7 +11,7 @@ Kanji Dojo CC 是基于 [Kanji Dojo](https://github.com/syt0r/Kanji-Dojo) 的汉
 
 ### 本项目新增 / 改进
 - 自定义主色：可在设置中配置主题主色
-- TTS 语音：整词/假名发音。目前受 TTS 实现限制，暂时依赖所在系统的外部语音模型；待内置 TTS 完成后再添加对其他系统的支持
+- TTS 语音：整词发音使用内置的离线引擎（VOICEVOX CORE），假名发音沿用预录音频；合成结果会落盘缓存，可预先缓存、导出/导入
 - UI 与 `.sql` 数据库释义汉化（持续推进中）
 
 ## 参与贡献
@@ -57,6 +57,25 @@ Kanji Dojo CC 是基于 [Kanji Dojo](https://github.com/syt0r/Kanji-Dojo) 的汉
   - 为 Yomichan 词汇添加 JLPT 分级标签，关联 Tanos 与 JMDict
   - License: Creative Commons Attribution-Share Alike 4.0
   - Link: https://github.com/stephenmk/yomichan-jlpt-vocab
+
+整词发音使用内置的离线语音合成引擎，特此署名：
+
+- **VOICEVOX CORE**
+  - 离线日语语音合成引擎（0.17.0），本项目的整词发音由它合成
+  - License: MIT
+  - Link: https://github.com/VOICEVOX/voicevox_core
+- **VOICEVOX:玄野武宏**
+  - 音声ライブラリ「玄野武宏」（4.vvm / style 11，CV: ガロ），提供方VirVox Project
+  - 必须标注：`VOICEVOX:玄野武宏`（商用与非商用均可使用，但必须保留该标注）
+  - Link: https://www.virvoxproject.com/voicevoxの利用規約
+- **Open JTalk 辞書**（open_jtalk_dic_utf_8-1.11）
+  - VOICEVOX 合成前用于文本解析的日语形态素词典
+  - License: 修改版 BSD（3-Clause）
+  - Link: https://open-jtalk.sourceforge.net/
+- **ONNX Runtime**（voicevox_onnxruntime）
+  - VOICEVOX CORE 运行声音模型所用的推理引擎
+  - License: MIT
+  - Link: https://github.com/VOICEVOX/onnxruntime-builder
 
 ## License
 

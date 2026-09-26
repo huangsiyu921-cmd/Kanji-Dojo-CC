@@ -1,0 +1,10 @@
+{
+  "uniqueId": "open-jtalk-dict",
+  "developers": [],
+  "name": "Open JTalk 辞書 (open_jtalk_dic_utf_8-1.11)",
+  "description": "Japanese morphological dictionary bundled with VOICEVOX, used to analyse the text before synthesis",
+  "website": "https://open-jtalk.sourceforge.net/",
+  "licenses": [
+    "BSD-3-Clause"
+  ]
+}

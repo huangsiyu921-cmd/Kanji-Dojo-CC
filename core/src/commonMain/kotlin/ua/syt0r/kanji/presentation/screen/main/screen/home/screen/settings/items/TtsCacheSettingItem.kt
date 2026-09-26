@@ -43,12 +43,6 @@ class TtsCacheSettingItem(
         ListItem(
             headlineContent = { Text("TTS 缓存") },
             supportingContent = { Text(stats?.let(::describeTtsCacheStats) ?: "正在统计…") },
-            trailingContent = {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null
-                )
-            },
             modifier = Modifier
                 .clip(MaterialTheme.shapes.medium)
                 .fillMaxWidth()

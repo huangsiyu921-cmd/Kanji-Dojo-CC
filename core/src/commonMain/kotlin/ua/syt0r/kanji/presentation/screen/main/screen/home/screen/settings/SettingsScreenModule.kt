@@ -41,8 +41,7 @@ val settingsScreenModule = module {
     // Feeds the "import a deck" action on the TTS cache screen.
     factory {
         GetVocabPreCacheDecksUseCase(
-            vocabPracticeRepository = get(),
-            vocabCardResolver = get()
+            vocabPracticeRepository = get()
         )
     }
 

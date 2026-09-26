@@ -1,0 +1,10 @@
+{
+  "uniqueId": "voicevox-genno-takehiro",
+  "developers": [],
+  "name": "VOICEVOX:玄野武宏",
+  "description": "Voice library 玄野武宏 (4.vvm, style 11, CV: ガロ) by VirVox Project — the voice used for word pronunciation. Credit notice: VOICEVOX:玄野武宏",
+  "website": "https://www.virvoxproject.com/",
+  "licenses": [
+    "voicevox-voice-terms"
+  ]
+}
