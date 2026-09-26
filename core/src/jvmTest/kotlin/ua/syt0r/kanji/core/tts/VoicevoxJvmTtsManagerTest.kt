@@ -15,7 +15,7 @@ import kotlin.system.measureTimeMillis
  */
 class VoicevoxJvmTtsManagerTest {
 
-    private val config = VoicevoxConfig.default()
+    private val config = VoicevoxConfig.resolve()
 
     private class RecordingFallback : WordTtsManager {
 
@@ -40,12 +40,17 @@ class VoicevoxJvmTtsManagerTest {
 
         assertTrue(manager.isAvailable())
 
-        // 「学校」 is 1.11s of audio with the settled postPhonemeLength. Waiting for playback is the
-        // only way to tell a real round trip from an instant bail-out.
+        // Warm up: the engine (≈750ms) is built lazily on the first call, and that cost alone would
+        // mask a playback that never happens.
+        manager.speak("学校")
+
+        // 「学校」 is 1.11s of audio with the settled postPhonemeLength, and speak() only returns
+        // once that audio has actually been played. A clip that gets closed before it starts makes
+        // this return after the synthesis alone (~300ms).
         val elapsed = measureTimeMillis { manager.speak("学校") }
 
         assertEquals(0, fallback.speakCalls, "engine path failed, fell back to the OS voice")
-        assertTrue(elapsed >= 900, "speak() returned after only ${elapsed}ms, audio was not played")
+        assertTrue(elapsed >= 1000, "speak() returned after only ${elapsed}ms, audio was not played")
     }
 
 }

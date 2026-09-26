@@ -119,3 +119,6 @@ app/linux/**
 
 # 本地交接文档（不进仓库）
 /TTS-HANDOFF.md
+
+# VOICEVOX 运行时资源（约 180MB，用 tools/voicevox/fetch-runtime.ps1 组装，不进仓库）
+/tools/voicevox/runtime/

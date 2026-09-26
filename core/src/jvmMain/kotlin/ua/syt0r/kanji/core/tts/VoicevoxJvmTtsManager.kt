@@ -20,10 +20,21 @@ import kotlin.coroutines.resume
 /**
  * Runtime files and synthesis settings for the bundled VOICEVOX CORE engine.
  *
- * The paths are still absolute locations of the M1 spike environment (`D:\voicevox-spike`), as
- * agreed for this milestone — packing the engine into the installer is M3 work. The base directory
- * can be overridden with the `kanjidojo.voicevox.dir` system property, which is also what an
- * eventual "unpacked next to the app" layout will use.
+ * The layout mirrors what VOICEVOX's own `download-*` tools produce, with one directory per
+ * platform for the ONNX Runtime build — the library name only depends on the OS, so the CPU
+ * architecture has to live in the path for several platforms to coexist in one checkout:
+ *
+ * ```
+ * <baseDir>/core/onnxruntime/lib/<platform>/voicevox_onnxruntime.dll   (windows)
+ *                                          libvoicevox_onnxruntime.so   (linux)
+ *                                          libvoicevox_onnxruntime.dylib(macos)
+ * <baseDir>/core/dict/open_jtalk_dic_utf_8-1.11/   ~102 MB, platform independent
+ * <baseDir>/models/4.vvm                           ~55 MB, platform independent
+ * ```
+ *
+ * `<platform>` is `<os>-<arch>` (`windows-x64`, `linux-arm64`, `macos-x64`, …), the same naming the
+ * `voicevoxcore-*.jar` uses for its bundled class library. `tools/voicevox/fetch-runtime.ps1`
+ * assembles such a directory, `VoicevoxConfig.resolve()` finds it.
  */
 data class VoicevoxConfig(
     val baseDir: File,
@@ -40,31 +51,94 @@ data class VoicevoxConfig(
     val postPhonemeLength: Double = 0.50
 ) {
 
-    val onnxRuntimeDll: File get() = File(baseDir, "core/onnxruntime/lib/voicevox_onnxruntime.dll")
+    /**
+     * VOICEVOX's own ONNX Runtime build — *not* the one that ships with, say, `onnxruntime-*.jar`,
+     * and the one file the `voicevoxcore` jar does not provide for us.
+     */
+    val onnxRuntimeLibrary: File
+        get() = File(baseDir, "core/onnxruntime/lib/$platformId/$onnxRuntimeLibraryName")
 
-    /** Not the same library as [onnxRuntimeDll]: this one is VOICEVOX's own ONNX Runtime build. */
     val dictionaryDir: File get() = File(baseDir, "core/dict/open_jtalk_dic_utf_8-1.11")
 
     val modelFile: File get() = File(baseDir, "models/4.vvm")
 
     fun isComplete(): Boolean =
-        onnxRuntimeDll.isFile && dictionaryDir.isDirectory && modelFile.isFile
+        onnxRuntimeLibrary.isFile && dictionaryDir.isDirectory && modelFile.isFile
 
     companion object {
 
+        /** Where the runtime files live. Set by the build/launch scripts, wins over everything else. */
         const val BASE_DIR_PROPERTY = "kanjidojo.voicevox.dir"
 
-        private const val SCAFFOLDING_BASE_DIR = "D:\\voicevox-spike"
+        /** Same, for launchers that would rather set an environment variable. */
+        const val BASE_DIR_ENV = "KANJIDOJO_VOICEVOX_DIR"
 
-        fun default(): VoicevoxConfig =
-            VoicevoxConfig(baseDir = File(System.getProperty(BASE_DIR_PROPERTY) ?: SCAFFOLDING_BASE_DIR))
+        /** `<os>-<arch>`, e.g. `windows-x64`, `linux-arm64`, `macos-arm64`. */
+        val platformId: String = platformId(
+            osName = System.getProperty("os.name").orEmpty(),
+            osArch = System.getProperty("os.arch").orEmpty()
+        )
+
+        /** The file name VOICEVOX publishes the ONNX Runtime build under, per OS. */
+        val onnxRuntimeLibraryName: String = when {
+            platformId.startsWith("windows") -> "voicevox_onnxruntime.dll"
+            platformId.startsWith("macos") -> "libvoicevox_onnxruntime.dylib"
+            else -> "libvoicevox_onnxruntime.so"
+        }
+
+        /**
+         * Locates a usable runtime directory: explicit setting first, then the usual places so that
+         * `./gradlew :desktopApp:run` works from a fresh checkout.
+         */
+        fun resolve(): VoicevoxConfig {
+            val explicit = System.getProperty(BASE_DIR_PROPERTY)
+                ?.takeIf { it.isNotBlank() }
+                ?: System.getenv(BASE_DIR_ENV)?.takeIf { it.isNotBlank() }
+            if (explicit != null) return VoicevoxConfig(File(explicit))
+
+            val candidates = candidateBaseDirs()
+            val complete = candidates.firstOrNull { VoicevoxConfig(it).isComplete() }
+            return VoicevoxConfig(complete ?: candidates.first())
+        }
+
+        private fun candidateBaseDirs(): List<File> {
+            val userDir = File(System.getProperty("user.dir") ?: ".")
+            val home = File(System.getProperty("user.home") ?: ".")
+            return listOf(
+                // Repo root (`./gradlew :desktopApp:run` from the root).
+                File(userDir, "tools/voicevox/runtime"),
+                // `user.dir` is the module directory when Gradle runs :core:jvmTest or :desktopApp:run.
+                File(userDir, "../tools/voicevox/runtime"),
+                // Where a packaged build is expected to unpack the assets (M3).
+                File(home, ".kanji-dojo-cc/voicevox"),
+                // Leftovers of the M1 spike environment, kept as a last resort on Windows.
+                File("D:\\voicevox-spike")
+            )
+        }
+
+        private fun platformId(osName: String, osArch: String): String {
+            val os = when {
+                osName.startsWith("Win") -> "windows"
+                osName.startsWith("Mac") -> "macos"
+                osName.startsWith("Linux") -> "linux"
+                else -> osName.lowercase()
+            }
+            val arch = when (osArch.lowercase()) {
+                "amd64", "x86_64" -> "x64"
+                "x86", "i386", "i686" -> "x86"
+                "aarch64", "arm64" -> "arm64"
+                else -> osArch.lowercase()
+            }
+            return "$os-$arch"
+        }
 
     }
 
 }
 
 /**
- * Offline Japanese word pronunciation for Desktop/JVM, backed by the VOICEVOX CORE engine.
+ * Offline Japanese word pronunciation for Desktop/JVM (Windows, Linux and macOS), backed by the
+ * VOICEVOX CORE engine.
  *
  * Replaces the OS-voice based [JavaWordTtsManager] on the happy path; that implementation is kept
  * as [fallback] so a broken/missing engine degrades to the old behaviour (system voice, then kana
@@ -72,7 +146,7 @@ data class VoicevoxConfig(
  */
 class VoicevoxJvmTtsManager(
     private val fallback: WordTtsManager,
-    private val config: VoicevoxConfig = VoicevoxConfig.default(),
+    private val config: VoicevoxConfig = VoicevoxConfig.resolve(),
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : WordTtsManager {
 
@@ -95,7 +169,7 @@ class VoicevoxJvmTtsManager(
 
     override val unavailableMessage: String
         get() = "The bundled Japanese voice is not installed. Expected the VOICEVOX runtime " +
-            "files in ${config.baseDir}."
+            "files for ${VoicevoxConfig.platformId} in ${config.baseDir}."
 
     override suspend fun speak(word: String) {
         if (word.isBlank()) return
@@ -135,10 +209,8 @@ class VoicevoxJvmTtsManager(
         clip.open(AudioSystem.getAudioInputStream(ByteArrayInputStream(wav)))
 
         replaceActiveClip(clip)
-        clip.start()
-
         try {
-            awaitCompletion(clip)
+            awaitPlayback(clip)
         } finally {
             clearActiveClip(clip)
             runCatching { clip.close() }
@@ -158,23 +230,30 @@ class VoicevoxJvmTtsManager(
         previous?.let { runCatching { it.stop() } }
     }
 
-    private fun clearActiveClip(clip: Clip): Boolean = synchronized(playbackLock) {
-        if (activeClip === clip) {
-            activeClip = null
-            true
-        } else {
-            false
+    private fun clearActiveClip(clip: Clip) {
+        synchronized(playbackLock) {
+            if (activeClip === clip) activeClip = null
         }
     }
 
-    private suspend fun awaitCompletion(clip: Clip): Unit = suspendCancellableCoroutine { continuation ->
+    /**
+     * Starts [clip] and suspends until it has really been played.
+     *
+     * The listener must be attached *before* [Clip.start]: a clip starts asynchronously, so right
+     * after that call `isRunning`/`isActive` are still false and using them as a completion check
+     * closes the line before a single sample is played.
+     */
+    private suspend fun awaitPlayback(clip: Clip): Unit = suspendCancellableCoroutine { continuation ->
         clip.addLineListener { event ->
             if (event.type == LineEvent.Type.STOP && continuation.isActive) {
                 continuation.resume(Unit)
             }
         }
-        // Guard against a clip that already finished before the listener was attached.
-        if (!clip.isRunning && continuation.isActive) continuation.resume(Unit)
+        clip.start()
+        // An empty clip never emits STOP on its own; anything else is stopped by the listener above.
+        if (clip.framePosition >= clip.frameLength && continuation.isActive) {
+            continuation.resume(Unit)
+        }
     }
 
 }
@@ -188,7 +267,7 @@ private class VoicevoxEngine(private val config: VoicevoxConfig) {
     private val synthesizer: Synthesizer = run {
         // The JVM API unpacks its own native library from the jar and loads it via System.load().
         val onnxRuntime = Onnxruntime.loadOnce()
-            .filename(config.onnxRuntimeDll.absolutePath)
+            .filename(config.onnxRuntimeLibrary.absolutePath)
             .perform()
         val openJtalk = OpenJtalk(config.dictionaryDir.absolutePath)
         Synthesizer.builder(onnxRuntime, openJtalk).build().also { synthesizer ->

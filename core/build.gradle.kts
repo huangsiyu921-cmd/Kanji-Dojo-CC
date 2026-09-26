@@ -197,4 +197,7 @@ buildConfig {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    // The VOICEVOX runtime files live outside the repository's sources (tools/voicevox/runtime,
+    // assembled by tools/voicevox/fetch-runtime.ps1); point the tests at them explicitly.
+    systemProperty("kanjidojo.voicevox.dir", rootProject.file("tools/voicevox/runtime").absolutePath)
 }
