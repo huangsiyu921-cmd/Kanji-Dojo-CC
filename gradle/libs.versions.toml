@@ -32,6 +32,7 @@ build-config = "5.4.0"
 javacv-platform = "1.5.11"
 mockk = "1.13.16"
 mp3spi = "1.9.5.4"
+gson = "2.10.1"
 materialKolor = "2.1.1"
 
 [plugins]
@@ -107,6 +108,8 @@ compose-reorderable = { module = "sh.calvin.reorderable:reorderable", version.re
 javacv-platform = { module = "org.bytedeco:javacv-platform", version.ref = "javacv-platform" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mp3spi = { module = "com.googlecode.soundlibs:mp3spi", version.ref = "mp3spi" }
+# Runtime dependency of the VOICEVOX CORE Java API (it serializes AudioQuery to JSON).
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 
 [bundles]

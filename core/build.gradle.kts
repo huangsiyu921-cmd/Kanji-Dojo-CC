@@ -92,6 +92,17 @@ kotlin {
                 implementation(libs.sqldelight.jvm.sqlite.driver)
                 implementation(libs.ktor.server.netty)
                 implementation(libs.mp3spi)
+
+                // Offline Japanese TTS engine for the desktop word pronunciation (see
+                // TTS-HANDOFF.md). The jar ships the native library for every desktop platform and
+                // unpacks the matching one at runtime, so no extra packaging step is needed yet.
+                implementation(files("libs/voicevoxcore-0.17.0.jar"))
+                implementation(libs.gson)
+            }
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
             }
         }
         iosMain {
