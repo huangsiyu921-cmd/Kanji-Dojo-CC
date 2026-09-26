@@ -101,19 +101,25 @@ data class VoicevoxConfig(
             return VoicevoxConfig(complete ?: candidates.first())
         }
 
+        /** Set by Compose Desktop in a packaged app: points at `<app>/resources`. */
+        private const val APP_RESOURCES_PROPERTY = "compose.application.resources.dir"
+
         private fun candidateBaseDirs(): List<File> {
             val userDir = File(System.getProperty("user.dir") ?: ".")
             val home = File(System.getProperty("user.home") ?: ".")
-            return listOf(
-                // Repo root (`./gradlew :desktopApp:run` from the root).
-                File(userDir, "tools/voicevox/runtime"),
-                // `user.dir` is the module directory when Gradle runs :core:jvmTest or :desktopApp:run.
-                File(userDir, "../tools/voicevox/runtime"),
-                // Where a packaged build is expected to unpack the assets (M3).
-                File(home, ".kanji-dojo-cc/voicevox"),
+            return buildList {
+                // A packaged desktop app bundles the runtime files and tells us where they are.
+                System.getProperty(APP_RESOURCES_PROPERTY)
+                    ?.takeIf { it.isNotBlank() }
+                    ?.let { add(File(it)) }
+                // Running from a checkout (repo root, or a module directory below it).
+                add(File(userDir, "tools/voicevox/runtime"))
+                add(File(userDir, "../tools/voicevox/runtime"))
+                // A manually installed copy of the runtime files.
+                add(File(home, ".kanji-dojo-cc/voicevox"))
                 // Leftovers of the M1 spike environment, kept as a last resort on Windows.
-                File("D:\\voicevox-spike")
-            )
+                add(File("D:\\voicevox-spike"))
+            }
         }
 
         private fun platformId(osName: String, osArch: String): String {
