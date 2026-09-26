@@ -55,6 +55,7 @@ fun VersionChangeDialog(
                         """
                         - 添加并替换TTS语音为内置TTS
                         - 添加了部分准备为多平台发布版的兼容代码
+                        - 删除了旧更新提示弹窗
                         """.trimIndent()
                     )
                 }
