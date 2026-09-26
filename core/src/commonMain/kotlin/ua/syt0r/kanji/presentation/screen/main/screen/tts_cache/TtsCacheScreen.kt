@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import ua.syt0r.kanji.core.tts.WordTtsCache
+import ua.syt0r.kanji.core.tts.WordTtsCacheArchive
 import ua.syt0r.kanji.core.tts.WordTtsCacheEntry
 import ua.syt0r.kanji.core.tts.WordTtsCacheStats
 import ua.syt0r.kanji.core.tts.WordTtsManager
@@ -62,6 +63,7 @@ fun TtsCacheScreen(
 ) {
 
     val cache = koinInject<WordTtsCache>()
+    val archive = koinInject<WordTtsCacheArchive>()
     val wordTtsManager = koinInject<WordTtsManager>()
     val coroutineScope = rememberCoroutineScope()
 
@@ -83,7 +85,13 @@ fun TtsCacheScreen(
     LaunchedEffect(Unit) { refresh() }
 
     fun preCache(words: List<String>) {
-        val todo = words.map { it.trim() }.filter { it.isNotBlank() }
+        // The field is multi-line, so pasting a whole word list works: one per line, or separated
+        // by commas / spaces.
+        val todo = words
+            .flatMap { it.split('\n', ',', '，', '、', '\t', ' ') }
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .distinct()
         if (todo.isEmpty() || busy) return
 
         coroutineScope.launch {
@@ -145,20 +153,60 @@ fun TtsCacheScreen(
                     OutlinedTextField(
                         value = input,
                         onValueChange = { input = it },
-                        label = { Text("词语（填假名读音效果最好）") },
-                        singleLine = true,
+                        label = { Text("词语，一行一个（填假名读音效果最好）") },
+                        minLines = 2,
+                        maxLines = 4,
                         enabled = !busy,
                         modifier = Modifier.weight(1f)
                     )
                     Button(
                         enabled = !busy && input.isNotBlank(),
                         onClick = {
-                            val word = input
+                            val words = input
                             input = ""
-                            preCache(listOf(word))
+                            preCache(listOf(words))
                         }
                     ) {
                         Text("缓存")
+                    }
+                }
+
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TextButton(
+                        enabled = !busy,
+                        onClick = {
+                            coroutineScope.launch {
+                                busy = true
+                                val exported = archive.export(cache)
+                                message = if (exported >= 0) {
+                                    "已导出 $exported 条 → ${archive.location}"
+                                } else {
+                                    "导出失败"
+                                }
+                                busy = false
+                                refresh()
+                            }
+                        }
+                    ) {
+                        Text("导出")
+                    }
+                    TextButton(
+                        enabled = !busy,
+                        onClick = {
+                            coroutineScope.launch {
+                                busy = true
+                                val restored = archive.import(cache)
+                                message = if (restored >= 0) {
+                                    "已导入 $restored 条"
+                                } else {
+                                    "导入失败：找不到 ${archive.location}"
+                                }
+                                busy = false
+                                refresh()
+                            }
+                        }
+                    ) {
+                        Text("导入")
                     }
                 }
 

@@ -34,7 +34,9 @@ import ua.syt0r.kanji.core.tts.FileWordTtsCache
 import ua.syt0r.kanji.core.tts.KanaTtsManager
 import ua.syt0r.kanji.core.tts.VoicevoxAndroidTtsManager
 import ua.syt0r.kanji.core.tts.WordTtsCache
+import ua.syt0r.kanji.core.tts.WordTtsCacheArchive
 import ua.syt0r.kanji.core.tts.WordTtsManager
+import ua.syt0r.kanji.core.tts.ZipWordTtsCacheArchive
 import ua.syt0r.kanji.core.tts.Neural2BKanaVoiceData
 import ua.syt0r.kanji.core.user_data.AndroidUserDataDatabasePlatformHandler
 import ua.syt0r.kanji.core.user_data.database.UserDataDatabaseContract
@@ -69,6 +71,14 @@ actual val platformComponentsModule: Module = module {
         // are also managed from the settings screen. The directory name mirrors the settled
         // synthesis settings in AndroidVoicevoxEngine, so changing one there must change it here.
         FileWordTtsCache(androidContext().filesDir.resolve("tts-cache/11-1.0-0.0-1.0-0.10-0.50"))
+    }
+
+    single<WordTtsCacheArchive> {
+        // In the app's external files dir so it is reachable over USB (Android/data/<pkg>/files/).
+        val external = androidContext().getExternalFilesDir(null)
+        ZipWordTtsCacheArchive(
+            (external ?: androidContext().filesDir).resolve("tts-cache-export.zip")
+        )
     }
 
     single<WordTtsManager> {

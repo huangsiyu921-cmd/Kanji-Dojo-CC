@@ -22,9 +22,11 @@ import ua.syt0r.kanji.core.tts.JavaKanaTtsManager
 import ua.syt0r.kanji.core.tts.JavaWordTtsManager
 import ua.syt0r.kanji.core.tts.KanaTtsManager
 import ua.syt0r.kanji.core.tts.WordTtsCache
+import ua.syt0r.kanji.core.tts.WordTtsCacheArchive
 import ua.syt0r.kanji.core.tts.WordTtsManager
 import ua.syt0r.kanji.core.tts.VoicevoxConfig
 import ua.syt0r.kanji.core.tts.VoicevoxJvmTtsManager
+import ua.syt0r.kanji.core.tts.ZipWordTtsCacheArchive
 import ua.syt0r.kanji.core.tts.Neural2BKanaVoiceData
 import ua.syt0r.kanji.core.user_data.JvmUserDataDatabasePlatformHandler
 import ua.syt0r.kanji.core.user_data.database.UserDataDatabaseContract
@@ -61,6 +63,13 @@ actual val platformComponentsModule: Module = module {
                 System.getProperty("user.home"),
                 ".kanji-dojo-cc/tts-cache/${config.cacheDirectoryName}"
             )
+        )
+    }
+
+    single<WordTtsCacheArchive> {
+        // A fixed spot so the archive can be copied out and back in; the path is shown in the UI.
+        ZipWordTtsCacheArchive(
+            File(System.getProperty("user.home"), ".kanji-dojo-cc/tts-cache-export.zip")
         )
     }
 
