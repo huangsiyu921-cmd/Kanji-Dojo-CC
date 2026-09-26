@@ -16,9 +16,6 @@
     <string name="vocab_card_missing_meaning">[err:无意义！]</string>
     <string name="error_unknown">未知错误</string>
 
-    <string name="update_snackbar_title">有可用更新</string>
-    <string name="update_snackbar_action">更改</string>
-
     <string name="general_dashboard_header_streak_current">目前连续记录</string>
     <string name="general_dashboard_header_streak_longest">最长连续记录</string>
     <string name="general_dashboard_header_reviews">今日复习数</string>
