@@ -30,7 +30,7 @@ val settingsScreenModule = module {
             // Platforms without a cache (currently iOS, whose TTS is not hooked up to VOICEVOX yet)
             // simply do not show the entry.
             getOrNull<WordTtsCache>()?.let { cache ->
-                TtsCacheSettingItem(cache = cache, wordTtsManager = get())
+                TtsCacheSettingItem(cache = cache)
             }
         )
     }

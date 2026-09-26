@@ -3,30 +3,32 @@ package ua.syt0r.kanji.core.tts
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.security.MessageDigest
+import java.net.URLDecoder
+import java.net.URLEncoder
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 /**
- * File backed [WordTtsCache]: one `.wav` per utterance, named after a hash of its key.
+ * File backed [WordTtsCache]: one `.wav` per word, named after the url-encoded word so the cache
+ * screen can list what is inside without a separate index.
  *
  * Totals are kept under [maxBytes] by dropping the least recently used files on write, so a long
- * lived installation cannot grow without bound. The same implementation is used by the Android
- * target (see `androidMain`), where the directory is the app's private storage.
+ * lived installation cannot grow without bound. The Android target has an identical twin in
+ * `androidMain` — keep the two in sync.
  */
 class FileWordTtsCache(
     private val directory: File,
     private val maxBytes: Long = DEFAULT_MAX_BYTES
 ) : WordTtsCache {
 
-    /** Serializes writes and the LRU sweep; reads are lock free. */
+    /** Serializes writes and the LRU sweep; reads and listings are lock free. */
     private val writeLock = ReentrantLock()
 
     @Volatile
     private var cachedStats: WordTtsCacheStats? = null
 
-    override suspend fun get(key: String): ByteArray? = withContext(Dispatchers.IO) {
-        val file = fileFor(key)
+    override suspend fun get(word: String): ByteArray? = withContext(Dispatchers.IO) {
+        val file = fileFor(word)
         if (!file.isFile) return@withContext null
 
         // Touching the file keeps it away from the LRU sweep.
@@ -34,11 +36,11 @@ class FileWordTtsCache(
         runCatching { file.readBytes() }.getOrNull()
     }
 
-    override suspend fun put(key: String, wav: ByteArray): Unit = withContext(Dispatchers.IO) {
+    override suspend fun put(word: String, wav: ByteArray): Unit = withContext(Dispatchers.IO) {
         writeLock.withLock {
             runCatching {
                 directory.mkdirs()
-                fileFor(key).writeBytes(wav)
+                fileFor(word).writeBytes(wav)
                 sweep()
             }
         }
@@ -52,6 +54,21 @@ class FileWordTtsCache(
             entries = files.size,
             sizeBytes = files.sumOf { it.length() }
         ).also { cachedStats = it }
+    }
+
+    override suspend fun entries(): List<WordTtsCacheEntry> = withContext(Dispatchers.IO) {
+        files()
+            .sortedByDescending { it.lastModified() }
+            .map { file -> WordTtsCacheEntry(word = wordOf(file), sizeBytes = file.length()) }
+    }
+
+    override suspend fun remove(word: String) {
+        withContext(Dispatchers.IO) {
+            writeLock.withLock {
+                runCatching { fileFor(word).delete() }
+            }
+        }
+        cachedStats = null
     }
 
     override suspend fun clear() {
@@ -68,8 +85,11 @@ class FileWordTtsCache(
             ?.toList()
             .orEmpty()
 
-    private fun fileFor(key: String): File =
-        File(directory, hash(key) + EXTENSION)
+    private fun fileFor(word: String): File =
+        File(directory, encode(word) + EXTENSION)
+
+    private fun wordOf(file: File): String =
+        decode(file.name.removeSuffix(EXTENSION))
 
     /** Drops the least recently used entries until the directory fits into [maxBytes]. */
     private fun sweep() {
@@ -88,11 +108,11 @@ class FileWordTtsCache(
         cachedStats = null
     }
 
-    private fun hash(key: String): String =
-        MessageDigest.getInstance("SHA-256")
-            .digest(key.toByteArray(Charsets.UTF_8))
-            .joinToString("") { byte -> "%02x".format(byte) }
-            .take(32)
+    private fun encode(word: String): String =
+        URLEncoder.encode(word, Charsets.UTF_8.name())
+
+    private fun decode(name: String): String =
+        runCatching { URLDecoder.decode(name, Charsets.UTF_8.name()) }.getOrDefault(name)
 
     private companion object {
 

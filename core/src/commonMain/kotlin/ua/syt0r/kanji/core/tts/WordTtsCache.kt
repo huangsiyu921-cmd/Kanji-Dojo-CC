@@ -10,23 +10,37 @@ data class WordTtsCacheStats(
 
 }
 
+/** One cached utterance, as listed on the TTS cache screen. */
+data class WordTtsCacheEntry(
+    val word: String,
+    val sizeBytes: Long
+)
+
 /**
  * Keeps synthesized audio around.
  *
- * Synthesis costs roughly 0.3–1.5s per word on device while replaying a cached wav is free, and
- * the same vocabulary shows up over and over in practice. Entries are keyed by everything that
- * changes the produced audio, see the key builder in the platform `WordTtsManager`s.
+ * Synthesis costs roughly 0.3–1.5s per word on device while replaying a cached wav is instant, and
+ * the same vocabulary shows up over and over in practice.
  *
- * Implementations are expected to be safe to call from several coroutines and to never throw on a
- * cache miss/hit problem — a broken cache must not break pronunciation.
+ * The directory backing an implementation is expected to already identify the synthesis settings
+ * that produced the audio (see the DI modules), so changing a setting starts a fresh cache instead
+ * of replaying audio that no longer matches. That is what makes a plain word a usable key here.
+ *
+ * Implementations must be safe to call from several coroutines and must never let a cache problem
+ * escape — a broken cache may not break pronunciation.
  */
 interface WordTtsCache {
 
-    suspend fun get(key: String): ByteArray?
+    suspend fun get(word: String): ByteArray?
 
-    suspend fun put(key: String, wav: ByteArray)
+    suspend fun put(word: String, wav: ByteArray)
 
     suspend fun stats(): WordTtsCacheStats
+
+    /** Newest first. */
+    suspend fun entries(): List<WordTtsCacheEntry>
+
+    suspend fun remove(word: String)
 
     suspend fun clear()
 

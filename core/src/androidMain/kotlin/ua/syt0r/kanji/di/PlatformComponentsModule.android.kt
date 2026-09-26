@@ -66,8 +66,9 @@ actual val platformComponentsModule: Module = module {
 
     single<WordTtsCache> {
         // Private app storage: the system's cacheDir can be wiped under pressure, and these files
-        // are also managed from the settings screen.
-        FileWordTtsCache(androidContext().filesDir.resolve("tts-cache"))
+        // are also managed from the settings screen. The directory name mirrors the settled
+        // synthesis settings in AndroidVoicevoxEngine, so changing one there must change it here.
+        FileWordTtsCache(androidContext().filesDir.resolve("tts-cache/11-1.0-0.0-1.0-0.10-0.50"))
     }
 
     single<WordTtsManager> {

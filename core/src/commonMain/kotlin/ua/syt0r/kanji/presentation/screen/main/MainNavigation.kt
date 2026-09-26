@@ -28,6 +28,7 @@ import ua.syt0r.kanji.presentation.screen.main.screen.practice_vocab.VocabPracti
 import ua.syt0r.kanji.presentation.screen.main.screen.practice_vocab.data.VocabPracticeScreenConfiguration
 import ua.syt0r.kanji.presentation.screen.main.screen.sponsor.SponsorScreenContract
 import ua.syt0r.kanji.presentation.screen.main.screen.sync.SyncScreen
+import ua.syt0r.kanji.presentation.screen.main.screen.tts_cache.TtsCacheScreen
 import ua.syt0r.kanji.presentation.screen.main.screen.vocab_card.SuggestedVocabCardData
 import ua.syt0r.kanji.presentation.screen.main.screen.vocab_card.VocabCardScreen
 import ua.syt0r.kanji.presentation.screen.main.screen.vocab_card.VocabCardScreenMode
@@ -89,6 +90,18 @@ interface MainDestination {
         @Composable
         override fun Content(state: MainNavigationState) {
             CreditsScreen(state)
+        }
+
+    }
+
+    @Serializable
+    object TtsCache : MainDestination {
+
+        override val analyticsName: String = "tts_cache"
+
+        @Composable
+        override fun Content(state: MainNavigationState) {
+            TtsCacheScreen(state)
         }
 
     }
@@ -337,6 +350,7 @@ val defaultMainDestinations: List<MainDestinationConfiguration<*>> = listOf(
     MainDestination.Backup.configuration(),
     MainDestination.About.configuration(),
     MainDestination.Credits.configuration(),
+    MainDestination.TtsCache.configuration(),
     MainDestination.Sponsor.configuration(),
     MainDestination.DailyLimit.configuration(),
     MainDestination.Sync.configuration(),

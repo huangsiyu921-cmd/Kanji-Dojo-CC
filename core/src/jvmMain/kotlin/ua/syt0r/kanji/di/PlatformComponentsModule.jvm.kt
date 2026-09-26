@@ -23,6 +23,7 @@ import ua.syt0r.kanji.core.tts.JavaWordTtsManager
 import ua.syt0r.kanji.core.tts.KanaTtsManager
 import ua.syt0r.kanji.core.tts.WordTtsCache
 import ua.syt0r.kanji.core.tts.WordTtsManager
+import ua.syt0r.kanji.core.tts.VoicevoxConfig
 import ua.syt0r.kanji.core.tts.VoicevoxJvmTtsManager
 import ua.syt0r.kanji.core.tts.Neural2BKanaVoiceData
 import ua.syt0r.kanji.core.user_data.JvmUserDataDatabasePlatformHandler
@@ -52,8 +53,15 @@ actual val platformComponentsModule: Module = module {
 
     single<WordTtsCache> {
         // Synthesized audio lives under the user's home so it survives reinstalls and is easy to
-        // inspect from the settings screen.
-        FileWordTtsCache(File(System.getProperty("user.home"), ".kanji-dojo-cc/tts-cache"))
+        // inspect from the settings screen. The directory carries the synthesis fingerprint, so
+        // changing a setting starts from a clean cache.
+        val config = VoicevoxConfig.resolve()
+        FileWordTtsCache(
+            File(
+                System.getProperty("user.home"),
+                ".kanji-dojo-cc/tts-cache/${config.cacheDirectoryName}"
+            )
+        )
     }
 
     single<WordTtsManager> {

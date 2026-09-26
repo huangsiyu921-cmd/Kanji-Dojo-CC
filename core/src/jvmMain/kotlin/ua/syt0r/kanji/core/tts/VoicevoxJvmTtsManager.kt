@@ -64,6 +64,16 @@ data class VoicevoxConfig(
 
     val modelFile: File get() = File(baseDir, "models/4.vvm")
 
+    /**
+     * Identifies the synthesis settings that produced cached audio. The cache lives in a directory
+     * named after this, so changing a setting starts from an empty cache instead of replaying audio
+     * that no longer matches.
+     */
+    val cacheDirectoryName: String
+        get() = listOf(
+            styleId, speedScale, pitchScale, intonationScale, prePhonemeLength, postPhonemeLength
+        ).joinToString("-")
+
     fun isComplete(): Boolean =
         onnxRuntimeLibrary.isFile && dictionaryDir.isDirectory && modelFile.isFile
 
@@ -183,10 +193,9 @@ class VoicevoxJvmTtsManager(
     override suspend fun speak(word: String) {
         if (word.isBlank()) return
 
-        val key = cacheKey(word)
         val wav = try {
             // A cached utterance is played instantly; only a miss costs a synthesis.
-            cached(key) ?: withContext(dispatcher) { synthesize(word) }.also { store(key, it) }
+            cached(word) ?: withContext(dispatcher) { synthesize(word) }.also { store(word, it) }
         } catch (cancellation: CancellationException) {
             // Cancellation is not a failure; swallowing it would fall back to the OS voice whenever
             // the screen (or the next auto-play) cancels the calling coroutine.
@@ -208,11 +217,10 @@ class VoicevoxJvmTtsManager(
     override suspend fun preCache(word: String): Boolean {
         if (word.isBlank()) return false
 
-        val key = cacheKey(word)
-        if (cached(key) != null) return true
+        if (cached(word) != null) return true
 
         return try {
-            store(key, withContext(dispatcher) { synthesize(word) })
+            store(word, withContext(dispatcher) { synthesize(word) })
             true
         } catch (cancellation: CancellationException) {
             throw cancellation
@@ -221,20 +229,12 @@ class VoicevoxJvmTtsManager(
         }
     }
 
-    private suspend fun cached(key: String): ByteArray? =
-        cache?.let { runCatching { it.get(key) }.getOrNull() }
+    private suspend fun cached(word: String): ByteArray? =
+        cache?.let { runCatching { it.get(word) }.getOrNull() }
 
-    private suspend fun store(key: String, wav: ByteArray) {
-        cache?.let { runCatching { it.put(key, wav) } }
+    private suspend fun store(word: String, wav: ByteArray) {
+        cache?.let { runCatching { it.put(word, wav) } }
     }
-
-    /**
-     * Everything that changes the synthesized audio belongs in the key, so changing a settled
-     * synthesis setting automatically invalidates the cache.
-     */
-    private fun cacheKey(word: String): String =
-        "${config.styleId}|${config.speedScale}|${config.pitchScale}|${config.intonationScale}|" +
-            "${config.prePhonemeLength}|${config.postPhonemeLength}|$word"
 
     private suspend fun speakWithSystemVoice(word: String) {
         runCatching { withContext(NonCancellable) { fallback.speak(word) } }

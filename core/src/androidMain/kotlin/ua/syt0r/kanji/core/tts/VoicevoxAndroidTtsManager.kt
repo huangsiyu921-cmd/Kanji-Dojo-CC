@@ -67,10 +67,9 @@ class VoicevoxAndroidTtsManager(
     override suspend fun speak(word: String) {
         if (word.isBlank()) return
 
-        val key = cacheKey(word)
         val wav = try {
             // A cached utterance is played instantly; only a miss costs a synthesis.
-            cached(key) ?: withContext(Dispatchers.IO) { synthesize(word) }.also { store(key, it) }
+            cached(word) ?: withContext(Dispatchers.IO) { synthesize(word) }.also { store(word, it) }
         } catch (cancellation: CancellationException) {
             // Cancellation is not a failure. Swallowing it would fall back to the system voice
             // whenever the screen (or the next card) cancels the calling coroutine.
@@ -96,11 +95,10 @@ class VoicevoxAndroidTtsManager(
     override suspend fun preCache(word: String): Boolean {
         if (word.isBlank()) return false
 
-        val key = cacheKey(word)
-        if (cached(key) != null) return true
+        if (cached(word) != null) return true
 
         return try {
-            store(key, withContext(Dispatchers.IO) { synthesize(word) })
+            store(word, withContext(Dispatchers.IO) { synthesize(word) })
             true
         } catch (cancellation: CancellationException) {
             throw cancellation
@@ -110,19 +108,12 @@ class VoicevoxAndroidTtsManager(
         }
     }
 
-    private suspend fun cached(key: String): ByteArray? =
-        cache?.let { runCatching { it.get(key) }.getOrNull() }
+    private suspend fun cached(word: String): ByteArray? =
+        cache?.let { runCatching { it.get(word) }.getOrNull() }
 
-    private suspend fun store(key: String, wav: ByteArray) {
-        cache?.let { runCatching { it.put(key, wav) } }
+    private suspend fun store(word: String, wav: ByteArray) {
+        cache?.let { runCatching { it.put(word, wav) } }
     }
-
-    /**
-     * Everything that changes the synthesized audio belongs in the key. The numbers mirror the
-     * settled settings in [AndroidVoicevoxEngine] (style 11, pre 0.10, post 0.50, …), so changing
-     * them there must be reflected here.
-     */
-    private fun cacheKey(word: String): String = "11|1.0|0.0|1.0|0.10|0.50|$word"
 
     private suspend fun speakWithSystemVoice(word: String) {
         runCatching { withContext(NonCancellable) { fallback.speak(word) } }
