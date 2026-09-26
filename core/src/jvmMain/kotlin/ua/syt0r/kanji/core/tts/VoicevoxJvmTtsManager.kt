@@ -6,6 +6,7 @@ import jp.hiroshiba.voicevoxcore.blocking.Synthesizer
 import jp.hiroshiba.voicevoxcore.blocking.VoiceModelFile
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -15,6 +16,7 @@ import java.io.File
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.Clip
 import javax.sound.sampled.LineEvent
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resume
 
 /**
@@ -182,16 +184,26 @@ class VoicevoxJvmTtsManager(
 
         val wav = try {
             withContext(dispatcher) { synthesize(word) }
+        } catch (cancellation: CancellationException) {
+            // Cancellation is not a failure; swallowing it would fall back to the OS voice whenever
+            // the screen (or the next auto-play) cancels the calling coroutine.
+            throw cancellation
         } catch (e: Exception) {
-            fallback.speak(word)
+            speakWithSystemVoice(word)
             return
         }
 
         try {
-            play(wav)
+            // Deliberately not tied to the caller's lifetime, so leaving the screen mid-word does
+            // not cut the audio off.
+            withContext(NonCancellable) { play(wav) }
         } catch (e: Exception) {
-            fallback.speak(word)
+            speakWithSystemVoice(word)
         }
+    }
+
+    private suspend fun speakWithSystemVoice(word: String) {
+        runCatching { withContext(NonCancellable) { fallback.speak(word) } }
     }
 
     private suspend fun synthesize(word: String): ByteArray = engineMutex.withLock {

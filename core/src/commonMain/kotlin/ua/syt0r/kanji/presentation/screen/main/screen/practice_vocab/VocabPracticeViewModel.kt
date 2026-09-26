@@ -5,6 +5,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,6 +46,9 @@ class VocabPracticeViewModel(
 
     private lateinit var _reviewState: MutableState<VocabPracticeQueueState.Review>
     private val _state = MutableStateFlow<ScreenState>(ScreenState.Loading)
+
+    /** The auto-play collector of the card currently on screen; replaced on every new card. */
+    private var autoReadJob: Job? = null
 
     override val state: StateFlow<ScreenState>
         get() = _state
@@ -150,7 +154,11 @@ class VocabPracticeViewModel(
                     )
                 }
 
-                queueState.autoReadFlow()
+                // Replacing the job matters as much as launching it: an older flow keeps watching
+                // its own card's state, so without cancelling it a stale card could speak again
+                // later (observed as "it talks when I finish the practice").
+                autoReadJob?.cancel()
+                autoReadJob = queueState.autoReadFlow()
                     .onEach { wordTtsManager.speak(it) }
                     .launchIn(viewModelScope)
             }

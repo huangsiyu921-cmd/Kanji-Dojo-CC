@@ -3,35 +3,37 @@ package ua.syt0r.kanji.core.tts
 import android.content.Context
 import android.content.res.AssetManager
 import android.media.AudioAttributes
-import android.media.AudioFormat
-import android.media.AudioTrack
-import android.os.Handler
-import android.os.Looper
+import android.media.MediaPlayer
+import android.util.Log
 import jp.hiroshiba.voicevoxcore.blocking.Onnxruntime
 import jp.hiroshiba.voicevoxcore.blocking.OpenJtalk
 import jp.hiroshiba.voicevoxcore.blocking.Synthesizer
 import jp.hiroshiba.voicevoxcore.blocking.VoiceModelFile
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Offline Japanese word pronunciation for Android, backed by the same VOICEVOX CORE engine as the
  * desktop build (see `VoicevoxJvmTtsManager`).
  *
- * The two differ in how the engine is fed:
- *  * Android's native library lives in `jniLibs`, so [Onnxruntime] gets a plain library name and
- *    dlopen resolves it, while on the desktop a path to the unpacked `.dll`/`.so`/`.dylib` is used;
+ * The two differ in how the engine is fed and how the audio comes out:
+ *  * Android's native libraries live in `jniLibs`, so ONNX Runtime is loaded through the class
+ *    loader first (with `extractNativeLibs=false` it stays inside the APK, where the by-name
+ *    `dlopen` that VOICEVOX does internally cannot find it);
  *  * the OpenJTalk dictionary and the voice model ship as APK assets and have to be unpacked into
- *    the app's private storage on first use, because VOICEVOX opens them by file path.
+ *    the app's private storage on first use, because VOICEVOX opens them by file path;
+ *  * playback goes through [MediaPlayer] rather than `javax.sound.sampled` (not on Android) or a
+ *    raw [android.media.AudioTrack] — the latter never started playback on at least one device.
  *
- * Audio is written straight to an [AudioTrack] instead of `javax.sound.sampled` (not available on
- * Android). Anything that fails falls back to [fallback] (the system voice) rather than going
- * silent.
+ * Anything that fails falls back to [fallback] (the system voice) rather than going silent.
+ * Failures are logged under the `VoicevoxTts` tag (`adb logcat -s VoicevoxTts`).
  */
 class VoicevoxAndroidTtsManager(
     context: Context,
@@ -53,7 +55,7 @@ class VoicevoxAndroidTtsManager(
     private var engineUnavailable = false
 
     @Volatile
-    private var activeTrack: AudioTrack? = null
+    private var activePlayer: MediaPlayer? = null
 
     /** The assets always ship with the APK, so a voice is always there in principle. */
     override suspend fun isAvailable(): Boolean = true
@@ -66,16 +68,31 @@ class VoicevoxAndroidTtsManager(
 
         val wav = try {
             withContext(Dispatchers.IO) { synthesize(word) }
-        } catch (e: Exception) {
-            fallback.speak(word)
+        } catch (cancellation: CancellationException) {
+            // Cancellation is not a failure. Swallowing it would fall back to the system voice
+            // whenever the screen (or the next card) cancels the calling coroutine.
+            throw cancellation
+        } catch (t: Throwable) {
+            // Throwable, not Exception: a failed System.loadLibrary/dlopen surfaces as an Error.
+            Log.e(TAG, "could not synthesize '$word', using the system voice", t)
+            speakWithSystemVoice(word)
             return
         }
+        Log.i(TAG, "synthesized '$word' (${wav.size} bytes)")
 
         try {
-            play(wav)
-        } catch (e: Exception) {
-            fallback.speak(word)
+            // Deliberately not tied to the caller's lifetime: leaving the screen mid-word (or the
+            // next auto-play replacing this one) must not cut the audio off.
+            withContext(NonCancellable) { play(wav) }
+        } catch (t: Throwable) {
+            Log.e(TAG, "could not play '$word', using the system voice", t)
+            speakWithSystemVoice(word)
         }
+    }
+
+    private suspend fun speakWithSystemVoice(word: String) {
+        runCatching { withContext(NonCancellable) { fallback.speak(word) } }
+            .onFailure { Log.e(TAG, "the system voice failed as well", it) }
     }
 
     private suspend fun synthesize(word: String): ByteArray = engineMutex.withLock {
@@ -86,74 +103,67 @@ class VoicevoxAndroidTtsManager(
 
         val created = try {
             AndroidVoicevoxEngine(appContext)
-        } catch (e: Exception) {
+        } catch (t: Throwable) {
             engineUnavailable = true
-            throw e
+            throw t
         }
         engine = created
         created.synthesize(word)
     }
 
     private suspend fun play(wav: ByteArray) {
-        val pcm = wavToPcm(wav)
-        if (pcm.isEmpty()) return
+        // A unique file per utterance: two players must never end up reading the same file.
+        val file = File.createTempFile("voicevox-", ".wav", appContext.cacheDir)
+        try {
+            file.writeBytes(wav)
 
-        val minBufferSize = AudioTrack.getMinBufferSize(
-            SAMPLE_RATE,
-            AudioFormat.CHANNEL_OUT_MONO,
-            AudioFormat.ENCODING_PCM_16BIT
-        )
-        val track = AudioTrack.Builder()
-            .setAudioAttributes(
+            val finished = CompletableDeferred<Result<Unit>>()
+            val player = MediaPlayer()
+            player.setAudioAttributes(
                 AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_MEDIA)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                     .build()
             )
-            .setAudioFormat(
-                AudioFormat.Builder()
-                    .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                    .setSampleRate(SAMPLE_RATE)
-                    .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
-                    .build()
-            )
-            .setTransferMode(AudioTrack.MODE_STREAM)
-            .setBufferSizeInBytes(maxOf(minBufferSize, PLAYBACK_BUFFER_BYTES))
-            .build()
+            player.setDataSource(file.absolutePath)
+            player.setOnCompletionListener { finished.complete(Result.success(Unit)) }
+            player.setOnErrorListener { _, what, extra ->
+                Log.e(TAG, "MediaPlayer error what=$what extra=$extra")
+                finished.complete(
+                    Result.failure(IllegalStateException("MediaPlayer error $what/$extra"))
+                )
+                true
+            }
 
-        replaceActiveTrack(track)
-        try {
-            val finished = CompletableDeferred<Unit>()
-            track.setNotificationMarkerPosition(pcm.size / BYTES_PER_FRAME)
-            track.setPlaybackPositionUpdateListener(
-                object : AudioTrack.OnPlaybackPositionUpdateListener {
-                    override fun onMarkerReached(track: AudioTrack) {
-                        finished.complete(Unit)
-                    }
+            try {
+                player.prepare()
+                replaceActivePlayer(player)
+                player.start()
+                Log.i(TAG, "playing ${wav.size} bytes (duration=${player.duration}ms)")
 
-                    override fun onPeriodicNotification(track: AudioTrack) = Unit
-                },
-                Handler(Looper.getMainLooper())
-            )
-
-            track.play()
-            track.write(pcm, 0, pcm.size)
-            withTimeoutOrNull(PLAYBACK_TIMEOUT_MS) { finished.await() }
+                val timeout = player.duration.toLong() + PLAYBACK_TIMEOUT_SLACK_MS
+                val result = withTimeoutOrNull(timeout) { finished.await() }
+                when {
+                    result == null -> Log.w(TAG, "playback did not finish within ${timeout}ms")
+                    result.isFailure -> throw result.exceptionOrNull()!!
+                }
+            } finally {
+                clearActivePlayer(player)
+                runCatching { player.release() }
+            }
         } finally {
-            clearActiveTrack(track)
-            runCatching { track.stop() }
-            runCatching { track.release() }
+            file.delete()
         }
     }
 
     /**
-     * Makes [track] the only playing one, mirroring Android's `TextToSpeech.QUEUE_FLUSH`: tapping
+     * Makes [player] the only playing one, mirroring Android's `TextToSpeech.QUEUE_FLUSH`: tapping
      * 🔊 again interrupts the previous word instead of talking over it.
      */
-    private fun replaceActiveTrack(track: AudioTrack) {
+    private fun replaceActivePlayer(player: MediaPlayer) {
         val previous = synchronized(playbackLock) {
-            val previous = activeTrack
-            activeTrack = track
+            val previous = activePlayer
+            activePlayer = player
             previous
         }
         previous?.let {
@@ -162,40 +172,16 @@ class VoicevoxAndroidTtsManager(
         }
     }
 
-    private fun clearActiveTrack(track: AudioTrack) {
+    private fun clearActivePlayer(player: MediaPlayer) {
         synchronized(playbackLock) {
-            if (activeTrack === track) activeTrack = null
+            if (activePlayer === player) activePlayer = null
         }
     }
 
     private companion object {
 
-        const val SAMPLE_RATE = 24000
-        const val BYTES_PER_FRAME = 2
-        const val PLAYBACK_BUFFER_BYTES = 64 * 1024
-        const val PLAYBACK_TIMEOUT_MS = 30_000L
-
-        /** Skips the RIFF header so the samples can be handed to [AudioTrack] directly. */
-        fun wavToPcm(wav: ByteArray): ByteArray {
-            var position = 12
-            while (position + 8 <= wav.size) {
-                val id = String(wav, position, 4, Charsets.US_ASCII)
-                val size = readIntLe(wav, position + 4)
-                if (id == "data") {
-                    val start = position + 8
-                    val end = minOf(start + size, wav.size)
-                    return if (start >= end) ByteArray(0) else wav.copyOfRange(start, end)
-                }
-                position += 8 + size + (size and 1)
-            }
-            return wav
-        }
-
-        fun readIntLe(bytes: ByteArray, offset: Int): Int =
-            (bytes[offset].toInt() and 0xFF) or
-                ((bytes[offset + 1].toInt() and 0xFF) shl 8) or
-                ((bytes[offset + 2].toInt() and 0xFF) shl 16) or
-                ((bytes[offset + 3].toInt() and 0xFF) shl 24)
+        const val TAG = "VoicevoxTts"
+        const val PLAYBACK_TIMEOUT_SLACK_MS = 5_000L
 
     }
 
@@ -205,20 +191,30 @@ class VoicevoxAndroidTtsManager(
  * Owns the native VOICEVOX objects for one process, and unpacks the bundled runtime files on first
  * use.
  */
-private class AndroidVoicevoxEngine(context: Context) {
+private class AndroidVoicevoxEngine(private val context: Context) {
 
     private val synthesizer: Synthesizer = run {
         val baseDir = ensureRuntimeFiles(context)
+        Log.i(TAG, "building the engine from $baseDir")
 
-        // The AAR puts libvoicevox_onnxruntime.so into jniLibs; dlopen resolves a plain name.
+        // Load it through the class loader first. With `extractNativeLibs=false` (AGP's default)
+        // the library stays *inside* the APK: `System.loadLibrary` handles that, while the
+        // by-name dlopen() that Onnxruntime does internally cannot see it. Loading it here means
+        // that dlopen just returns the handle of the already loaded library.
+        loadOnnxRuntime()
+
         val onnxRuntime = Onnxruntime.loadOnce()
-            .filename(ONNX_RUNTIME_LIBRARY)
+            .filename(onnxRuntimeLibrary())
             .perform()
         val openJtalk = OpenJtalk(File(baseDir, DICTIONARY_PATH).absolutePath)
-        Synthesizer.builder(onnxRuntime, openJtalk).build().also { synthesizer ->
-            synthesizer.loadVoiceModel(
+        // The lambda parameter is called `created` on purpose: naming it `synthesizer` and then
+        // reading `synthesizer` as the last expression of the `run` block would return this very
+        // property — still null while it is being initialized.
+        Synthesizer.builder(onnxRuntime, openJtalk).build().also { created ->
+            created.loadVoiceModel(
                 VoiceModelFile(File(baseDir, MODEL_PATH).absolutePath)
             ).perform()
+            Log.i(TAG, "engine ready")
         }
     }
 
@@ -235,12 +231,39 @@ private class AndroidVoicevoxEngine(context: Context) {
         return synthesizer.synthesis(query, STYLE_ID).perform()
     }
 
+    /** Loads the ONNX Runtime build through the class loader (see the note in the initializer). */
+    private fun loadOnnxRuntime() {
+        val extracted = extractedOnnxRuntimeLibrary()
+        if (extracted != null) {
+            Log.i(TAG, "System.load($extracted)")
+            System.load(extracted)
+        } else {
+            Log.i(TAG, "System.loadLibrary($LIBRARY_WITHOUT_SUFFIX)")
+            System.loadLibrary(LIBRARY_WITHOUT_SUFFIX)
+        }
+    }
+
+    /** What `Onnxruntime.loadOnce().filename(...)` should be given. */
+    private fun onnxRuntimeLibrary(): String =
+        extractedOnnxRuntimeLibrary() ?: ONNX_RUNTIME_LIBRARY
+
+    private fun extractedOnnxRuntimeLibrary(): String? {
+        val nativeDir = context.applicationInfo.nativeLibraryDir ?: return null
+        val file = File(nativeDir, ONNX_RUNTIME_LIBRARY)
+        return if (file.isFile) file.absolutePath else null
+    }
+
     private companion object {
+
+        val TAG = "VoicevoxTts"
 
         /** 玄野武宏 / ノーマル. See TTS-HANDOFF.md for the (mandatory) credits. */
         const val STYLE_ID = 11
 
         const val ONNX_RUNTIME_LIBRARY = "libvoicevox_onnxruntime.so"
+
+        /** The same library as `System.loadLibrary` sees it. */
+        const val LIBRARY_WITHOUT_SUFFIX = "voicevox_onnxruntime"
 
         /** Both live in the APK's assets, see the assets.srcDir entries in core/build.gradle.kts. */
         const val DICTIONARY_ASSET = "open_jtalk_dic_utf_8-1.11"
@@ -256,13 +279,25 @@ private class AndroidVoicevoxEngine(context: Context) {
 
         fun ensureRuntimeFiles(context: Context): File {
             val baseDir = File(context.filesDir, "voicevox")
-            if (File(baseDir, READY_MARKER).isFile) return baseDir
+            val dictionaryDir = File(baseDir, DICTIONARY_PATH)
+            val modelFile = File(baseDir, MODEL_PATH)
+            val marker = File(baseDir, READY_MARKER)
 
+            if (marker.isFile && dictionaryDir.isDirectory && modelFile.isFile) return baseDir
+
+            Log.i(TAG, "unpacking the voice runtime into $baseDir (first use)")
+            val startedAt = System.currentTimeMillis()
             val assets = context.assets
-            copyAssetTree(assets, DICTIONARY_ASSET, File(baseDir, DICTIONARY_PATH))
-            copyAssetTree(assets, MODEL_ASSET, File(baseDir, MODEL_PATH))
+            dictionaryDir.deleteRecursively()
+            copyAssetTree(assets, DICTIONARY_ASSET, dictionaryDir)
+            copyAssetTree(assets, MODEL_ASSET, modelFile)
+
+            check(dictionaryDir.isDirectory && modelFile.isFile) {
+                "the bundled voice runtime could not be unpacked into $baseDir"
+            }
             // Written last, so an interrupted extraction is simply redone next time.
-            File(baseDir, READY_MARKER).writeText(RUNTIME_VERSION)
+            marker.writeText(RUNTIME_VERSION)
+            Log.i(TAG, "runtime unpacked in ${System.currentTimeMillis() - startedAt}ms")
             return baseDir
         }
 
