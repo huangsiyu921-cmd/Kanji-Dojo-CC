@@ -3,13 +3,23 @@ package ua.syt0r.kanji.presentation.screen.main.screen.practice_vocab
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import ua.syt0r.kanji.core.analytics.AnalyticsManager
+import ua.syt0r.kanji.core.app_data.data.toKanaReading
+import ua.syt0r.kanji.core.tts.WordTtsManager
 import ua.syt0r.kanji.core.user_data.preferences.PreferencesContract
 import ua.syt0r.kanji.presentation.screen.main.screen.practice_common.PracticeAnswer
 import ua.syt0r.kanji.presentation.screen.main.screen.practice_common.PracticeConfigurationCardsSelectorState
@@ -27,7 +37,8 @@ class VocabPracticeViewModel(
     private val practicePreferences: PreferencesContract.PracticePreferences,
     private val getQueueDataUseCase: GetVocabPracticeQueueDataUseCase,
     private val practiceQueue: VocabPracticeQueue,
-    private val analyticsManager: AnalyticsManager
+    private val analyticsManager: AnalyticsManager,
+    private val wordTtsManager: WordTtsManager
 ) : VocabPracticeScreenContract.ViewModel {
 
     private lateinit var configuration: VocabPracticeScreenConfiguration
@@ -138,6 +149,10 @@ class VocabPracticeViewModel(
                         state = derivedStateOf { _reviewState.value.toPracticeReviewState() }
                     )
                 }
+
+                queueState.autoReadFlow()
+                    .onEach { wordTtsManager.speak(it) }
+                    .launchIn(viewModelScope)
             }
 
             is VocabPracticeQueueState.Summary -> {
@@ -155,6 +170,37 @@ class VocabPracticeViewModel(
             reviewState = state.asImmutable,
             answers = answers
         )
+    }
+
+    /**
+     * Speaks a card's kana reading once the word is actually on screen, mirroring the auto play of
+     * the kana practice screen. The reading picker is the exception: there the reading *is* the
+     * answer, so it is only spoken after the answer has been revealed.
+     */
+    private fun VocabPracticeQueueState.Review.autoReadFlow(): Flow<String> = callbackFlow {
+        when (val state = this@autoReadFlow.state) {
+            is MutableVocabReviewState.Flashcard -> {
+                // The word is visible from the start, unless the meaning is shown on the front.
+                snapshotFlow { state.showAnswer.value || !state.showMeaningInFront }
+                    .filter { it }
+                    .take(1)
+                    .onEach { send(state.reading.toKanaReading()) }
+                    .collect()
+            }
+
+            is MutableVocabReviewState.Reading -> {
+                snapshotFlow { state.selectedAnswer.value }
+                    .filterNotNull()
+                    .take(1)
+                    .onEach { send(state.revealedReading.toKanaReading()) }
+                    .collect()
+            }
+
+            is MutableVocabReviewState.Writing -> {
+                send(state.kanaReading)
+            }
+        }
+        awaitClose()
     }
 
 }

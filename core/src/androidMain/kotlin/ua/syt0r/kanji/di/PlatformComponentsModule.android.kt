@@ -31,6 +31,7 @@ import ua.syt0r.kanji.core.theme_manager.ThemeManager
 import ua.syt0r.kanji.core.tts.AndroidKanaTtsManager
 import ua.syt0r.kanji.core.tts.AndroidWordTtsManager
 import ua.syt0r.kanji.core.tts.KanaTtsManager
+import ua.syt0r.kanji.core.tts.VoicevoxAndroidTtsManager
 import ua.syt0r.kanji.core.tts.WordTtsManager
 import ua.syt0r.kanji.core.tts.Neural2BKanaVoiceData
 import ua.syt0r.kanji.core.user_data.AndroidUserDataDatabasePlatformHandler
@@ -62,7 +63,12 @@ actual val platformComponentsModule: Module = module {
     }
 
     single<WordTtsManager> {
-        AndroidWordTtsManager(context = androidContext())
+        // Bundled VOICEVOX engine first; the system voice stays as the fallback, mirroring the
+        // desktop module (see TTS-HANDOFF.md).
+        VoicevoxAndroidTtsManager(
+            context = androidContext(),
+            fallback = AndroidWordTtsManager(context = androidContext())
+        )
     }
 
     single<AppDataDatabaseProvider> {

@@ -66,7 +66,8 @@ val vocabPracticeScreenModule = module {
             practicePreferences = get(),
             getQueueDataUseCase = get(),
             practiceQueue = get { it },
-            analyticsManager = get()
+            analyticsManager = get(),
+            wordTtsManager = get()
         )
     }
 }

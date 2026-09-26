@@ -50,7 +50,7 @@ fun VersionChangeDialog(
                 modifier = Modifier.weight(1f).fillMaxWidth()
             ) {
 
-                version("0.５", LocalDate(2026, 9, 26)) {
+                version("0.5", LocalDate(2026, 9, 26)) {
                     append(
                         """
                         - 更改了TTS语音逻辑

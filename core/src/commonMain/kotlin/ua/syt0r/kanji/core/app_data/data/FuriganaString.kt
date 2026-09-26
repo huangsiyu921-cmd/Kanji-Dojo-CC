@@ -64,4 +64,14 @@ fun FuriganaString.withoutAnnotations(): String {
     return compounds.joinToString("") { it.text }
 }
 
+/**
+ * The kana reading of the whole string — what a speech engine should get instead of the kanji,
+ * which it would otherwise have to guess (「今日」 → こんいち instead of きょう).
+ */
+fun FuriganaString.toKanaReading(): String {
+    return compounds.joinToString("") { compound ->
+        compound.annotation?.takeIf { it.isNotBlank() } ?: compound.text
+    }
+}
+
 fun String.toFurigana() = buildFuriganaString { append(this@toFurigana) }

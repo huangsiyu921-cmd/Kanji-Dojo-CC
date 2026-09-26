@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ua.syt0r.kanji.core.app_data.data.FuriganaString
+import ua.syt0r.kanji.core.app_data.data.toKanaReading
 import ua.syt0r.kanji.presentation.common.AutopaddedScrollableColumn
 import ua.syt0r.kanji.presentation.common.theme.Dimens
 import ua.syt0r.kanji.presentation.common.ui.CenteredBoxWithSide
@@ -61,7 +62,7 @@ fun VocabPracticeFlashcardUI(
 
         val wordTts = koinInject<WordTtsManager>()
         val scope = rememberCoroutineScope()
-        val readingText = reviewState.reading.compounds.joinToString("") { it.text }
+        val readingText = reviewState.reading.toKanaReading()
 
         Row(
             modifier = Modifier.fillMaxWidth(),

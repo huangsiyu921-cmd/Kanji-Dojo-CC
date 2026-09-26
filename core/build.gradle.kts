@@ -84,6 +84,12 @@ kotlin {
                 api(libs.core.ktx)
                 api(libs.appcompat)
                 implementation(libs.media3.exoplayer)
+
+                // VOICEVOX CORE for Android. The JVM jar only carries the desktop natives, the AAR
+                // adds the Android ones (jni/<abi>/libvoicevox_core_java_api.so) plus the same
+                // blocking Java API. See TTS-HANDOFF.md (M2).
+                implementation(files("libs/voicevoxcore-android-0.17.0.aar"))
+                implementation(libs.gson)
             }
         }
         val jvmMain by getting {
@@ -146,6 +152,14 @@ android {
 
     sourceSets["main"].apply {
         manifest.srcFile("src/androidMain/AndroidManifest.xml")
+
+        // VOICEVOX runtime files, assembled by tools/voicevox/fetch-runtime.ps1 (.sh) and kept out
+        // of the repository: the dictionary and the voice model become assets (extracted to
+        // filesDir on first use), the ONNX Runtime build is a native library so that dlopen can
+        // find it. See TTS-HANDOFF.md (M2/M3, Android).
+        assets.srcDir(rootProject.file("tools/voicevox/runtime/core/dict"))
+        assets.srcDir(rootProject.file("tools/voicevox/runtime/models"))
+        jniLibs.srcDir(rootProject.file("tools/voicevox/runtime/android/jniLibs"))
     }
 
     buildFeatures {
