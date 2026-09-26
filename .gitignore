@@ -123,5 +123,5 @@ app/linux/**
 # VOICEVOX 运行时资源（约 180MB，用 tools/voicevox/fetch-runtime.ps1 组装，不进仓库）
 /tools/voicevox/runtime/
 
-# Android 版 VOICEVOX CORE（构建依赖，要随仓库分发；上面的 *.aar 规则会误伤）
-!core/libs/voicevoxcore-android-0.17.0.aar
+# 注：Android 版 VOICEVOX 的类库是 core/libs/voicevoxcore-android-0.17.0.jar —— 由 AAR 拆出来
+# （library 模块不允许直接依赖本地 .aar），它 jni/ 下的原生库放在 tools/voicevox/runtime 里

@@ -85,10 +85,11 @@ kotlin {
                 api(libs.appcompat)
                 implementation(libs.media3.exoplayer)
 
-                // VOICEVOX CORE for Android. The JVM jar only carries the desktop natives, the AAR
-                // adds the Android ones (jni/<abi>/libvoicevox_core_java_api.so) plus the same
-                // blocking Java API. See TTS-HANDOFF.md (M2).
-                implementation(files("libs/voicevoxcore-android-0.17.0.aar"))
+                // VOICEVOX CORE for Android. The JVM jar only carries the desktop natives, this
+                // one is the classes.jar taken out of voicevoxcore-android-0.17.0.aar (a library
+                // module cannot depend on a local .aar directly); the AAR's jni/ libraries sit in
+                // tools/voicevox/runtime/android/jniLibs and are picked up via jniLibs.srcDir.
+                implementation(files("libs/voicevoxcore-android-0.17.0.jar"))
                 implementation(libs.gson)
             }
         }
