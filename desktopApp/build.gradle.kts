@@ -72,6 +72,14 @@ tasks.withType<ComposeHotRun>().configureEach {
     javaLauncher
 }
 
+// The VOICEVOX runtime files are not part of the repository (they live in tools/voicevox/runtime
+// and are assembled by tools/voicevox/fetch-runtime.ps1); tell the development run where they are
+// instead of relying on the process working directory. Packaged builds resolve them themselves
+// (see VoicevoxConfig.resolve and TTS-HANDOFF.md, M3).
+tasks.withType<JavaExec>().configureEach {
+    systemProperty("kanjidojo.voicevox.dir", rootProject.file("tools/voicevox/runtime").absolutePath)
+}
+
 compose.resources {
     generateResClass = always
     packageOfResClass = "ua.syt0r.kanji.desktopApp"
