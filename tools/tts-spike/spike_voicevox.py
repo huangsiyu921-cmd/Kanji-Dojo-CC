@@ -117,6 +117,10 @@ def main():
     ap.add_argument("--pitch-scale", type=float, default=0.0)
     ap.add_argument("--intonation-scale", type=float, default=1.0,
                     help="抑扬顿挫（<1 更平，>1 更夸张）")
+    ap.add_argument("--pre-phoneme-length", type=float, default=0.10,
+                    help="音头静音秒数（默认 0.10）")
+    ap.add_argument("--post-phoneme-length", type=float, default=0.50,
+                    help="音尾静音秒数（AudioQuery 默认 0.10 —— 单音「あ」「ん」会像被切掉；试听定档 0.50）")
     args = ap.parse_args()
 
     try:
@@ -168,6 +172,9 @@ def main():
             query.speed_scale = args.speed_scale
             query.pitch_scale = args.pitch_scale
             query.intonation_scale = args.intonation_scale
+            # 关键：AudioQuery 默认音尾静音只有 0.10s，单音/短词听起来像被切断
+            query.pre_phoneme_length = args.pre_phoneme_length
+            query.post_phoneme_length = args.post_phoneme_length
             wav_bytes = synth.synthesis(query, args.style_id)
             with open(out_path, "wb") as fh:
                 fh.write(wav_bytes)
