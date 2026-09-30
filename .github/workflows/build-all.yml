@@ -103,7 +103,9 @@ jobs:
             Write-Host "$file : aliyun mirrors removed"
           }
 
-      # Fail in a second instead of after eight minutes of compiling.
+      # Fail in a second instead of after eight minutes of compiling. Only checks that the secrets
+      # exist - whether they actually fit the keystore is checked in the Build step below, after the
+      # keystore has been placed (that ordering is what a previous run got wrong).
       - name: Check the Android signing secrets
         shell: bash
         env:
@@ -122,16 +124,6 @@ jobs:
           fi
           echo "signing secrets present"
 
-          # The alias is easy to get wrong (it is `key0` in this keystore, not the project's name),
-          # and a wrong one would only surface after eight minutes of compiling.
-          # keytool's output stays in the log on purpose: it lists the alias and certificate but
-          # never the password, which travels through the environment (-storepass:env).
-          if ! keytool -list -keystore keystore.jks -storepass:env ANDROID_KEYSTORE_PASSWORD -alias "$ANDROID_KEY_ALIAS"; then
-            echo "::error::keytool cannot find alias '$ANDROID_KEY_ALIAS' in keystore.jks - check the ANDROID_KEY_ALIAS secret"
-            exit 1
-          fi
-          echo "keystore alias '$ANDROID_KEY_ALIAS' verified"
-
       - name: Build
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -140,13 +132,28 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
+
           # Only overwrite the keystore when the secret actually carries one: an empty secret used
           # to decode to a zero-byte keystore.jks and clobber the one committed in the repository.
           if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
             echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > keystore.jks
+            echo "keystore.jks restored from ANDROID_KEYSTORE_BASE64"
           else
-            echo "::warning::ANDROID_KEYSTORE_BASE64 is empty - signing with the keystore.jks from the repository"
+            echo "using the keystore.jks committed in the repository"
           fi
+
+          # Verify the file we are about to sign with, whichever way it got here. This has to run
+          # *after* the overwrite above - checking before it only ever proves the repository copy is
+          # fine, while the build uses whatever the secret left behind.
+          # keytool prints the alias and certificate but never the password (-storepass:env keeps it
+          # off the command line and out of the log).
+          sha256sum keystore.jks || true
+          if ! keytool -list -keystore keystore.jks -storepass:env ANDROID_KEYSTORE_PASSWORD -alias "$ANDROID_KEY_ALIAS"; then
+            echo "::error::keystore.jks cannot be opened with ANDROID_KEYSTORE_PASSWORD / ANDROID_KEY_ALIAS - if you set ANDROID_KEYSTORE_BASE64, its value is not this keystore"
+            exit 1
+          fi
+          echo "keystore alias '$ANDROID_KEY_ALIAS' verified"
+
           ./gradlew app:assembleFdroidRelease
           ./desktopApp/linux/AppImage/make.sh
 
