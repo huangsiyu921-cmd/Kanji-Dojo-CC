@@ -13,8 +13,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import kotlin.math.round
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import ua.syt0r.kanji.core.tts.WordTtsCache
@@ -261,7 +262,7 @@ fun TtsCacheScreen(
                                             )
                                         } else {
                                             Icon(
-                                                imageVector = Icons.Default.VolumeUp,
+                                                imageVector = Icons.AutoMirrored.Filled.VolumeUp,
                                                 contentDescription = "试听"
                                             )
                                         }
@@ -395,8 +396,23 @@ internal fun describeTtsCacheStats(stats: WordTtsCacheStats): String =
     }
 
 internal fun formatTtsCacheSize(bytes: Long): String = when {
-    bytes >= 1024L * 1024 * 1024 -> "%.1f GB".format(bytes / 1024.0 / 1024 / 1024)
-    bytes >= 1024L * 1024 -> "%.1f MB".format(bytes / 1024.0 / 1024)
-    bytes >= 1024L -> "%.0f KB".format(bytes / 1024.0)
+    bytes >= 1024L * 1024 * 1024 -> "${formatDecimal(bytes / 1024.0 / 1024 / 1024, 1)} GB"
+    bytes >= 1024L * 1024 -> "${formatDecimal(bytes / 1024.0 / 1024, 1)} MB"
+    bytes >= 1024L -> "${formatDecimal(bytes / 1024.0, 0)} KB"
     else -> "$bytes B"
+}
+
+/**
+ * `String.format` only exists on the JVM, and this file is in commonMain (it would break the iOS
+ * target), so the number is assembled by hand.
+ */
+private fun formatDecimal(value: Double, decimals: Int): String {
+    var factor = 1L
+    repeat(decimals) { factor *= 10 }
+
+    val scaled = round(value * factor).toLong()
+    if (decimals == 0) return scaled.toString()
+
+    val fraction = (scaled % factor).toString().padStart(decimals, '0')
+    return "${scaled / factor}.$fraction"
 }

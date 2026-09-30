@@ -50,6 +50,17 @@ fun VersionChangeDialog(
                 modifier = Modifier.weight(1f).fillMaxWidth()
             ) {
 
+                version("0.7", LocalDate(2026, 9, 30)) {
+                    append(
+                        """
+                        - 学习页的释义字号调小
+                        - 设置里TTS缓存页改为「缓存设置」页
+                        - 新增「刷新词卡释义」：刷新早期导入的牌组释义
+                        - 统一UI逻辑，更新了捐赠页的UI逻辑
+                        - 假名学习页的硬编码部分翻译
+                        """.trimIndent()
+                    )
+                }
                 version("0.6", LocalDate(2026, 9, 27)) {
                     append(
                         """
