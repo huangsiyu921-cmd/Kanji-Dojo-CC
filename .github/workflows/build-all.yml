@@ -3,7 +3,53 @@ name: Build All
 on: [ workflow_call, workflow_dispatch ]
 
 jobs:
+  # The installers are useless without the VOICEVOX runtime (TTS would silently fall back to the
+  # system voice), and it is not in the repository, so it is assembled once here and handed to every
+  # platform build. Everything comes from official releases - see tools/voicevox/fetch-runtime.ps1.
+  voicevox-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Assemble the VOICEVOX runtime
+        shell: pwsh
+        run: ./tools/voicevox/fetch-runtime.ps1
+
+      # A silent gap here is exactly the failure mode this job exists to prevent: the installers
+      # would build fine and quietly ship without the TTS engine.
+      - name: Verify the runtime is complete
+        shell: pwsh
+        run: |
+          $required = @(
+            'tools/voicevox/runtime/core/dict/open_jtalk_dic_utf_8-1.11/sys.dic',
+            'tools/voicevox/runtime/models/4.vvm',
+            'tools/voicevox/runtime/core/onnxruntime/lib/windows-x64/voicevox_onnxruntime.dll',
+            'tools/voicevox/runtime/core/onnxruntime/lib/linux-x64/libvoicevox_onnxruntime.so',
+            'tools/voicevox/runtime/core/onnxruntime/lib/linux-arm64/libvoicevox_onnxruntime.so',
+            'tools/voicevox/runtime/core/onnxruntime/lib/macos-x64/libvoicevox_onnxruntime.dylib',
+            'tools/voicevox/runtime/core/onnxruntime/lib/macos-arm64/libvoicevox_onnxruntime.dylib',
+            'tools/voicevox/runtime/android/jniLibs/arm64-v8a/libvoicevox_core_java_api.so',
+            'tools/voicevox/runtime/android/jniLibs/arm64-v8a/libvoicevox_onnxruntime.so',
+            'tools/voicevox/runtime/android/jniLibs/x86_64/libvoicevox_core_java_api.so',
+            'tools/voicevox/runtime/android/jniLibs/x86_64/libvoicevox_onnxruntime.so'
+          )
+          $missing = $required | Where-Object { -not (Test-Path $_) }
+          if ($missing) {
+            $missing | ForEach-Object { Write-Host "missing: $_" }
+            throw 'The VOICEVOX runtime is incomplete - refusing to build installers without TTS.'
+          }
+          Write-Host 'VOICEVOX runtime looks complete'
+
+      - name: Upload runtime
+        uses: actions/upload-artifact@v4
+        with:
+          name: voicevox-runtime
+          path: tools/voicevox/runtime
+          retention-days: 1
+
   build-android-and-desktop-linux:
+    needs: voicevox-runtime
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -15,6 +61,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
+
+      - name: Download runtime
+        uses: actions/download-artifact@v4
+        with:
+          name: voicevox-runtime
+          path: tools/voicevox
 
       - name: Build
         env:
@@ -43,6 +95,7 @@ jobs:
           retention-days: 1
 
   build-desktop-windows:
+    needs: voicevox-runtime
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -55,6 +108,12 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Download runtime
+        uses: actions/download-artifact@v4
+        with:
+          name: voicevox-runtime
+          path: tools/voicevox
+
       - name: Build
         run: ./gradlew desktopApp:packageDistributionForCurrentOS
 
@@ -66,6 +125,7 @@ jobs:
           retention-days: 1
 
   build-desktop-mac-intel:
+    needs: voicevox-runtime
     runs-on: macos-15-intel
     steps:
       - name: Checkout
@@ -77,6 +137,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
+
+      - name: Download runtime
+        uses: actions/download-artifact@v4
+        with:
+          name: voicevox-runtime
+          path: tools/voicevox
 
       - name: Build
         run: |
@@ -94,6 +160,7 @@ jobs:
 
 
   build-desktop-mac-arm:
+    needs: voicevox-runtime
     runs-on: macos-15
     steps:
       - name: Checkout
@@ -105,6 +172,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
+
+      - name: Download runtime
+        uses: actions/download-artifact@v4
+        with:
+          name: voicevox-runtime
+          path: tools/voicevox
 
       - name: Build
         run: |

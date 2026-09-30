@@ -105,11 +105,11 @@ if [[ -f "$library" ]]; then
     echo "    VOICEVOX runtime for $target found"
 elif [[ "$require_runtime" == 1 ]]; then
     echo "VOICEVOX runtime for $target is missing ($library)." >&2
-    echo "Run tools/voicevox/fetch-runtime.sh first." >&2
+    echo "Run tools/voicevox/fetch-runtime.ps1 first (pwsh tools/voicevox/fetch-runtime.ps1)." >&2
     exit 1
 else
     echo "WARNING: VOICEVOX runtime for $target is missing ($library)." >&2
-    echo "         Run tools/voicevox/fetch-runtime.sh to assemble it; without it the packaged" >&2
+    echo "         Run tools/voicevox/fetch-runtime.ps1 to assemble it; without it the packaged" >&2
     echo "         app falls back to the system Japanese voice." >&2
 fi
 
