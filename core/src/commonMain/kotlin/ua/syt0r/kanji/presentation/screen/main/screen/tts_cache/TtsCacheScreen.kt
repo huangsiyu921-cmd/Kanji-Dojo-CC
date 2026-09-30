@@ -158,7 +158,7 @@ fun TtsCacheScreen(
                     OutlinedTextField(
                         value = input,
                         onValueChange = { input = it },
-                        label = { Text("词语，一行一个（填假名读音效果最好）") },
+                        label = { Text("手动填词") },
                         minLines = 2,
                         maxLines = 4,
                         enabled = !busy,
@@ -210,7 +210,7 @@ fun TtsCacheScreen(
                                 message = if (restored >= 0) {
                                     "已导入 $restored 条"
                                 } else {
-                                    "导入失败：找不到 ${archive.location}"
+                                    "导入失败：未找到 ${archive.location}"
                                 }
                                 busy = false
                                 refresh()
@@ -235,7 +235,7 @@ fun TtsCacheScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "还没有缓存。缓存过的词再朗读就是瞬时的。",
+                        text = "还没有缓存。",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -295,9 +295,9 @@ fun TtsCacheScreen(
     if (showClearDialog) {
         MultiplatformDialog(
             onDismissRequest = { showClearDialog = false },
-            title = { Text("清空 TTS 缓存") },
+            title = { Text("清空 TTS 缓存？") },
             content = {
-                Text("将删除全部 ${stats?.entries ?: 0} 条已缓存的语音，之后朗读需要重新合成。")
+                Text("将删除 ${stats?.entries ?: 0} 条已缓存的语音，之后朗读需要重新合成。")
             },
             buttons = {
                 TextButton(onClick = { showClearDialog = false }) {
