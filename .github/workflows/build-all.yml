@@ -103,6 +103,25 @@ jobs:
             Write-Host "$file : aliyun mirrors removed"
           }
 
+      # Fail in a second instead of after eight minutes of compiling.
+      - name: Check the Android signing secrets
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          missing=""
+          for name in ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+            eval "value=\$$name"
+            if [ -z "$value" ]; then missing="$missing $name"; fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::release signing secrets are missing:$missing (repository Settings -> Secrets and variables -> Actions)"
+            exit 1
+          fi
+          echo "signing secrets present"
+
       - name: Build
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -111,7 +130,13 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > keystore.jks
+          # Only overwrite the keystore when the secret actually carries one: an empty secret used
+          # to decode to a zero-byte keystore.jks and clobber the one committed in the repository.
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
+            echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > keystore.jks
+          else
+            echo "::warning::ANDROID_KEYSTORE_BASE64 is empty - signing with the keystore.jks from the repository"
+          fi
           ./gradlew app:assembleFdroidRelease
           ./desktopApp/linux/AppImage/make.sh
 
