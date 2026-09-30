@@ -39,8 +39,9 @@ param(
     ),
     [string] $OnnxRuntimeVersion = '1.23.2',
     [string] $VoicevoxCoreVersion = '0.17.0',
-    # M1 spike environment (optional; override with -SpikeDir when it lives somewhere else).
-    [string] $SpikeDir = 'D:\voicevox-spike',
+    # M1 spike environment (optional, a local shortcut only). Left empty by default and resolved
+    # below - a hardcoded Windows path here would be handed to Join-Path on Linux and abort the run.
+    [string] $SpikeDir = '',
     # Where to assemble the runtime. Override to rehearse a clean run somewhere else.
     [string] $RuntimeDir = '',
     [switch] $Force
@@ -49,6 +50,13 @@ param(
 $ErrorActionPreference = 'Stop'
 # Invoke-WebRequest crawls through ~300 MB with the progress bar enabled.
 $ProgressPreference = 'SilentlyContinue'
+
+# The spike directory is a local convenience: use it on Windows when it happens to be there. On
+# other platforms (CI) it stays empty and everything is downloaded instead.
+if ((-not $SpikeDir) -and ($env:OS -eq 'Windows_NT')) {
+    $candidateSpike = 'D:\voicevox-spike'
+    if (Test-Path -Path $candidateSpike) { $SpikeDir = $candidateSpike }
+}
 
 $repoRoot       = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $runtimeDir     = if ($RuntimeDir) { $RuntimeDir } else { Join-Path $repoRoot 'tools/voicevox/runtime' }
@@ -133,6 +141,22 @@ function Get-RemoteFile {
     Invoke-WebRequest -Uri $Url -OutFile $Destination -UseBasicParsing
 }
 
+function Get-SpikePath {
+    param([string] $RelativePath)
+
+    # Never let a Windows-style path reach Join-Path on another OS: it throws
+    # "Cannot find drive. A drive with the name 'D' does not exist." and, with
+    # $ErrorActionPreference = 'Stop', that kills the whole run.
+    if (-not $SpikeDir) { return $null }
+    try {
+        $candidate = Join-Path -Path $SpikeDir -ChildPath $RelativePath
+        if (Test-Path -Path $candidate) { return $candidate }
+    } catch {
+        return $null
+    }
+    return $null
+}
+
 function Copy-RuntimeFile {
     param(
         [string] $Source,
@@ -195,8 +219,8 @@ function New-Dictionary {
         return
     }
 
-    $spikeDictionary = Join-Path $SpikeDir 'core/dict/open_jtalk_dic_utf_8-1.11'
-    if (Test-Path $spikeDictionary) {
+    $spikeDictionary = Get-SpikePath 'core/dict/open_jtalk_dic_utf_8-1.11'
+    if ($spikeDictionary) {
         Copy-RuntimeFile -Source $spikeDictionary -Destination $dictDir -What 'open_jtalk_dic_utf_8-1.11'
         return
     }
@@ -233,8 +257,8 @@ function New-VoiceModel {
         return
     }
 
-    $spikeModel = Join-Path $SpikeDir 'models/4.vvm'
-    if (Test-Path $spikeModel) {
+    $spikeModel = Get-SpikePath 'models/4.vvm'
+    if ($spikeModel) {
         Copy-RuntimeFile -Source $spikeModel -Destination $modelPath -What 'models/4.vvm'
         return
     }
@@ -260,8 +284,8 @@ function Get-OnnxRuntimeDesktopLibrary {
 
     # The Windows build usually sits in the spike environment already; reuse it instead of downloading.
     if ($Platform -eq 'windows-x64') {
-        $spikeLibrary = Join-Path $SpikeDir "core/onnxruntime/lib/$($Info.File)"
-        if (Test-Path $spikeLibrary) {
+        $spikeLibrary = Get-SpikePath "core/onnxruntime/lib/$($Info.File)"
+        if ($spikeLibrary) {
             Copy-RuntimeFile -Source $spikeLibrary -Destination $destination -What "$Platform/$($Info.File)"
             return
         }
@@ -334,8 +358,10 @@ Write-Host "    host platform: $(Get-HostPlatformId)"
 Write-Host "    python       : $python"
 Write-Host "    powershell   : $($PSVersionTable.PSVersion) ($($PSVersionTable.Platform))"
 
-if (-not (Test-Path $SpikeDir)) {
-    Write-Host "    (no spike directory at $SpikeDir - the dictionary and the voice model are downloaded)"
+if ($SpikeDir) {
+    Write-Host "    local spike   : $SpikeDir"
+} else {
+    Write-Host "    (no local spike directory - the dictionary and the voice model are downloaded)"
 }
 
 Write-Step "OpenJTalk dictionary (~102 MB, shared by every platform)"
