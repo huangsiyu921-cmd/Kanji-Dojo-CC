@@ -122,6 +122,16 @@ jobs:
           fi
           echo "signing secrets present"
 
+          # The alias is easy to get wrong (it is `key0` in this keystore, not the project's name),
+          # and a wrong one would only surface after eight minutes of compiling.
+          # keytool's output stays in the log on purpose: it lists the alias and certificate but
+          # never the password, which travels through the environment (-storepass:env).
+          if ! keytool -list -keystore keystore.jks -storepass:env ANDROID_KEYSTORE_PASSWORD -alias "$ANDROID_KEY_ALIAS"; then
+            echo "::error::keytool cannot find alias '$ANDROID_KEY_ALIAS' in keystore.jks - check the ANDROID_KEY_ALIAS secret"
+            exit 1
+          fi
+          echo "keystore alias '$ANDROID_KEY_ALIAS' verified"
+
       - name: Build
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
