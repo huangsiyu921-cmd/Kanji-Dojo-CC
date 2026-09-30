@@ -77,11 +77,21 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: voicevox-runtime
-          path: tools/voicevox
+          path: .
 
       # The runners are not in China: the project's aliyun mirrors only slow the resolution down,
       # and resolving against them is what made these jobs fail. Stripping them here keeps local
       # builds untouched while CI resolves from the official repositories.
+      - name: Verify the runtime is in place
+        shell: pwsh
+        run: |
+          if (-not (Test-Path 'tools/voicevox/runtime/models/4.vvm')) {
+            Write-Host "::error::the runtime artifact did not extract to tools/voicevox/runtime"
+            Get-ChildItem -Recurse -Depth 4 -Filter '*.vvm' . | Select-Object -First 5 | ForEach-Object { Write-Host $_.FullName }
+            exit 1
+          }
+          Write-Host 'VOICEVOX runtime is where the build expects it'
+
       - name: Use the official Gradle repositories
         shell: pwsh
         run: |
@@ -135,11 +145,21 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: voicevox-runtime
-          path: tools/voicevox
+          path: .
 
       # The runners are not in China: the project's aliyun mirrors only slow the resolution down,
       # and resolving against them is what made these jobs fail. Stripping them here keeps local
       # builds untouched while CI resolves from the official repositories.
+      - name: Verify the runtime is in place
+        shell: pwsh
+        run: |
+          if (-not (Test-Path 'tools/voicevox/runtime/models/4.vvm')) {
+            Write-Host "::error::the runtime artifact did not extract to tools/voicevox/runtime"
+            Get-ChildItem -Recurse -Depth 4 -Filter '*.vvm' . | Select-Object -First 5 | ForEach-Object { Write-Host $_.FullName }
+            exit 1
+          }
+          Write-Host 'VOICEVOX runtime is where the build expects it'
+
       - name: Use the official Gradle repositories
         shell: pwsh
         run: |
@@ -177,11 +197,21 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: voicevox-runtime
-          path: tools/voicevox
+          path: .
 
       # The runners are not in China: the project's aliyun mirrors only slow the resolution down,
       # and resolving against them is what made these jobs fail. Stripping them here keeps local
       # builds untouched while CI resolves from the official repositories.
+      - name: Verify the runtime is in place
+        shell: pwsh
+        run: |
+          if (-not (Test-Path 'tools/voicevox/runtime/models/4.vvm')) {
+            Write-Host "::error::the runtime artifact did not extract to tools/voicevox/runtime"
+            Get-ChildItem -Recurse -Depth 4 -Filter '*.vvm' . | Select-Object -First 5 | ForEach-Object { Write-Host $_.FullName }
+            exit 1
+          }
+          Write-Host 'VOICEVOX runtime is where the build expects it'
+
       - name: Use the official Gradle repositories
         shell: pwsh
         run: |
@@ -224,11 +254,21 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: voicevox-runtime
-          path: tools/voicevox
+          path: .
 
       # The runners are not in China: the project's aliyun mirrors only slow the resolution down,
       # and resolving against them is what made these jobs fail. Stripping them here keeps local
       # builds untouched while CI resolves from the official repositories.
+      - name: Verify the runtime is in place
+        shell: pwsh
+        run: |
+          if (-not (Test-Path 'tools/voicevox/runtime/models/4.vvm')) {
+            Write-Host "::error::the runtime artifact did not extract to tools/voicevox/runtime"
+            Get-ChildItem -Recurse -Depth 4 -Filter '*.vvm' . | Select-Object -First 5 | ForEach-Object { Write-Host $_.FullName }
+            exit 1
+          }
+          Write-Host 'VOICEVOX runtime is where the build expects it'
+
       - name: Use the official Gradle repositories
         shell: pwsh
         run: |
