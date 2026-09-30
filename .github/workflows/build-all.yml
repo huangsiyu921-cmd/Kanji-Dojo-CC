@@ -79,6 +79,18 @@ jobs:
           name: voicevox-runtime
           path: tools/voicevox
 
+      # The runners are not in China: the project's aliyun mirrors only slow the resolution down,
+      # and resolving against them is what made these jobs fail. Stripping them here keeps local
+      # builds untouched while CI resolves from the official repositories.
+      - name: Use the official Gradle repositories
+        shell: pwsh
+        run: |
+          foreach ($file in 'settings.gradle.kts', 'build.gradle.kts') {
+            $kept = Get-Content $file | Where-Object { $_ -notmatch 'maven\.aliyun\.com' }
+            Set-Content -Path $file -Value $kept -Encoding utf8
+            Write-Host "$file : aliyun mirrors removed"
+          }
+
       - name: Build
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -125,6 +137,18 @@ jobs:
           name: voicevox-runtime
           path: tools/voicevox
 
+      # The runners are not in China: the project's aliyun mirrors only slow the resolution down,
+      # and resolving against them is what made these jobs fail. Stripping them here keeps local
+      # builds untouched while CI resolves from the official repositories.
+      - name: Use the official Gradle repositories
+        shell: pwsh
+        run: |
+          foreach ($file in 'settings.gradle.kts', 'build.gradle.kts') {
+            $kept = Get-Content $file | Where-Object { $_ -notmatch 'maven\.aliyun\.com' }
+            Set-Content -Path $file -Value $kept -Encoding utf8
+            Write-Host "$file : aliyun mirrors removed"
+          }
+
       - name: Build
         run: ./gradlew desktopApp:packageDistributionForCurrentOS
 
@@ -154,6 +178,18 @@ jobs:
         with:
           name: voicevox-runtime
           path: tools/voicevox
+
+      # The runners are not in China: the project's aliyun mirrors only slow the resolution down,
+      # and resolving against them is what made these jobs fail. Stripping them here keeps local
+      # builds untouched while CI resolves from the official repositories.
+      - name: Use the official Gradle repositories
+        shell: pwsh
+        run: |
+          foreach ($file in 'settings.gradle.kts', 'build.gradle.kts') {
+            $kept = Get-Content $file | Where-Object { $_ -notmatch 'maven\.aliyun\.com' }
+            Set-Content -Path $file -Value $kept -Encoding utf8
+            Write-Host "$file : aliyun mirrors removed"
+          }
 
       - name: Build
         run: |
@@ -189,6 +225,18 @@ jobs:
         with:
           name: voicevox-runtime
           path: tools/voicevox
+
+      # The runners are not in China: the project's aliyun mirrors only slow the resolution down,
+      # and resolving against them is what made these jobs fail. Stripping them here keeps local
+      # builds untouched while CI resolves from the official repositories.
+      - name: Use the official Gradle repositories
+        shell: pwsh
+        run: |
+          foreach ($file in 'settings.gradle.kts', 'build.gradle.kts') {
+            $kept = Get-Content $file | Where-Object { $_ -notmatch 'maven\.aliyun\.com' }
+            Set-Content -Path $file -Value $kept -Encoding utf8
+            Write-Host "$file : aliyun mirrors removed"
+          }
 
       - name: Build
         run: |
