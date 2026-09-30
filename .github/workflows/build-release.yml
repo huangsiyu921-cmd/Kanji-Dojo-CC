@@ -5,6 +5,12 @@ on:
     tags:
       - "v*.*"
 
+# The release step writes to the repository (creating the GitHub Release and attaching the files).
+# Without this the default token is read-only on newer repositories and the step fails with
+# "Resource not accessible by integration".
+permissions:
+  contents: write
+
 jobs:
   build-all:
     uses: ./.github/workflows/build-all.yml
@@ -21,3 +27,5 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: '**/*.@(jar|apk|dmg|msi|AppImage)'
+          # Draft the change list from the commits so the release page is not empty on creation.
+          generate_release_notes: true
