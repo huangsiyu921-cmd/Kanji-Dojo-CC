@@ -41,6 +41,8 @@ param(
     [string] $VoicevoxCoreVersion = '0.17.0',
     # M1 spike environment (optional; override with -SpikeDir when it lives somewhere else).
     [string] $SpikeDir = 'D:\voicevox-spike',
+    # Where to assemble the runtime. Override to rehearse a clean run somewhere else.
+    [string] $RuntimeDir = '',
     [switch] $Force
 )
 
@@ -49,7 +51,7 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 
 $repoRoot       = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-$runtimeDir     = Join-Path $repoRoot 'tools/voicevox/runtime'
+$runtimeDir     = if ($RuntimeDir) { $RuntimeDir } else { Join-Path $repoRoot 'tools/voicevox/runtime' }
 $libRoot        = Join-Path $runtimeDir 'core/onnxruntime/lib'
 $dictDir        = Join-Path $runtimeDir 'core/dict/open_jtalk_dic_utf_8-1.11'
 $modelPath      = Join-Path $runtimeDir 'models/4.vvm'
@@ -181,9 +183,9 @@ function Invoke-VoicevoxDownloader {
     $process.WaitForExit()
 
     if ($process.ExitCode -ne 0) {
-        Write-Host $stdout
-        Write-Host $stderr
-        throw "VOICEVOX's download helper failed (exit code $($process.ExitCode))."
+        $detail = ($stderr + "`n" + $stdout).Trim()
+        if ($detail.Length -gt 800) { $detail = $detail.Substring($detail.Length - 800) }
+        throw "VOICEVOX's download helper failed (exit code $($process.ExitCode)).`n$detail"
     }
 }
 
@@ -328,6 +330,9 @@ function Get-AndroidCoreLibraries {
 }
 
 Write-Step "Voicevox runtime -> $runtimeDir"
+Write-Host "    host platform: $(Get-HostPlatformId)"
+Write-Host "    python       : $python"
+Write-Host "    powershell   : $($PSVersionTable.PSVersion) ($($PSVersionTable.Platform))"
 
 if (-not (Test-Path $SpikeDir)) {
     Write-Host "    (no spike directory at $SpikeDir - the dictionary and the voice model are downloaded)"

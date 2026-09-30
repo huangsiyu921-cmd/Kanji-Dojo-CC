@@ -10,11 +10,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Assemble the VOICEVOX runtime
         shell: pwsh
-        run: ./tools/voicevox/fetch-runtime.ps1
+        run: |
+          Write-Host "pwsh $($PSVersionTable.PSVersion) / $($PSVersionTable.OS)"
+          Write-Host "python  : $((Get-Command python -ErrorAction SilentlyContinue).Source)"
+          Write-Host "python3 : $((Get-Command python3 -ErrorAction SilentlyContinue).Source)"
+          try {
+            ./tools/voicevox/fetch-runtime.ps1
+          } catch {
+            # Surface the reason in the run's annotation panel as well, not only in the job log.
+            Write-Host "::error::fetch-runtime failed: $($_.Exception.Message)"
+            Write-Host $_.ScriptStackTrace
+            exit 1
+          }
 
       # A silent gap here is exactly the failure mode this job exists to prevent: the installers
       # would build fine and quietly ship without the TTS engine.
@@ -42,7 +53,7 @@ jobs:
           Write-Host 'VOICEVOX runtime looks complete'
 
       - name: Upload runtime
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: voicevox-runtime
           path: tools/voicevox/runtime
@@ -53,17 +64,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup build environment
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
 
       - name: Download runtime
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: voicevox-runtime
           path: tools/voicevox
@@ -81,14 +92,14 @@ jobs:
           ./desktopApp/linux/AppImage/make.sh
 
       - name: Upload Android Build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: android
           path: app/build/outputs/apk/fdroid/release/*.apk
           retention-days: 1
 
       - name: Upload Desktop Build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: linux
           path: desktopApp/linux/AppImage/Kanji_dojo_CC-x86_64.AppImage
@@ -99,17 +110,17 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup build environment
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
 
       - name: Download runtime
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: voicevox-runtime
           path: tools/voicevox
@@ -118,7 +129,7 @@ jobs:
         run: ./gradlew desktopApp:packageDistributionForCurrentOS
 
       - name: Upload Desktop Build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: windows
           path: desktopApp/build/compose/binaries/main/msi/*.msi
@@ -129,17 +140,17 @@ jobs:
     runs-on: macos-15-intel
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup build environment
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
 
       - name: Download runtime
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: voicevox-runtime
           path: tools/voicevox
@@ -152,7 +163,7 @@ jobs:
           mv "$DMG_PATH" "$NEW_DMG_PATH"
 
       - name: Upload Desktop Build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: mac-intel
           path: desktopApp/build/compose/binaries/main/dmg/*.dmg
@@ -164,17 +175,17 @@ jobs:
     runs-on: macos-15
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup build environment
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
 
       - name: Download runtime
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: voicevox-runtime
           path: tools/voicevox
@@ -187,7 +198,7 @@ jobs:
           mv "$DMG_PATH" "$NEW_DMG_PATH"
 
       - name: Upload Desktop Build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: mac-arm
           path: desktopApp/build/compose/binaries/main/dmg/*.dmg
@@ -202,7 +213,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Downloading artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
 
       - name: Print all files
         run: ls -R
