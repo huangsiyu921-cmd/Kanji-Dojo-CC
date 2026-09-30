@@ -48,6 +48,15 @@ interface VocabPracticeRepository : ObservableRepository {
     suspend fun deleteCard(id: Long)
     suspend fun getCardIdList(deckId: Long): List<Long>
     suspend fun getAllCards(): List<SavedVocabCard>
+
+    /**
+     * Drops the meaning snapshot stored on these cards (see `RefreshVocabMeaningsUseCase`).
+     *
+     * Addressed by card id only, so it also works for cards whose deck is gone — such orphan rows do
+     * exist in practice (deleting a deck does not cascade here) and would otherwise be skipped
+     * forever while still being counted as refreshed.
+     */
+    suspend fun clearCardMeanings(cardIds: List<Long>)
 }
 
 interface FsrsCardRepository : ObservableRepository {

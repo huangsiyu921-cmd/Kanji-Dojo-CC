@@ -263,6 +263,19 @@ object EnglishSettingsStrings : SettingsStrings {
     override val sync: String = "Sync (Preview)"
     override val backupTitle: String = "Backup & Restore"
     override val aboutTitle: String = "About"
+    override val sponsorTitle: String = "Donate"
+
+    override val cacheSettingsTitle: String = "Cache"
+    override val ttsCacheTitle: String = "TTS cache"
+
+    override val refreshMeaningsTitle: String = "Refresh card meanings"
+    override val refreshMeaningsMessage: String =
+        "Clears the old meanings that earlier versions stored on cards and uses the current " +
+                "dictionary meaning instead. Hand-written meanings are overwritten as well, so back up first."
+    override val refreshMeaningsConfirm: String = "Refresh"
+    override val refreshMeaningsDone: (count: Int) -> String = { "Refreshed $it cards" }
+    override val dialogOk: String = "OK"
+
     override val pickerDialogCancel: String = "Cancel"
     override val pickerDialogApply: String = "Apply"
 }
@@ -342,6 +355,11 @@ object EnglishSponsorStrings : SponsorStrings {
     """.trimIndent()
 
     override val buyCoffee: String = "Buy the original author a coffee"
+
+    override val dialogTitle: String = "Open the sponsor page?"
+    override val dialogMessage: String = "Donate to syt0r"
+    override val dialogConfirm: String = "Open"
+    override val dialogCancel: String = "Cancel"
 }
 
 object EnglishDeckPickerStrings : DeckPickerStrings {

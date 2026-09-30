@@ -261,6 +261,18 @@ object ChineseSettingsStrings : SettingsStrings {
     override val sync: String = "同步（预览）"
     override val backupTitle: String = "备份与恢复"
     override val aboutTitle: String = "关于"
+    override val sponsorTitle: String = "捐赠"
+
+    override val cacheSettingsTitle: String = "缓存设置"
+    override val ttsCacheTitle: String = "TTS 缓存"
+
+    override val refreshMeaningsTitle: String = "刷新词卡释义"
+    override val refreshMeaningsMessage: String =
+        "清除卡片中早期保存的旧释义，改用词典库当前的释义。手写内容同样会被覆盖，建议先备份。"
+    override val refreshMeaningsConfirm: String = "刷新"
+    override val refreshMeaningsDone: (count: Int) -> String = { "已刷新 $it 张卡" }
+    override val dialogOk: String = "好的"
+
     override val pickerDialogCancel: String = "取消"
     override val pickerDialogApply: String = "应用"
 }
@@ -339,6 +351,11 @@ object ChineseSponsorStrings : SponsorStrings {
     """.trimIndent()
 
     override val buyCoffee: String = "给原作者买杯咖啡"
+
+    override val dialogTitle: String = "前往捐赠页？"
+    override val dialogMessage: String = "为 syt0r 捐款"
+    override val dialogConfirm: String = "前往"
+    override val dialogCancel: String = "取消"
 }
 
 object ChineseDeckPickerStrings : DeckPickerStrings {
@@ -591,7 +608,7 @@ object ChineseLetterPracticeStrings : LetterPracticeStrings {
     override val leftHandedModeMessage: String = "调整书写练习屏幕横屏模式下的输入位置"
 
     override val headerWordsMessage: (count: Int) -> String = {
-        "Examples ($it)"
+        "例句 ($it)"
     }
     override val studyFinishedButton: String = "继续"
     override val noKanjiTranslationsLabel: String = "[无翻译]"

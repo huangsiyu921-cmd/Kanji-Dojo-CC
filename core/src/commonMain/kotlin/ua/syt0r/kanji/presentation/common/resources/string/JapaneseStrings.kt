@@ -255,6 +255,19 @@ object JapaneseSettingsStrings : SettingsStrings {
     override val sync: String = "同期（プレビュー）"
     override val backupTitle: String = "バックアップと復元"
     override val aboutTitle: String = "このアプリについて"
+    override val sponsorTitle: String = "寄付"
+
+    override val cacheSettingsTitle: String = "キャッシュ設定"
+    override val ttsCacheTitle: String = "TTS キャッシュ"
+
+    override val refreshMeaningsTitle: String = "カードの意味を更新"
+    override val refreshMeaningsMessage: String =
+        "以前のバージョンがカードに保存した古い意味を削除し、辞書の現在の意味を使用します。" +
+                "手書きした意味も上書きされるため、先にバックアップしてください。"
+    override val refreshMeaningsConfirm: String = "更新"
+    override val refreshMeaningsDone: (count: Int) -> String = { "$it 枚のカードを更新しました" }
+    override val dialogOk: String = "OK"
+
     override val pickerDialogCancel: String = "キャンセル"
     override val pickerDialogApply: String = "適用"
 }

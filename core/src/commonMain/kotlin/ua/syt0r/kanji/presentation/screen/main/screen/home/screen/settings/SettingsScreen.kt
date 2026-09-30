@@ -24,6 +24,13 @@ fun SettingsScreen(
         onAboutButtonClick = {
             mainNavigationState.navigate(MainDestination.About)
         },
+        // Entries in this list always lead to a screen of their own; nothing in it opens a dialog.
+        onSponsorButtonClick = {
+            mainNavigationState.navigate(MainDestination.Sponsor)
+        },
+        onCacheSettingsClick = {
+            mainNavigationState.navigate(MainDestination.CacheSettings)
+        },
         loadedContent = { screenState ->
             screenState.items.forEach { it.content(mainNavigationState) }
         }

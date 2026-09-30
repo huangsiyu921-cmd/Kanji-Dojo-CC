@@ -100,7 +100,7 @@ fun VocabPracticeFlashcardUI(
                 centerContent = {
                     Text(
                         text = reviewState.meaning,
-                        style = MaterialTheme.typography.displaySmall,
+                        style = MaterialTheme.typography.headlineMedium,
                         textAlign = TextAlign.Center,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis

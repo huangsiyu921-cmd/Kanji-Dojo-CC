@@ -115,6 +115,10 @@ class SqlDelightVocabPracticeRepository(
         }
     }
 
+    override suspend fun clearCardMeanings(cardIds: List<Long>): Unit = writeTransaction {
+        cardIds.forEach { clearVocabDeckEntryMeaning(it) }
+    }
+
     private fun UserDataQueries.insert(
         deckId: Long,
         wordData: VocabCardData

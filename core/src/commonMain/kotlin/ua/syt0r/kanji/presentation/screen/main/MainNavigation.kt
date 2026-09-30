@@ -9,6 +9,7 @@ import ua.syt0r.kanji.presentation.common.ScreenLetterPracticeType
 import ua.syt0r.kanji.presentation.getMultiplatformViewModel
 import ua.syt0r.kanji.presentation.screen.main.screen.about.AboutScreen
 import ua.syt0r.kanji.presentation.screen.main.screen.backup.BackupScreenContract
+import ua.syt0r.kanji.presentation.screen.main.screen.cache_settings.CacheSettingsScreen
 import ua.syt0r.kanji.presentation.screen.main.screen.credits.CreditsScreen
 import ua.syt0r.kanji.presentation.screen.main.screen.daily_limit.DailyLimitScreen
 import ua.syt0r.kanji.presentation.screen.main.screen.deck_details.DeckDetailsScreen
@@ -102,6 +103,18 @@ interface MainDestination {
         @Composable
         override fun Content(state: MainNavigationState) {
             TtsCacheScreen(state)
+        }
+
+    }
+
+    @Serializable
+    object CacheSettings : MainDestination {
+
+        override val analyticsName: String = "cache_settings"
+
+        @Composable
+        override fun Content(state: MainNavigationState) {
+            CacheSettingsScreen(state)
         }
 
     }
@@ -351,6 +364,7 @@ val defaultMainDestinations: List<MainDestinationConfiguration<*>> = listOf(
     MainDestination.About.configuration(),
     MainDestination.Credits.configuration(),
     MainDestination.TtsCache.configuration(),
+    MainDestination.CacheSettings.configuration(),
     MainDestination.Sponsor.configuration(),
     MainDestination.DailyLimit.configuration(),
     MainDestination.Sync.configuration(),

@@ -202,6 +202,11 @@ interface TutorialDialogStrings {
 interface SponsorStrings {
     val message: String
     val buyCoffee: String
+
+    val dialogTitle: String
+    val dialogMessage: String
+    val dialogConfirm: String
+    val dialogCancel: String
 }
 
 interface FeedbackStrings {
@@ -334,6 +339,16 @@ interface SettingsStrings {
     val sync: String
     val backupTitle: String
     val aboutTitle: String
+    val sponsorTitle: String
+
+    val cacheSettingsTitle: String
+    val ttsCacheTitle: String
+
+    val refreshMeaningsTitle: String
+    val refreshMeaningsMessage: String
+    val refreshMeaningsConfirm: String
+    val refreshMeaningsDone: (count: Int) -> String
+    val dialogOk: String
 
     val pickerDialogCancel: String
     val pickerDialogApply: String

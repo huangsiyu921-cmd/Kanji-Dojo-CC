@@ -96,6 +96,9 @@ VALUES (?, ?, ?, ?, ?);
 updateVocabDeckEntry:
 UPDATE vocab_deck_entry SET kanji_reading=?, kana_reading=?, meaning=? WHERE id=?;
 
+clearVocabDeckEntryMeaning:
+UPDATE vocab_deck_entry SET meaning = NULL WHERE id = :cardId;
+
 deleteVocabDeckEntry:
 DELETE FROM vocab_deck_entry WHERE id = ?;
 

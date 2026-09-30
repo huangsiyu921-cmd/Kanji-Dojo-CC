@@ -51,6 +51,8 @@ fun SettingsScreenUI(
     onBackupButtonClick: () -> Unit,
     onFeedbackButtonClick: () -> Unit,
     onAboutButtonClick: () -> Unit,
+    onSponsorButtonClick: () -> Unit,
+    onCacheSettingsClick: () -> Unit,
     loadedContent: @Composable ColumnScope.(ScreenState.Loaded) -> Unit
 ) {
 
@@ -69,8 +71,10 @@ fun SettingsScreenUI(
 
                     loadedContent(screenState)
 
+                    SettingsCacheSettingsButton(onCacheSettingsClick)
                     SettingsBackupButton(onBackupButtonClick)
                     SettingsFeedbackButton(onFeedbackButtonClick)
+                    SettingsSponsorButton(onSponsorButtonClick)
                     SettingsAboutButton(onAboutButtonClick)
 
                 }
@@ -131,9 +135,25 @@ fun SettingsSwitchRow(
 }
 
 @Composable
+fun SettingsCacheSettingsButton(onClick: () -> Unit) {
+    SettingsTextButton(
+        title = resolveString { settings.cacheSettingsTitle },
+        onClick = onClick
+    )
+}
+
+@Composable
 fun SettingsBackupButton(onClick: () -> Unit) {
     SettingsTextButton(
         title = resolveString { settings.backupTitle },
+        onClick = onClick
+    )
+}
+
+@Composable
+fun SettingsSponsorButton(onClick: () -> Unit) {
+    SettingsTextButton(
+        title = resolveString { settings.sponsorTitle },
         onClick = onClick
     )
 }
