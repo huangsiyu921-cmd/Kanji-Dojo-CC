@@ -80,6 +80,16 @@ data class VoicevoxConfig(
     fun isComplete(): Boolean =
         onnxRuntimeLibrary.isFile && dictionaryDir.isDirectory && modelFile.isFile
 
+    /**
+     * Names whatever is missing, so a fallback to the system voice can say *why* it happened.
+     * Without this a packaged app that lost a file just quietly speaks with the OS voice.
+     */
+    fun describeMissing(): String = buildList {
+        if (!onnxRuntimeLibrary.isFile) add("onnxruntime ($onnxRuntimeLibrary)")
+        if (!dictionaryDir.isDirectory) add("dictionary ($dictionaryDir)")
+        if (!modelFile.isFile) add("voice model ($modelFile)")
+    }.joinToString(", ").ifEmpty { "nothing - the runtime looks complete" }
+
     companion object {
 
         /** Where the runtime files live. Set by the build/launch scripts, wins over everything else. */
@@ -208,6 +218,7 @@ class VoicevoxJvmTtsManager(
             // the screen (or the next auto-play) cancels the calling coroutine.
             throw cancellation
         } catch (e: Exception) {
+            logFallback("could not synthesize '$word'", e)
             speakWithSystemVoice(word)
             return
         }
@@ -217,6 +228,7 @@ class VoicevoxJvmTtsManager(
             // not cut the audio off.
             withContext(NonCancellable) { play(wav) }
         } catch (e: Exception) {
+            logFallback("could not play '$word'", e)
             speakWithSystemVoice(word)
         }
     }
@@ -232,6 +244,7 @@ class VoicevoxJvmTtsManager(
         } catch (cancellation: CancellationException) {
             throw cancellation
         } catch (e: Exception) {
+            logFallback("could not pre-cache '$word'", e)
             false
         }
     }
@@ -258,11 +271,29 @@ class VoicevoxJvmTtsManager(
         runCatching { withContext(NonCancellable) { fallback.speak(word) } }
     }
 
+    /**
+     * The fallback to the OS voice is otherwise completely silent - the app just sounds different,
+     * which is impossible to act on. Every fallback leaves one line on stderr instead.
+     */
+    private fun logFallback(reason: String, error: Throwable? = null) {
+        val detail = error?.let { " (${it::class.simpleName}: ${it.message})" }.orEmpty()
+        System.err.println("[voicevox] $reason - falling back to the system voice$detail")
+    }
+
     private suspend fun synthesize(word: String): ByteArray = engineMutex.withLock {
         check(!engineUnavailable) { "VOICEVOX engine is not available on this machine" }
 
         val existing = engine
         if (existing != null) return@withLock existing.synthesize(word)
+
+        // Report what is missing before trying to load anything: a packaged app that quietly speaks
+        // with the system voice is otherwise impossible to diagnose.
+        if (!config.isComplete()) {
+            engineUnavailable = true
+            throw IllegalStateException(
+                "the VOICEVOX runtime is incomplete, missing ${config.describeMissing()}"
+            )
+        }
 
         val created = try {
             VoicevoxEngine(config)
